@@ -217,7 +217,7 @@ export const CompanyProfile: React.FC<CompanyProfileProps> = ({
               {/* Dynamic Interactive Card with Motion AnimatePresence */}
               <div className="relative rounded-3xl overflow-hidden shadow-2xl border-2 border-white bg-slate-900 group min-h-[380px] flex flex-col justify-end">
                 <img
-                  src="/src/assets/images/adaptiv_hero_vocational_lab_1792696958145.jpg"
+                  src="/images/hero/hero-vocational-lab.jpg"
                   alt="Modern Vocational Assessment Lab Adaptiv"
                   referrerPolicy="no-referrer"
                   className="absolute inset-0 w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-700 opacity-80"
@@ -597,7 +597,7 @@ export const CompanyProfile: React.FC<CompanyProfileProps> = ({
             
             <div className="lg:col-span-5 rounded-3xl overflow-hidden border border-[#E3E8F8] shadow-lg">
               <img
-                src="/src/assets/images/industry_engineer_tablet_1792696958848.jpg"
+                src="/images/industry/industry-engineer-tablet.jpg"
                 alt="Manajer Industri Memeriksa Paspor Kemampuan"
                 referrerPolicy="no-referrer"
                 className="w-full h-auto aspect-4/3 object-cover object-center"

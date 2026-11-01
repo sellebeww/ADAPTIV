@@ -75,3 +75,17 @@
   background-size: 16px 16px;
   background-position: 0 0, 0 8px, 8px -8px, -8px 0px;
 }
+
+/* Aksesibilitas: fokus keyboard terlihat & hormati preferensi kurangi gerak */
+:focus-visible {
+  outline: 2px solid var(--brand-indigo);
+  outline-offset: 2px;
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

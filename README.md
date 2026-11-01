@@ -1,20 +1,25 @@
-<div align="center">
-<img width="1200" height="475" alt="GHBanner" src="https://ai.google.dev/static/site-assets/images/share-ais-513315318.png" />
-</div>
+# Adaptiv
 
-# Run and deploy your AI Studio app
+Platform penilaian kemampuan beradaptasi vokasi & keterampilan kerja dinamis.
+SPA statis: Vite + React 19 + TypeScript + Tailwind 4. Data contoh ada di `src/data/seedData.ts`.
 
-This contains everything you need to run your app locally.
+## Prasyarat
+Node.js 20+ dan npm (atau Bun; lockfile bawaan repo adalah `bun.lock`).
 
-View your app in AI Studio: https://ai.studio/apps/a4488e80-a41f-48bb-978e-c5b17375b85e
+## Perintah
+| Perintah | Fungsi |
+|---|---|
+| `npm install` | pasang dependensi |
+| `npm run dev` | server dev di http://localhost:3000 |
+| `npm run typecheck` / `npm run lint` | pemeriksaan tipe (`tsc --noEmit`) |
+| `npm run build` | build produksi ke `dist/` |
+| `npm run preview` | pratinjau hasil build |
 
-## Run Locally
+## Struktur
+- `src/components/` komponen per fitur (admin, assessment, brand, circuit, company, industry, layout, library, passport)
+- `src/data/`, `src/types/`, `src/utils/` data seed, tipe, logika skor
+- `public/brand/` logo & ikon, `public/images/` foto
+- `docs/` dokumentasi; `docs/audit/` laporan audit
 
-**Prerequisites:**  Node.js
-
-
-1. Install dependencies:
-   `npm install`
-2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
-3. Run the app:
-   `npm run dev`
+## Variabel lingkungan
+Belum ada yang dipakai. Lihat `.env.example`.
