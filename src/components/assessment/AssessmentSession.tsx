@@ -41,15 +41,46 @@ interface AssessmentSessionProps {
   onUpdateSession: (updated: SessionType) => void;
   currentRole: UserRole;
   onViewPassport: () => void;
+  onResetSession?: () => void;
+  onSwitchRole?: (role: UserRole) => void;
 }
 
 export const AssessmentSession: React.FC<AssessmentSessionProps> = ({
   session,
   onUpdateSession,
   currentRole,
-  onViewPassport
+  onViewPassport,
+  onResetSession,
+  onSwitchRole
 }) => {
   const [activeHintModal, setActiveHintModal] = useState<string | null>(null);
+  // Highest phase reached; the stepper never jumps past it so a session cannot skip to the passport without a result.
+  const [furthest, setFurthest] = useState<number>(session.currentPhase);
+  const reached = Math.max(furthest, session.currentPhase);
+
+  const ROLE_FOR: Partial<Record<number, { role: UserRole; label: string }>> = {
+    3: { role: 'peserta', label: 'Siswa SMK (Peserta)' },
+    5: { role: 'peserta', label: 'Siswa SMK (Peserta)' },
+    6: { role: 'penilai', label: 'Guru Produktif (Penilai)' }
+  };
+  const locked = (phase: number) => {
+    const need = ROLE_FOR[phase];
+    return !!need && currentRole !== need.role && currentRole !== 'super_admin';
+  };
+  const RoleNotice: React.FC<{ phase: number }> = ({ phase }) => {
+    const need = ROLE_FOR[phase];
+    if (!need || !locked(phase)) return null;
+    return (
+      <div role="status" className="mb-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-4 rounded-2xl bg-amber-50 border border-amber-200 text-sm text-amber-900">
+        <span>Fase ini diisi oleh <strong>{need.label}</strong>. Peran aktif saat ini hanya bisa melihat.</span>
+        {onSwitchRole && (
+          <button type="button" onClick={() => onSwitchRole(need.role)} className="shrink-0 px-4 py-2 rounded-xl bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold">
+            Ganti ke peran ini
+          </button>
+        )}
+      </div>
+    );
+  };
   
   // Prediction Form State
   const [changeSummary, setChangeSummary] = useState(
@@ -95,20 +126,21 @@ export const AssessmentSession: React.FC<AssessmentSessionProps> = ({
     ]
   );
 
-  const phasesList: { phase: AssessmentPhase; label: string; icon: string }[] = [
-    { phase: 0, label: '0. Persiapan', icon: '📋' },
-    { phase: 1, label: '1. Tugas Dasar', icon: '⚡' },
-    { phase: 2, label: '2. Situasi Berubah', icon: '🔄' },
-    { phase: 3, label: '3. Prediksi', icon: '🧠' },
-    { phase: 4, label: '4. Penyesuaian', icon: '🛠️' },
-    { phase: 5, label: '5. Evaluasi Diri', icon: '📝' },
-    { phase: 6, label: '6. Penilaian Rubrik', icon: '⚖️' },
-    { phase: 7, label: '7. Paspor Siap', icon: '🎓' }
+  const phasesList: { phase: AssessmentPhase; label: string }[] = [
+    { phase: 0, label: '0. Persiapan' },
+    { phase: 1, label: '1. Tugas Dasar' },
+    { phase: 2, label: '2. Situasi Berubah' },
+    { phase: 3, label: '3. Prediksi' },
+    { phase: 4, label: '4. Penyesuaian' },
+    { phase: 5, label: '5. Evaluasi Diri' },
+    { phase: 6, label: '6. Penilaian Rubrik' },
+    { phase: 7, label: '7. Paspor Siap' }
   ];
 
   const handleNextPhase = () => {
     if (session.currentPhase < 7) {
       const nextPhase = (session.currentPhase + 1) as AssessmentPhase;
+      setFurthest((f) => Math.max(f, nextPhase));
       onUpdateSession({
         ...session,
         currentPhase: nextPhase,
@@ -134,6 +166,7 @@ export const AssessmentSession: React.FC<AssessmentSessionProps> = ({
       prediction: updatedPrediction,
       currentPhase: 4
     });
+    setFurthest((f) => Math.max(f, 4));
   };
 
   const handleOpenHint = (hintId: string) => {
@@ -159,15 +192,21 @@ export const AssessmentSession: React.FC<AssessmentSessionProps> = ({
       reflection: updatedReflection,
       currentPhase: 6
     });
+    setFurthest((f) => Math.max(f, 6));
   };
 
   const handleScoreChange = (index: number, newScore: number) => {
-    const updated = [...currentScores];
-    updated[index].score = newScore;
-    setCurrentScores(updated);
+    setCurrentScores(currentScores.map((c, i) => (i === index ? { ...c, score: newScore } : c)));
   };
 
+  const handleRationaleChange = (index: number, rationale: string) => {
+    setCurrentScores(currentScores.map((c, i) => (i === index ? { ...c, rationale } : c)));
+  };
+
+  const missingRationale = currentScores.filter((c) => (c.score === 0 || c.score === 4) && !(c.rationale ?? '').trim()).length;
+
   const handleFinalizeEvaluation = () => {
+    if (missingRationale > 0) return;
     const calculatedResult = computeSessionResult(
       currentScores,
       3.5, // Base task score baseline
@@ -182,6 +221,7 @@ export const AssessmentSession: React.FC<AssessmentSessionProps> = ({
       currentPhase: 7,
       status: 'selesai'
     });
+    setFurthest(7);
   };
 
   return (
@@ -191,7 +231,7 @@ export const AssessmentSession: React.FC<AssessmentSessionProps> = ({
       <div className="p-4 sm:p-6 rounded-3xl bg-white border border-[#E3E8F8] shadow-xs">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-5 border-b border-[#E3E8F8]">
           <div className="flex items-center gap-3">
-            <div className="w-11 h-11 rounded-2xl bg-[#3F55F0]/10 flex items-center justify-center text-[#3F55F0] font-bold text-lg">
+            <div className="w-16 h-16 rounded-2xl bg-[#3F55F0]/10 flex items-center justify-center text-[#3F55F0] font-bold text-2xl">
               TITL
             </div>
             <div>
@@ -226,13 +266,14 @@ export const AssessmentSession: React.FC<AssessmentSessionProps> = ({
                 <React.Fragment key={p.phase}>
                   <button
                     onClick={() => onUpdateSession({ ...session, currentPhase: p.phase })}
+                    disabled={p.phase > reached}
                     className={`flex flex-col items-center gap-1.5 transition-all text-center focus:outline-hidden ${
                       isCurrent
                         ? 'scale-105 font-bold text-[#3F55F0]'
                         : isPassed
                         ? 'text-[#16A34A] hover:text-[#0F1B4A]'
                         : 'text-[#5B6585] opacity-60'
-                    }`}
+                    } disabled:cursor-not-allowed`}
                   >
                     <div
                       className={`w-9 h-9 rounded-xl flex items-center justify-center text-xs font-bold transition-all ${
@@ -243,7 +284,7 @@ export const AssessmentSession: React.FC<AssessmentSessionProps> = ({
                           : 'bg-[#F6F8FF] text-[#5B6585] border border-[#E3E8F8]'
                       }`}
                     >
-                      {isPassed ? <CheckCircle2 className="w-4 h-4" /> : p.icon}
+                      {isPassed ? <CheckCircle2 className="w-4 h-4" /> : p.phase}
                     </div>
                     <span className="text-[11px] whitespace-nowrap">{p.label}</span>
                   </button>
@@ -456,7 +497,7 @@ export const AssessmentSession: React.FC<AssessmentSessionProps> = ({
           <div className="relative z-10 p-6 sm:p-8 rounded-2xl bg-white/10 backdrop-blur-lg border border-white/20 space-y-4">
             <div className="flex items-center gap-3">
               <div className="w-12 h-12 rounded-2xl bg-[#4A8BFF] text-[#0F1B4A] flex items-center justify-center font-black text-2xl shadow-lg">
-                ⚡
+                2
               </div>
               <div>
                 <span className="text-xs font-bold uppercase tracking-wider text-[#4A8BFF]">
@@ -490,7 +531,7 @@ export const AssessmentSession: React.FC<AssessmentSessionProps> = ({
 
           <div className="relative z-10 flex flex-col sm:flex-row items-center justify-between gap-4 pt-2">
             <div className="text-xs text-blue-200">
-              💡 <em>Ingat: Jangan langsung bertindak. Rumuskan prediksimu pada Fase 3.</em>
+              <em>Ingat: Jangan langsung bertindak. Rumuskan prediksimu pada Fase 3.</em>
             </div>
             <button
               onClick={handleNextPhase}
@@ -506,6 +547,9 @@ export const AssessmentSession: React.FC<AssessmentSessionProps> = ({
 
       {/* PHASE 3: PREDIKSI (TERSTRUKTUR & TERKUNCI) */}
       {session.currentPhase === 3 && (
+        <>
+        <RoleNotice phase={3} />
+        <fieldset disabled={locked(3)} className="contents min-w-0">
         <div className="p-6 sm:p-8 rounded-3xl bg-white border border-[#E3E8F8] shadow-xs space-y-6">
           <div className="flex items-start justify-between">
             <div>
@@ -601,7 +645,7 @@ export const AssessmentSession: React.FC<AssessmentSessionProps> = ({
 
           <div className="flex items-center justify-between pt-4 border-t border-[#E3E8F8]">
             <span className="text-xs text-[#5B6585]">
-              🔒 Setelah dikirim, jawaban tidak dapat disunting kembali.
+              Setelah dikirim, jawaban tidak dapat disunting kembali.
             </span>
             <button
               onClick={handleLockPrediction}
@@ -612,6 +656,8 @@ export const AssessmentSession: React.FC<AssessmentSessionProps> = ({
             </button>
           </div>
         </div>
+        </fieldset>
+        </>
       )}
 
       {/* PHASE 4: PENYESUAIAN & PETUNJUK BERTINGKAT */}
@@ -739,6 +785,9 @@ export const AssessmentSession: React.FC<AssessmentSessionProps> = ({
 
       {/* PHASE 5: EVALUASI DIRI */}
       {session.currentPhase === 5 && (
+        <>
+        <RoleNotice phase={5} />
+        <fieldset disabled={locked(5)} className="contents min-w-0">
         <div className="p-6 sm:p-8 rounded-3xl bg-white border border-[#E3E8F8] shadow-xs space-y-6">
           <div className="flex items-start justify-between">
             <div>
@@ -814,10 +863,15 @@ export const AssessmentSession: React.FC<AssessmentSessionProps> = ({
             </button>
           </div>
         </div>
+        </fieldset>
+        </>
       )}
 
       {/* PHASE 6: PENILAIAN RUBRIK (5 DIMENSI) */}
       {session.currentPhase === 6 && (
+        <>
+        <RoleNotice phase={6} />
+        <fieldset disabled={locked(6)} className="contents min-w-0">
         <div className="p-6 sm:p-8 rounded-3xl bg-white border border-[#E3E8F8] shadow-xs space-y-6">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
@@ -899,7 +953,9 @@ export const AssessmentSession: React.FC<AssessmentSessionProps> = ({
                         </label>
                         <input
                           type="text"
-                          defaultValue={currentScoreObj?.rationale || 'Demonstrasi kepatuhan PUIL dan kerapian sangat istimewa.'}
+                          value={currentScoreObj?.rationale ?? ''}
+                          onChange={(e) => handleRationaleChange(idx, e.target.value)}
+                          aria-invalid={!currentScoreObj?.rationale?.trim()}
                           className="w-full p-2.5 rounded-xl border border-red-200 bg-red-50/30 text-xs text-[#0F1B4A]"
                           placeholder="Tuliskan justifikasi detail..."
                         />
@@ -966,15 +1022,23 @@ export const AssessmentSession: React.FC<AssessmentSessionProps> = ({
 
               <button
                 onClick={handleFinalizeEvaluation}
-                className="w-full py-3 px-4 rounded-xl bg-[#16A34A] hover:bg-emerald-700 text-white text-xs font-bold transition-all shadow-md shadow-emerald-500/20 flex items-center justify-center gap-1.5"
+                disabled={missingRationale > 0}
+                className="w-full py-3 px-4 rounded-xl bg-[#16A34A] hover:bg-emerald-700 disabled:opacity-50 disabled:hover:bg-[#16A34A] text-white text-xs font-bold transition-all shadow-md shadow-emerald-500/20 flex items-center justify-center gap-1.5"
               >
                 <CheckCircle2 className="w-4 h-4" />
                 <span>Terbitkan Paspor (Fase 7)</span>
               </button>
+              {missingRationale > 0 && (
+                <p role="alert" className="text-[11px] font-semibold text-[#DC2626]">
+                  Isi alasan tertulis untuk {missingRationale} dimensi bernilai 0 atau 4.
+                </p>
+              )}
             </div>
 
           </div>
         </div>
+        </fieldset>
+        </>
       )}
 
       {/* PHASE 7: PASPOR KEMAMPUAN SIAP */}
@@ -993,6 +1057,7 @@ export const AssessmentSession: React.FC<AssessmentSessionProps> = ({
               </p>
             </div>
 
+            <div className="flex flex-wrap gap-3">
             <button
               onClick={onViewPassport}
               className="inline-flex items-center gap-2 px-6 py-3.5 rounded-2xl bg-white hover:bg-blue-50 text-[#0F1B4A] text-sm font-bold transition-all shadow-lg"
@@ -1000,6 +1065,15 @@ export const AssessmentSession: React.FC<AssessmentSessionProps> = ({
               Lihat Paspor Kemampuan Lengkap
               <ArrowRight className="w-4 h-4 text-[#3F55F0]" />
             </button>
+            {onResetSession && (
+              <button
+                onClick={onResetSession}
+                className="inline-flex items-center gap-2 px-6 py-3.5 rounded-2xl border border-white/40 hover:bg-white/10 text-white text-sm font-bold transition-colors"
+              >
+                Mulai Sesi Baru
+              </button>
+            )}
+            </div>
           </div>
 
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 pt-4 border-t border-white/20">

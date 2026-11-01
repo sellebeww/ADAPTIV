@@ -3,7 +3,9 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import QRCode from 'qrcode';
+import { verifyUrl } from '../../utils/passports';
 import { AbilityPassport, HistoricalSessionRecord } from '../../types/adaptiv';
 import { Logo } from '../brand/Logo';
 import { SkillTrendChart } from './SkillTrendChart';
@@ -21,24 +23,44 @@ import {
   Copy,
   Clock,
   Layers,
-  FileCheck
+  FileCheck,
+  ArrowLeft
 } from 'lucide-react';
 
 interface PassportViewProps {
   passport: AbilityPassport;
   onBackToSession: () => void;
+  backLabel?: string;
   sessionHistory?: HistoricalSessionRecord[];
 }
 
 export const PassportView: React.FC<PassportViewProps> = ({ 
   passport, 
   onBackToSession,
+  backLabel = 'Sesi Uji',
   sessionHistory 
 }) => {
   const [copiedLink, setCopiedLink] = useState(false);
 
-  const handleCopyLink = () => {
-    navigator.clipboard.writeText(passport.verificationUrl);
+  const link = verifyUrl(passport.publicCode);
+  const [qr, setQr] = useState('');
+  useEffect(() => {
+    let live = true;
+    QRCode.toDataURL(link, { margin: 1, width: 160, color: { dark: '#0F1B4A', light: '#FFFFFF' } })
+      .then((url) => live && setQr(url))
+      .catch(() => live && setQr(''));
+    return () => {
+      live = false;
+    };
+  }, [link]);
+
+  const handleCopyLink = async () => {
+    try {
+      await navigator.clipboard.writeText(link);
+    } catch {
+      // Clipboard API is blocked on insecure origins and some embedded views; let the user copy by hand.
+      window.prompt('Salin tautan verifikasi:', link);
+    }
     setCopiedLink(true);
     setTimeout(() => setCopiedLink(false), 2000);
   };
@@ -75,8 +97,16 @@ export const PassportView: React.FC<PassportViewProps> = ({
   return (
     <div className="space-y-6">
       
+      <button
+        onClick={onBackToSession}
+        className="print:hidden inline-flex items-center gap-1.5 text-xs font-semibold text-[#3F55F0] hover:underline"
+      >
+        <ArrowLeft className="w-3.5 h-3.5" />
+        Kembali ke {backLabel}
+      </button>
+
       {/* Top Action Bar */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 rounded-3xl bg-white border border-[#E3E8F8] shadow-xs">
+      <div className="print:hidden flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 rounded-3xl bg-white border border-[#E3E8F8] shadow-xs">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-2xl bg-[#3F55F0]/10 flex items-center justify-center text-[#3F55F0]">
             <Award className="w-5 h-5" />
@@ -140,7 +170,7 @@ export const PassportView: React.FC<PassportViewProps> = ({
         </div>
 
         {/* Participant & Score Banner */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 p-6 rounded-2xl bg-[#F6F8FF] border border-[#E3E8F8]">
+        <div className="stagger grid grid-cols-1 md:grid-cols-3 gap-6 p-6 rounded-2xl bg-[#F6F8FF] border border-[#E3E8F8]">
           <div className="space-y-1 md:col-span-2">
             <span className="text-xs font-semibold text-[#3F55F0] uppercase tracking-wider">
               Pemegang Paspor Kemampuan
@@ -180,8 +210,8 @@ export const PassportView: React.FC<PassportViewProps> = ({
               Grafik Radar 5 Dimensi Adaptasi
             </h4>
             
-            <div className="relative w-[300px] h-[300px]">
-              <svg viewBox="0 0 300 300" className="w-full h-full overflow-visible">
+            <div className="relative w-full max-w-[440px] aspect-[22/16]">
+              <svg viewBox="-70 -20 440 320" className="w-full h-full overflow-visible">
                 {/* Background grid concentric pentagons */}
                 {[0.25, 0.5, 0.75, 1.0].map((level, lIdx) => {
                   const gridPoints = dimensions.map((_, i) => {
@@ -242,19 +272,26 @@ export const PassportView: React.FC<PassportViewProps> = ({
                   );
                 })}
 
-                {/* Labels */}
+                {/* Labels: sisi kiri/kanan menempel keluar dari sumbu agar tidak menimpa titik data */}
                 {dimensions.map((dim, i) => {
-                  const { x, y } = getCoordinates(i, 4.8, 4);
+                  const angle = (Math.PI * 2 / numAxes) * i - Math.PI / 2;
+                  const cos = Math.cos(angle);
+                  const sin = Math.sin(angle);
+                  const gap = radius + 18;
+                  const side = Math.abs(cos) < 0.2 ? 'middle' : cos > 0 ? 'start' : 'end';
+                  const x = cx + gap * cos;
+                  const y = cy + gap * sin + (sin > 0.5 ? 6 : 0);
                   return (
                     <text
                       key={i}
                       x={x}
                       y={y}
-                      textAnchor="middle"
+                      textAnchor={side}
                       dominantBaseline="central"
                       className="text-[10px] font-bold fill-[#0F1B4A]"
                     >
-                      {dim.label} ({dim.score}/4)
+                      <tspan x={x} dy="-0.6em">{dim.label}</tspan>
+                      <tspan x={x} dy="1.3em" className="fill-[#5B6585] font-semibold">({dim.score}/4)</tspan>
                     </text>
                   );
                 })}
@@ -358,8 +395,8 @@ export const PassportView: React.FC<PassportViewProps> = ({
         {/* Certificate Verification Footer */}
         <div className="p-4 rounded-2xl bg-[#0F1B4A] text-white flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-3">
-            <div className="w-12 h-12 rounded-xl bg-white p-1 flex items-center justify-center shrink-0">
-              <QrCode className="w-10 h-10 text-[#0F1B4A]" />
+            <div className="w-16 h-16 rounded-xl bg-white p-1 flex items-center justify-center shrink-0">
+              {qr ? <img src={qr} alt={`QR code verifikasi paspor ${passport.publicCode}`} className="w-full h-full" /> : <QrCode className="w-10 h-10 text-[#0F1B4A]" />}
             </div>
             <div>
               <div className="text-xs font-bold text-white flex items-center gap-1.5">
@@ -367,13 +404,13 @@ export const PassportView: React.FC<PassportViewProps> = ({
                 Verifikasi Integritas Publik
               </div>
               <p className="text-[11px] text-blue-200">
-                Pindai kode QR atau buka tautan resmi: <span className="font-mono underline text-white">{passport.verificationUrl}</span>
+                Pindai kode QR atau buka tautan resmi: <span className="font-mono underline text-white">{link}</span>
               </p>
             </div>
           </div>
 
           <a
-            href={passport.verificationUrl}
+            href={link}
             target="_blank"
             rel="noreferrer"
             className="px-4 py-2 rounded-xl bg-[#3F55F0] hover:bg-[#4A8BFF] text-white text-xs font-semibold flex items-center gap-1.5 transition-colors"

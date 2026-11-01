@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   X, 
   Download, 
@@ -26,6 +26,13 @@ interface BrandKitModalProps {
 export const BrandKitModal: React.FC<BrandKitModalProps> = ({ isOpen, onClose }) => {
   const [copiedColor, setCopiedColor] = useState<string | null>(null);
   const [previewBg, setPreviewBg] = useState<'transparent' | 'light' | 'dark'>('transparent');
+
+  useEffect(() => {
+    if (!isOpen) return;
+    const onKey = (e: KeyboardEvent) => e.key === 'Escape' && onClose();
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [isOpen, onClose]);
 
   if (!isOpen) return null;
 

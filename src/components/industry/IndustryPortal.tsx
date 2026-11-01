@@ -5,55 +5,15 @@
 
 import React, { useState } from 'react';
 import { Building2, Search, Filter, CheckCircle2, Send, Star, ExternalLink, ShieldCheck } from 'lucide-react';
-import { SEED_USERS } from '../../data/seedData';
+import { SEED_CANDIDATES } from '../../data/seedData';
 
-export const IndustryPortal: React.FC<{ onSelectPassport: () => void }> = ({ onSelectPassport }) => {
+export const IndustryPortal: React.FC<{ onSelectPassport: (candidateId: string) => void }> = ({ onSelectPassport }) => {
   const [filterLevel, setFilterLevel] = useState<string>('all');
   const [variationDescription, setVariationDescription] = useState('');
   const [submittedRequest, setSubmittedRequest] = useState(false);
+  const [requests, setRequests] = useState<{ text: string; at: string }[]>([]);
 
-  const candidates = [
-    {
-      id: 'c1',
-      name: 'Rizky Pratama',
-      school: 'SMK Negeri 2 Nusantara',
-      major: 'Teknik Instalasi Tenaga Listrik',
-      iaScore: 82.5,
-      level: 'Mahir Beradaptasi',
-      weakest: 'Beban / Daya Tinggi',
-      verified: true
-    },
-    {
-      id: 'c2',
-      name: 'Fauzan Hidayat',
-      school: 'SMK Negeri 2 Nusantara',
-      major: 'Teknik Instalasi Tenaga Listrik',
-      iaScore: 74.0,
-      level: 'Cakap Beradaptasi',
-      weakest: 'Variasi Jenis Kabel',
-      verified: true
-    },
-    {
-      id: 'c3',
-      name: 'Anisa Kusuma',
-      school: 'SMK Negeri 2 Nusantara',
-      major: 'Teknik Instalasi Tenaga Listrik',
-      iaScore: 68.5,
-      level: 'Cakap Beradaptasi',
-      weakest: 'Tekanan Waktu Kerja',
-      verified: true
-    },
-    {
-      id: 'c4',
-      name: 'Bayu Saputra',
-      school: 'SMK Negeri 2 Nusantara',
-      major: 'Teknik Instalasi Tenaga Listrik',
-      iaScore: 52.0,
-      level: 'Berkembang',
-      weakest: 'Kegagalan Komponen',
-      verified: true
-    }
-  ];
+  const candidates = SEED_CANDIDATES;
 
   const filteredCandidates = candidates.filter(c => {
     if (filterLevel === 'all') return true;
@@ -63,11 +23,10 @@ export const IndustryPortal: React.FC<{ onSelectPassport: () => void }> = ({ onS
   const handleSubmitRequest = (e: React.FormEvent) => {
     e.preventDefault();
     if (!variationDescription.trim()) return;
+    setRequests((r) => [{ text: variationDescription.trim(), at: new Date().toLocaleString('id-ID', { dateStyle: 'medium', timeStyle: 'short' }) }, ...r]);
+    setVariationDescription('');
     setSubmittedRequest(true);
-    setTimeout(() => {
-      setSubmittedRequest(false);
-      setVariationDescription('');
-    }, 3000);
+    setTimeout(() => setSubmittedRequest(false), 3000);
   };
 
   return (
@@ -95,7 +54,7 @@ export const IndustryPortal: React.FC<{ onSelectPassport: () => void }> = ({ onS
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div className="stagger grid grid-cols-1 lg:grid-cols-3 gap-6">
         
         {/* Talent List */}
         <div className="lg:col-span-2 space-y-4">
@@ -125,7 +84,7 @@ export const IndustryPortal: React.FC<{ onSelectPassport: () => void }> = ({ onS
             {filteredCandidates.map((c) => (
               <div
                 key={c.id}
-                className="p-5 rounded-2xl bg-white border border-[#E3E8F8] hover:border-[#3F55F0]/50 transition-all shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4"
+                className="card-lift p-5 rounded-2xl bg-white border border-[#E3E8F8] hover:border-[#3F55F0]/50 transition-all shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4"
               >
                 <div className="space-y-1">
                   <div className="flex items-center gap-2">
@@ -150,7 +109,7 @@ export const IndustryPortal: React.FC<{ onSelectPassport: () => void }> = ({ onS
                     </div>
                   </div>
                   <button
-                    onClick={onSelectPassport}
+                    onClick={() => onSelectPassport(c.id)}
                     className="px-4 py-2.5 rounded-xl bg-[#3F55F0] hover:bg-[#2A38B8] text-white text-xs font-semibold transition-colors flex items-center gap-1.5 shadow-2xs"
                   >
                     Buka Paspor
@@ -204,6 +163,20 @@ export const IndustryPortal: React.FC<{ onSelectPassport: () => void }> = ({ onS
               </div>
             )}
           </form>
+
+          {requests.length > 0 && (
+            <div className="pt-4 border-t border-[#E3E8F8] space-y-2.5">
+              <span className="text-[11px] font-bold text-[#0F1B4A] uppercase tracking-wider">Permintaan Terkirim ({requests.length})</span>
+              <ul className="space-y-2">
+                {requests.map((r, i) => (
+                  <li key={i} className="p-3 rounded-xl bg-[#F6F8FF] border border-[#E3E8F8] text-xs text-[#3B4670] leading-relaxed">
+                    {r.text}
+                    <span className="block mt-1.5 text-[10px] text-[#5B6585]">{r.at} · Menunggu tinjauan Kurikulum</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
         </div>
 
       </div>

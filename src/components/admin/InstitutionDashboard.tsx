@@ -3,7 +3,8 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React from 'react';
+import React, { useState } from 'react';
+import { downloadText, toCsv, escapeHtml } from '../../utils/download';
 import { CURRENT_INSTITUTION } from '../../data/seedData';
 import { 
   BarChart3, 
@@ -15,10 +16,65 @@ import {
   ShieldCheck, 
   Download,
   Percent,
-  Sliders
+  Sliders,
+  Check
 } from 'lucide-react';
 
+const DISTRIBUTION = [
+  { label: 'Mahir Beradaptasi (IA ≥ 80)', count: 48, pct: 33.8, color: 'bg-[#3F55F0]' },
+  { label: 'Cakap Beradaptasi (60 ≤ IA < 80)', count: 64, pct: 45.1, color: 'bg-[#4A8BFF]' },
+  { label: 'Berkembang (40 ≤ IA < 60)', count: 24, pct: 16.9, color: 'bg-amber-400' },
+  { label: 'Tergantung Prosedur (IA < 40)', count: 6, pct: 4.2, color: 'bg-red-500' }
+];
+
+const CHALLENGES = [
+  { category: 'Beban / Daya Tinggi', failureRate: '34.2%', note: 'Sering keliru menghitung KHA kabel dan tripping MCB.' },
+  { category: 'Kegagalan Komponen Sengaja', failureRate: '28.1%', note: 'Membutuhkan penelusuran multitester sistematis.' },
+  { category: 'Spesifikasi Kendali (Saklar Tukar)', failureRate: '15.4%', note: 'Sebagian besar siswa berhasil mengadaptasi strapping wire.' },
+  { category: 'Variasi Waktu Kerja Singkat', failureRate: '11.0%', note: 'Penyesuaian kecepatan tetap memenuhi standar K3.' }
+];
+
+const STATS = [
+  ['Total Sesi Diuji', '142'],
+  ['Rata-rata Indeks Adaptasi', '71.8'],
+  ['Kesepakatan Penilai (Kappa)', '0.86'],
+  ['Korelasi Kinerja Lapangan', 'r = 0.79']
+];
+
 export const InstitutionDashboard: React.FC = () => {
+  const [done, setDone] = useState<'csv' | 'laporan' | null>(null);
+  const flash = (k: 'csv' | 'laporan') => {
+    setDone(k);
+    setTimeout(() => setDone(null), 2200);
+  };
+
+  const exportCsv = () => {
+    downloadText(
+      'adaptiv-rekap-lembaga.csv',
+      toCsv([
+        ['Bagian', 'Nama', 'Nilai', 'Keterangan'],
+        ...STATS.map(([k, v]) => ['Ringkasan', k, v, '']),
+        ...DISTRIBUTION.map((d) => ['Distribusi Tingkat Adaptasi', d.label, d.count, `${d.pct}%`]),
+        ...CHALLENGES.map((c) => ['Kategori Variasi Menantang', c.category, c.failureRate, c.note])
+      ]),
+      'text/csv;charset=utf-8'
+    );
+    flash('csv');
+  };
+
+  const exportReport = () => {
+    const rows = (items: string[][]) => items.map((r) => `<tr>${r.map((c) => `<td>${escapeHtml(c)}</td>`).join('')}</tr>`).join('');
+    const html = `<!doctype html><html lang="id"><head><meta charset="utf-8"><title>Laporan Akreditasi Vokasi</title>
+<style>body{font:14px/1.6 system-ui,sans-serif;color:#0F1B4A;max-width:780px;margin:40px auto;padding:0 20px}h1{font-size:22px;margin:0}h2{font-size:15px;margin:28px 0 8px;color:#2A38B8}p.m{color:#5B6585;margin:4px 0 0}table{width:100%;border-collapse:collapse}td,th{border:1px solid #E3E8F8;padding:8px 10px;text-align:left}th{background:#F6F8FF}@media print{body{margin:0}}</style></head><body>
+<h1>Laporan Akreditasi Vokasi</h1><p class="m">${escapeHtml(CURRENT_INSTITUTION.name)} · NPSN ${escapeHtml(String(CURRENT_INSTITUTION.npsn))}</p>
+<h2>Ringkasan Validitas Penilaian</h2><table><tr><th>Indikator</th><th>Nilai</th></tr>${rows(STATS)}</table>
+<h2>Distribusi Tingkat Adaptasi Siswa (N = 142)</h2><table><tr><th>Tingkat</th><th>Siswa</th><th>Persentase</th></tr>${rows(DISTRIBUTION.map((d) => [d.label, String(d.count), `${d.pct}%`]))}</table>
+<h2>Kategori Variasi Paling Menantang</h2><table><tr><th>Kategori</th><th>Tingkat Gagal</th><th>Catatan</th></tr>${rows(CHALLENGES.map((c) => [c.category, c.failureRate, c.note]))}</table>
+<p class="m" style="margin-top:28px">Dihasilkan oleh Adaptiv pada ${new Date().toLocaleDateString('id-ID', { dateStyle: 'long' })}. Gunakan Cetak (Ctrl/Cmd+P) untuk menyimpan sebagai PDF.</p></body></html>`;
+    downloadText('laporan-akreditasi-vokasi.html', html, 'text/html;charset=utf-8');
+    flash('laporan');
+  };
+
   return (
     <div className="space-y-6">
       
@@ -42,19 +98,19 @@ export const InstitutionDashboard: React.FC = () => {
         </div>
 
         <div className="flex items-center gap-2">
-          <button className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-2xl border border-[#E3E8F8] hover:border-[#3F55F0] bg-white text-xs font-semibold text-[#0F1B4A] transition-colors shadow-2xs">
-            <Download className="w-3.5 h-3.5 text-[#5B6585]" />
-            Ekspor CSV
+          <button onClick={exportCsv} className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-2xl border border-[#E3E8F8] hover:border-[#3F55F0] bg-white text-xs font-semibold text-[#0F1B4A] transition-colors shadow-2xs">
+            {done === 'csv' ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Download className="w-3.5 h-3.5 text-[#5B6585]" />}
+            {done === 'csv' ? 'Terunduh' : 'Ekspor CSV'}
           </button>
-          <button className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-2xl bg-[#3F55F0] hover:bg-[#2A38B8] text-white text-xs font-semibold transition-colors shadow-xs">
-            <FileSpreadsheet className="w-3.5 h-3.5" />
-            Laporan Akreditasi Vokasi
+          <button onClick={exportReport} className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-2xl bg-[#3F55F0] hover:bg-[#2A38B8] text-white text-xs font-semibold transition-colors shadow-xs">
+            {done === 'laporan' ? <Check className="w-3.5 h-3.5" /> : <FileSpreadsheet className="w-3.5 h-3.5" />}
+            {done === 'laporan' ? 'Terunduh' : 'Laporan Akreditasi Vokasi'}
           </button>
         </div>
       </div>
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+      <div className="stagger grid grid-cols-2 sm:grid-cols-4 gap-4">
         <div className="p-5 rounded-2xl bg-white border border-[#E3E8F8] shadow-xs">
           <span className="text-xs text-[#5B6585] block">Total Sesi Diuji</span>
           <div className="text-2xl font-black text-[#0F1B4A] font-mono mt-1">142</div>
@@ -78,7 +134,7 @@ export const InstitutionDashboard: React.FC = () => {
       </div>
 
       {/* Analytics Breakdown Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="stagger grid grid-cols-1 lg:grid-cols-2 gap-6">
         
         {/* Adaptation Level Distribution */}
         <div className="p-6 rounded-3xl bg-white border border-[#E3E8F8] shadow-xs space-y-4">
@@ -88,12 +144,7 @@ export const InstitutionDashboard: React.FC = () => {
           </h3>
 
           <div className="space-y-3">
-            {[
-              { label: 'Mahir Beradaptasi (IA ≥ 80)', count: 48, pct: 33.8, color: 'bg-[#3F55F0]' },
-              { label: 'Cakap Beradaptasi (60 ≤ IA < 80)', count: 64, pct: 45.1, color: 'bg-[#4A8BFF]' },
-              { label: 'Berkembang (40 ≤ IA < 60)', count: 24, pct: 16.9, color: 'bg-amber-400' },
-              { label: 'Tergantung Prosedur (IA < 40)', count: 6, pct: 4.2, color: 'bg-red-500' }
-            ].map((d, i) => (
+            {DISTRIBUTION.map((d, i) => (
               <div key={i} className="space-y-1">
                 <div className="flex justify-between text-xs">
                   <span className="font-semibold text-[#0F1B4A]">{d.label}</span>
@@ -110,7 +161,7 @@ export const InstitutionDashboard: React.FC = () => {
           </div>
 
           <div className="p-3 rounded-xl bg-blue-50 border border-blue-200 text-xs text-blue-900 mt-2">
-            💡 <strong>Insight Lembaga:</strong> 78.9% siswa berada pada kategori adaptif mandiri. 6 siswa membutuhkan bimbingan intensif pada penyusunan prediksi sebelum aksi.
+            <strong>Insight Lembaga:</strong> 78.9% siswa berada pada kategori adaptif mandiri. 6 siswa membutuhkan bimbingan intensif pada penyusunan prediksi sebelum aksi.
           </div>
         </div>
 
@@ -122,12 +173,7 @@ export const InstitutionDashboard: React.FC = () => {
           </h3>
 
           <div className="space-y-2.5">
-            {[
-              { category: 'Beban / Daya Tinggi', failureRate: '34.2%', note: 'Sering keliru menghitung KHA kabel dan tripping MCB.' },
-              { category: 'Kegagalan Komponen Sengaja', failureRate: '28.1%', note: 'Membutuhkan penelusuran multitester sistematis.' },
-              { category: 'Spesifikasi Kendali (Saklar Tukar)', failureRate: '15.4%', note: 'Sebagian besar siswa berhasil mengadaptasi strapping wire.' },
-              { category: 'Variasi Waktu Kerja Singkat', failureRate: '11.0%', note: 'Penyesuaian kecepatan tetap memenuhi standar K3.' }
-            ].map((c, i) => (
+            {CHALLENGES.map((c, i) => (
               <div key={i} className="p-3.5 rounded-2xl bg-[#F6F8FF] border border-[#E3E8F8] flex items-start justify-between gap-3 text-xs">
                 <div>
                   <h4 className="font-bold text-[#0F1B4A]">{c.category}</h4>

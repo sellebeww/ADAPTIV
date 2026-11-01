@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { AbilityPassport, AssessmentSession, BaseTask, Competency, HistoricalSessionRecord, TaskVariation, User } from '../types/adaptiv';
+import { AbilityPassport, AdaptationLevel, AssessmentSession, BaseTask, Competency, HistoricalSessionRecord, TaskVariation, User } from '../types/adaptiv';
 import { computeSessionResult, RUBRIC_DIMENSIONS } from '../utils/scoring';
 
 export const CURRENT_INSTITUTION = {
@@ -379,3 +379,23 @@ export const INITIAL_ABILITY_PASSPORT: AbilityPassport = {
   verificationUrl: 'https://adaptiv.id/verifikasi/ADAPT-2026-TITL-0891',
   issuedAt: '2026-10-22'
 };
+
+export interface Candidate {
+  id: string;
+  name: string;
+  nisn: string;
+  className: string;
+  school: string;
+  major: string;
+  iaScore: number;
+  level: AdaptationLevel;
+  weakest: string;
+  verified: boolean;
+}
+
+export const SEED_CANDIDATES: Candidate[] = [
+  { id: 'c1', name: 'Rizky Pratama', nisn: '0072381920', className: 'XII TITL 2', school: 'SMK Negeri 2 Nusantara', major: 'Teknik Instalasi Tenaga Listrik', iaScore: 82.5, level: 'Mahir Beradaptasi', weakest: 'Beban / Daya Tinggi', verified: true },
+  { id: 'c2', name: 'Fauzan Hidayat', nisn: '0072381944', className: 'XII TITL 1', school: 'SMK Negeri 2 Nusantara', major: 'Teknik Instalasi Tenaga Listrik', iaScore: 74.0, level: 'Cakap Beradaptasi', weakest: 'Variasi Jenis Kabel', verified: true },
+  { id: 'c3', name: 'Anisa Kusuma', nisn: '0072381957', className: 'XII TITL 2', school: 'SMK Negeri 2 Nusantara', major: 'Teknik Instalasi Tenaga Listrik', iaScore: 68.5, level: 'Cakap Beradaptasi', weakest: 'Tekanan Waktu Kerja', verified: true },
+  { id: 'c4', name: 'Bayu Saputra', nisn: '0072381963', className: 'XII TITL 1', school: 'SMK Negeri 2 Nusantara', major: 'Teknik Instalasi Tenaga Listrik', iaScore: 52.0, level: 'Berkembang', weakest: 'Kegagalan Komponen', verified: true }
+];

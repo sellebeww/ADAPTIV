@@ -4,12 +4,16 @@
  */
 
 import React, { useState } from 'react';
+import { motion, AnimatePresence } from 'motion/react';
 import { UserRole, AssessmentSession as SessionType, AbilityPassport } from './types/adaptiv';
 import { 
   INITIAL_COMPLETED_SESSION, 
   INITIAL_ABILITY_PASSPORT, 
-  CURRENT_INSTITUTION 
+  CURRENT_INSTITUTION,
+  SEED_CANDIDATES
 } from './data/seedData';
+import { findPassportByCode, passportForCandidate } from './utils/passports';
+import { VerificationView } from './components/passport/VerificationView';
 import { CompanyProfile } from './components/company/CompanyProfile';
 import { Navbar } from './components/layout/Navbar';
 import { BrandKitModal } from './components/brand/BrandKitModal';
@@ -42,6 +46,44 @@ export default function App() {
   
   const [session, setSession] = useState<SessionType>(INITIAL_COMPLETED_SESSION);
   const [passport, setPassport] = useState<AbilityPassport>(INITIAL_ABILITY_PASSPORT);
+  // Remounts the assessment screen so its local form state restarts with a new session.
+  const [sessionKey, setSessionKey] = useState(0);
+  // Passport opened from the industry portal; null = the live participant passport.
+  const [candidateId, setCandidateId] = useState<string | null>(null);
+  const [verifyCode, setVerifyCode] = useState<string | null>(() => new URLSearchParams(window.location.search).get('verifikasi'));
+
+  const candidate = SEED_CANDIDATES.find((c) => c.id === candidateId);
+  const shownPassport = candidate ? passportForCandidate(passport, candidate) : passport;
+
+  const handleResetSession = () => {
+    setSession({
+      ...INITIAL_COMPLETED_SESSION,
+      id: `sess-demo-${Date.now().toString(36)}`,
+      currentPhase: 0,
+      status: 'berjalan',
+      startedAt: new Date().toISOString(),
+      evidence: [],
+      prediction: undefined,
+      reflection: undefined,
+      openedHintIds: [],
+      scores: undefined,
+      result: undefined,
+      assessorNotes: []
+    });
+    setSessionKey((k) => k + 1);
+    setActiveTab('sesi');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const handleTabChange = (tab: string) => {
+    setCandidateId(null);
+    setActiveTab(tab);
+  };
+
+  const closeVerification = () => {
+    window.history.replaceState(null, '', window.location.pathname);
+    setVerifyCode(null);
+  };
 
   // Sync result to passport whenever session result is computed
   const handleUpdateSession = (updatedSession: SessionType) => {
@@ -88,6 +130,7 @@ export default function App() {
   };
 
   const handleEnterDemo = (targetTab: string = 'sesi') => {
+    setCandidateId(null);
     setActiveTab(targetTab);
     setViewMode('demo');
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -98,18 +141,22 @@ export default function App() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
+  if (verifyCode) {
+    return <VerificationView code={verifyCode} passport={findPassportByCode(passport, verifyCode)} onClose={closeVerification} />;
+  }
+
   return (
     <div className="min-h-screen flex flex-col bg-[#F6F8FF] text-[#0F1B4A] font-sans">
-      
+
       {/* VIEW MODE 1: COMPANY PROFILE */}
       {viewMode === 'company_profile' ? (
-        <div className="min-h-screen flex flex-col">
+        <div key="company" className="min-h-screen flex flex-col animate-[riseIn_500ms_cubic-bezier(0.23,1,0.32,1)_both]">
           <Navbar
             currentRole={currentRole}
             onRoleChange={setCurrentRole}
             onOpenBrandKit={() => setIsBrandKitOpen(true)}
             activeTab={activeTab}
-            onTabChange={setActiveTab}
+            onTabChange={handleTabChange}
             onBackToCompanyProfile={handleBackToCompanyProfile}
             viewMode="company_profile"
             onEnterDemo={handleEnterDemo}
@@ -123,32 +170,7 @@ export default function App() {
         </div>
       ) : (
         /* VIEW MODE 2: INTERACTIVE DEMO ENVIRONMENT */
-        <div className="min-h-screen flex flex-col">
-          
-          {/* Top Return Banner */}
-          <div className="bg-[#0F1B4A] text-white py-2.5 px-4 sm:px-6 border-b border-[#1E2888] shadow-sm">
-            <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-3 text-xs">
-              <div className="flex items-center gap-2 text-center sm:text-left">
-                <span className="w-2 h-2 rounded-full bg-[#4A8BFF] animate-ping" />
-                <span className="font-semibold text-blue-100">
-                  Mode Demo Interaktif Platform Adaptiv
-                </span>
-                <span className="hidden md:inline text-blue-300">
-                  • Simulasi Penilaian Dinamis 8 Fase &amp; Paspor Kemampuan
-                </span>
-              </div>
-
-              <div className="flex items-center gap-2">
-                <button
-                  onClick={handleBackToCompanyProfile}
-                  className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-white/10 hover:bg-white text-white hover:text-[#0F1B4A] text-xs font-bold transition-all shadow-xs"
-                >
-                  <ArrowLeft className="w-3.5 h-3.5" />
-                  <span>Kembali ke Company Profile</span>
-                </button>
-              </div>
-            </div>
-          </div>
+        <div key="demo" className="min-h-screen flex flex-col animate-[riseIn_500ms_cubic-bezier(0.23,1,0.32,1)_both]">
 
           {/* Top Navigation */}
           <Navbar
@@ -156,7 +178,7 @@ export default function App() {
             onRoleChange={setCurrentRole}
             onOpenBrandKit={() => setIsBrandKitOpen(true)}
             activeTab={activeTab}
-            onTabChange={setActiveTab}
+            onTabChange={handleTabChange}
             onBackToCompanyProfile={handleBackToCompanyProfile}
             viewMode="demo"
             onEnterDemo={handleEnterDemo}
@@ -166,7 +188,7 @@ export default function App() {
           <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
             
             {/* Quick Demo Context Callout */}
-            <div className="mb-6 p-4 rounded-2xl bg-white border border-[#E3E8F8] shadow-2xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div className="mb-6 p-4 rounded-2xl bg-white border border-[#E3E8F8] shadow-2xs animate-[riseIn_480ms_cubic-bezier(0.23,1,0.32,1)_both] flex flex-col sm:flex-row sm:items-center justify-between gap-4">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#3F55F0] to-[#4A8BFF] flex items-center justify-center text-white shrink-0 shadow-xs">
                   <Sparkles className="w-5 h-5" />
@@ -197,30 +219,50 @@ export default function App() {
               </div>
             </div>
 
-            {/* Tab View Routing */}
-            {activeTab === 'sesi' && (
-              <AssessmentSession
-                session={session}
-                onUpdateSession={handleUpdateSession}
-                currentRole={currentRole}
-                onViewPassport={() => setActiveTab('paspor')}
-              />
-            )}
+            {/* Tab View Routing: key per tab -> fade/slide keluar-masuk */}
+            <AnimatePresence mode="wait" initial={false}>
+              <motion.div
+                key={activeTab}
+                initial={{ opacity: 0, y: 14, filter: 'blur(4px)' }}
+                animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+                exit={{ opacity: 0, y: -6, transition: { duration: 0.15 } }}
+                transition={{ duration: 0.35, ease: [0.23, 1, 0.32, 1] }}
+              >
+                {activeTab === 'sesi' && (
+                  <AssessmentSession
+                    key={sessionKey}
+                    session={session}
+                    onUpdateSession={handleUpdateSession}
+                    currentRole={currentRole}
+                    onViewPassport={() => handleTabChange('paspor')}
+                    onResetSession={handleResetSession}
+                    onSwitchRole={setCurrentRole}
+                  />
+                )}
 
-            {activeTab === 'paspor' && (
-              <PassportView
-                passport={passport}
-                onBackToSession={() => setActiveTab('sesi')}
-              />
-            )}
+                {activeTab === 'paspor' && (
+                  <PassportView
+                    passport={shownPassport}
+                    backLabel={candidate ? 'Portal Mitra Industri' : 'Sesi Uji'}
+                    onBackToSession={() => handleTabChange(candidate ? 'industri' : 'sesi')}
+                  />
+                )}
 
-            {activeTab === 'pustaka' && <TaskLibrary />}
+                {activeTab === 'pustaka' && <TaskLibrary />}
 
-            {activeTab === 'industri' && (
-              <IndustryPortal onSelectPassport={() => setActiveTab('paspor')} />
-            )}
+                {activeTab === 'industri' && (
+                  <IndustryPortal
+                    onSelectPassport={(id) => {
+                      setCandidateId(id);
+                      setActiveTab('paspor');
+                      window.scrollTo({ top: 0, behavior: 'smooth' });
+                    }}
+                  />
+                )}
 
-            {activeTab === 'admin' && <InstitutionDashboard />}
+                {activeTab === 'admin' && <InstitutionDashboard />}
+              </motion.div>
+            </AnimatePresence>
 
           </main>
 

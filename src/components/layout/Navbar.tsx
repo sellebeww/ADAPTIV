@@ -6,6 +6,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { UserRole } from '../../types/adaptiv';
 import { Logo } from '../brand/Logo';
+import { LandingNav } from './LandingNav';
 import { 
   Palette, 
   UserCheck, 
@@ -100,30 +101,32 @@ export const Navbar: React.FC<NavbarProps> = ({
     }
   };
 
+  if (viewMode === 'company_profile') return <LandingNav onEnterDemo={onEnterDemo} />;
+
   return (
     <header className="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-[#E3E8F8] transition-all">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between gap-6 h-20">
           
           {/* Brand Logo */}
-          <div className="flex items-center gap-8">
+          <div className="flex items-center gap-6">
             <button
               onClick={() => {
                 if (viewMode === 'demo') onBackToCompanyProfile();
               }}
               className="text-left focus:outline-hidden group"
             >
-              <Logo variant="horizontal" transparent={true} size="md" showTagline={true} />
+              <Logo variant="horizontal" transparent={true} size="md" />
             </button>
 
             {/* Structured Navigation with Dropdowns */}
-            <nav className="hidden lg:flex items-center gap-2" ref={dropdownRef}>
+            <nav className="hidden xl:flex items-center gap-1" ref={dropdownRef}>
               
               {/* Dropdown 1: Metodologi & Riset */}
               <div className="relative">
                 <button
                   onClick={() => setOpenDropdown(openDropdown === 'metodologi' ? null : 'metodologi')}
-                  className={`inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold transition-all ${
+                  className={`inline-flex items-center gap-1.5 whitespace-nowrap px-3 py-2 rounded-xl text-xs font-bold transition-all ${
                     openDropdown === 'metodologi'
                       ? 'bg-[#3F55F0]/10 text-[#3F55F0]'
                       : 'text-[#5B6585] hover:text-[#0F1B4A] hover:bg-[#F6F8FF]'
@@ -218,7 +221,7 @@ export const Navbar: React.FC<NavbarProps> = ({
               <div className="relative">
                 <button
                   onClick={() => setOpenDropdown(openDropdown === 'solusi' ? null : 'solusi')}
-                  className={`inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold transition-all ${
+                  className={`inline-flex items-center gap-1.5 whitespace-nowrap px-3 py-2 rounded-xl text-xs font-bold transition-all ${
                     openDropdown === 'solusi'
                       ? 'bg-[#3F55F0]/10 text-[#3F55F0]'
                       : 'text-[#5B6585] hover:text-[#0F1B4A] hover:bg-[#F6F8FF]'
@@ -314,7 +317,7 @@ export const Navbar: React.FC<NavbarProps> = ({
               <div className="relative">
                 <button
                   onClick={() => setOpenDropdown(openDropdown === 'kasus' ? null : 'kasus')}
-                  className={`inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold transition-all ${
+                  className={`inline-flex items-center gap-1.5 whitespace-nowrap px-3 py-2 rounded-xl text-xs font-bold transition-all ${
                     openDropdown === 'kasus'
                       ? 'bg-[#3F55F0]/10 text-[#3F55F0]'
                       : 'text-[#5B6585] hover:text-[#0F1B4A] hover:bg-[#F6F8FF]'
@@ -370,7 +373,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                 <div className="flex items-center gap-1 pl-2 border-l border-[#E3E8F8]">
                   <button
                     onClick={() => onTabChange('sesi')}
-                    className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-colors ${
+                    className={`whitespace-nowrap px-3 py-1.5 rounded-lg text-xs font-bold transition-colors ${
                       activeTab === 'sesi' ? 'bg-[#3F55F0] text-white shadow-2xs' : 'text-[#5B6585] hover:text-[#0F1B4A]'
                     }`}
                   >
@@ -378,7 +381,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                   </button>
                   <button
                     onClick={() => onTabChange('paspor')}
-                    className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-colors ${
+                    className={`whitespace-nowrap px-3 py-1.5 rounded-lg text-xs font-bold transition-colors ${
                       activeTab === 'paspor' ? 'bg-[#3F55F0] text-white shadow-2xs' : 'text-[#5B6585] hover:text-[#0F1B4A]'
                     }`}
                   >
@@ -386,7 +389,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                   </button>
                   <button
                     onClick={() => onTabChange('pustaka')}
-                    className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-colors ${
+                    className={`whitespace-nowrap px-3 py-1.5 rounded-lg text-xs font-bold transition-colors ${
                       activeTab === 'pustaka' ? 'bg-[#3F55F0] text-white shadow-2xs' : 'text-[#5B6585] hover:text-[#0F1B4A]'
                     }`}
                   >
@@ -399,13 +402,13 @@ export const Navbar: React.FC<NavbarProps> = ({
           </div>
 
           {/* Right Action Controls */}
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3 shrink-0">
             
             {/* View Mode Switcher Button */}
             {viewMode === 'demo' ? (
               <button
                 onClick={onBackToCompanyProfile}
-                className="inline-flex items-center gap-2 px-3.5 sm:px-4 py-2.5 rounded-xl border border-[#3F55F0]/30 bg-[#3F55F0]/5 hover:bg-[#3F55F0]/10 hover:border-[#3F55F0] text-xs font-bold text-[#3F55F0] transition-all shadow-2xs group"
+                className="inline-flex items-center gap-2 whitespace-nowrap px-3.5 sm:px-4 py-2.5 rounded-xl border border-[#3F55F0]/30 bg-[#3F55F0]/5 hover:bg-[#3F55F0]/10 hover:border-[#3F55F0] text-xs font-bold text-[#3F55F0] transition-all shadow-2xs group"
                 title="Kembali ke Halaman Company Profile"
               >
                 <ArrowLeft className="w-3.5 h-3.5 group-hover:-translate-x-0.5 transition-transform" />
@@ -421,23 +424,10 @@ export const Navbar: React.FC<NavbarProps> = ({
               </button>
             )}
 
-            {/* Brand Kit & No-BG Assets Trigger */}
-            <button
-              onClick={onOpenBrandKit}
-              className="inline-flex items-center gap-2 px-3 sm:px-3.5 py-2.5 rounded-xl border border-[#E3E8F8] bg-white hover:border-[#3F55F0] text-xs font-semibold text-[#0F1B4A] transition-colors shadow-2xs"
-              title="Palet Warna Resmi & Unduh Logo Transparan No-BG"
-            >
-              <Palette className="w-3.5 h-3.5 text-[#3F55F0]" />
-              <span className="hidden sm:inline">Logo &amp; Brand Kit</span>
-              <span className="px-1.5 py-0.2 rounded text-[10px] bg-[#3F55F0] text-white font-bold">
-                No-BG
-              </span>
-            </button>
-
             {/* Role Switcher (in Demo mode) */}
             {viewMode === 'demo' && (
               <div className="relative group">
-                <div className="flex items-center gap-2 pl-3 pr-2.5 py-1.5 rounded-xl border border-[#E3E8F8] bg-[#F6F8FF] hover:border-[#3F55F0]/50 transition-colors cursor-pointer">
+                <div tabIndex={0} role="button" aria-haspopup="menu" aria-label="Ganti peran simulasi" className="flex items-center gap-2 whitespace-nowrap pl-3 pr-2.5 py-1.5 rounded-xl border border-[#E3E8F8] bg-[#F6F8FF] hover:border-[#3F55F0]/50 transition-colors cursor-pointer">
                   <div className="w-7 h-7 rounded-lg bg-white shadow-2xs flex items-center justify-center">
                     {roleConfig[currentRole].icon}
                   </div>
@@ -453,7 +443,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                 </div>
 
                 {/* Dropdown Menu */}
-                <div className="absolute right-0 mt-1 w-64 p-2 bg-white rounded-2xl shadow-xl border border-[#E3E8F8] opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-150 z-50">
+                <div className="absolute right-0 mt-1 w-64 p-2 bg-white rounded-2xl shadow-xl border border-[#E3E8F8] opacity-0 invisible group-hover:opacity-100 group-hover:visible group-focus-within:opacity-100 group-focus-within:visible transition-all duration-150 z-50">
                   <div className="px-3 py-1.5 text-[10px] font-bold text-[#5B6585] uppercase tracking-wider">
                     Ganti Simulasi Peran (RBAC)
                   </div>
@@ -490,7 +480,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             {/* Mobile Hamburger Toggle */}
             <button
               onClick={() => setIsMobileOpen(!isMobileOpen)}
-              className="lg:hidden p-2 rounded-xl text-[#0F1B4A] hover:bg-[#F6F8FF] border border-[#E3E8F8] transition-colors"
+              className="xl:hidden p-2 rounded-xl text-[#0F1B4A] hover:bg-[#F6F8FF] border border-[#E3E8F8] transition-colors"
               aria-label="Toggle Menu"
             >
               {isMobileOpen ? <X className="w-5 h-5 text-[#3F55F0]" /> : <Menu className="w-5 h-5" />}
@@ -509,7 +499,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
             transition={{ duration: 0.2 }}
-            className="lg:hidden border-t border-[#E3E8F8] bg-white overflow-hidden shadow-xl"
+            className="xl:hidden border-t border-[#E3E8F8] bg-white overflow-hidden shadow-xl"
           >
             <div className="p-4 sm:p-6 space-y-4 max-h-[80vh] overflow-y-auto">
               

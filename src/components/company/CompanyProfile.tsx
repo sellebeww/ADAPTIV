@@ -3,803 +3,760 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useState } from 'react';
-import { Logo } from '../brand/Logo';
-import { 
-  ArrowRight, 
-  CheckCircle2, 
-  ShieldCheck, 
-  Award, 
-  Sparkles, 
-  Layers, 
-  TrendingUp, 
-  Building2, 
-  GraduationCap, 
-  Users, 
-  Download, 
-  Palette, 
-  ExternalLink, 
-  Cpu, 
-  Zap, 
-  FileCheck2, 
-  Compass, 
-  BarChart3, 
-  ChevronRight,
-  BookOpen,
-  Sliders,
-  AlertTriangle,
-  RotateCcw,
+import React, { useEffect, useRef, useState } from 'react';
+import {
+  motion,
+  AnimatePresence,
+  animate,
+  useInView,
+  useReducedMotion,
+  type Variants
+} from 'motion/react';
+import {
+  ArrowRight,
   Play,
+  ShieldCheck,
+  GraduationCap,
+  BarChart3,
+  ClipboardList,
+  Repeat,
+  Lock,
+  Wrench,
+  Star,
+  Brain,
+  Settings2,
+  Trophy,
+  UserCheck,
+  CircleCheck,
+  TrendingUp,
+  Users,
+  UserRound,
+  Factory,
+  Landmark,
+  Crown,
   ChevronDown,
-  HelpCircle
+  QrCode
 } from 'lucide-react';
-import { motion, AnimatePresence } from 'motion/react';
-import { CircuitVisualizer } from '../circuit/CircuitVisualizer';
+import { Logo } from '../brand/Logo';
+import { WallSwitch, Bulb, TrophyArt, HeroSwoosh } from './Illustrations';
 
 interface CompanyProfileProps {
   onEnterDemo: (tab?: string) => void;
   onOpenBrandKit: () => void;
 }
 
-export const CompanyProfile: React.FC<CompanyProfileProps> = ({
-  onEnterDemo,
-  onOpenBrandKit
+const EASE = [0.23, 1, 0.32, 1] as const;
+
+const fadeUp: Variants = {
+  hidden: { opacity: 0, y: 28 },
+  show: (i: number = 0) => ({
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.6, ease: EASE, delay: i * 0.08 }
+  })
+};
+
+/** Scroll-triggered wrapper so every section animates in once. */
+const Reveal: React.FC<{
+  children: React.ReactNode;
+  className?: string;
+  index?: number;
+  id?: string;
+}> = ({ children, className, index = 0, id }) => (
+  <motion.div
+    id={id}
+    className={className}
+    variants={fadeUp}
+    custom={index}
+    initial="hidden"
+    whileInView="show"
+    viewport={{ once: true, margin: '-80px' }}
+  >
+    {children}
+  </motion.div>
+);
+
+const CountUp: React.FC<{ to: number; decimals?: number; className?: string }> = ({
+  to,
+  decimals = 0,
+  className
 }) => {
-  // Live Scenario Switcher state in Hero
-  const [heroScenario, setHeroScenario] = useState<'standar' | 'berubah'>('berubah');
+  const ref = useRef<HTMLSpanElement>(null);
+  const inView = useInView(ref, { once: true });
+  const reduce = useReducedMotion();
+  const [val, setVal] = useState(reduce ? to : 0);
 
-  // Interactive Live Radar Simulator State
-  const [simScores, setSimScores] = useState({
-    prediksi: 3,
-    penyesuaian: 4,
-    hasil: 3,
-    kemandirian: 3,
-    evaluasi: 4
-  });
-
-  // Calculate simulated IA
-  const p = simScores.prediksi;
-  const k = simScores.penyesuaian;
-  const h = simScores.hasil;
-  const m = simScores.kemandirian;
-  const e = simScores.evaluasi;
-  const calculatedIA = Math.round(100 * ((0.20 * p) + (0.30 * k) + (0.25 * h) + (0.15 * m) + (0.10 * e)) / 4 * 10) / 10;
-  
-  const getSimLevel = (score: number) => {
-    if (score < 40) return { title: 'Tergantung Prosedur', color: 'text-red-600 bg-red-50' };
-    if (score < 60) return { title: 'Berkembang', color: 'text-amber-600 bg-amber-50' };
-    if (score < 80) return { title: 'Cakap Beradaptasi', color: 'text-[#3F55F0] bg-blue-50' };
-    return { title: 'Mahir Beradaptasi', color: 'text-emerald-700 bg-emerald-50' };
-  };
-
-  const simLevel = getSimLevel(calculatedIA);
-
-  // SVG Radar coordinates for the simulator
-  const radarDimensions = [
-    { label: 'Prediksi', score: simScores.prediksi },
-    { label: 'Penyesuaian', score: simScores.penyesuaian },
-    { label: 'Hasil Kerja', score: simScores.hasil },
-    { label: 'Kemandirian', score: simScores.kemandirian },
-    { label: 'Evaluasi Diri', score: simScores.evaluasi }
-  ];
-
-  const cx = 110;
-  const cy = 110;
-  const maxR = 75;
-  const polygonPoints = radarDimensions.map((d, i) => {
-    const angle = (Math.PI * 2 / 5) * i - Math.PI / 2;
-    const r = (d.score / 4) * maxR;
-    return `${cx + r * Math.cos(angle)},${cy + r * Math.sin(angle)}`;
-  }).join(' ');
-
-  // Active step in interactive process flow
-  const [activeStep, setActiveStep] = useState<number>(2);
-
-  const processSteps = [
-    { num: 1, title: 'Tugas Dasar', desc: 'Siswa merakit saklar tunggal & lampu, menguji keselamatan awal MCB.' },
-    { num: 2, title: 'Situasi Berubah', desc: 'Tepat 1 kondisi diubah: Klien minta saklar tukar kendali 2 arah.' },
-    { num: 3, title: 'Prediksi Terkunci', desc: 'Menuliskan risiko korsleting & rencana kerja sebelum bertindak.' },
-    { num: 4, title: 'Penyesuaian Mandiri', desc: 'Mengeksekusi kabel strapping dengan opsi petunjuk bertingkat.' },
-    { num: 5, title: 'Evaluasi Diri', desc: 'Membandingkan prediksi vs hasil nyata untuk mengenali batas kemampuan.' },
-    { num: 6, title: 'Paspor Kemampuan', desc: 'Indeks Adaptasi terbit dengan grafik radar & verifikasi QR code.' }
-  ];
-
-  const [openFaq, setOpenFaq] = useState<number | null>(0);
+  useEffect(() => {
+    if (!inView || reduce) return;
+    const controls = animate(0, to, {
+      duration: 1.6,
+      ease: EASE,
+      onUpdate: (v) => setVal(v)
+    });
+    return () => controls.stop();
+  }, [inView, reduce, to]);
 
   return (
-    <div className="min-h-screen bg-[#F6F8FF] text-[#0F1B4A] font-sans selection:bg-[#4A8BFF]/20 selection:text-[#0F1B4A] overflow-x-hidden">
-      
-      {/* 1. HERO SECTION WITH VIBRANT ANIMATION & INTERACTIVE SCENARIO SIMULATOR */}
-      <section id="hero" className="relative pt-10 pb-20 lg:pt-16 lg:pb-28 overflow-hidden">
-        
-        {/* Animated Background Gradient Blobs */}
-        <div className="absolute top-0 left-1/4 w-96 h-96 bg-[#3F55F0]/10 rounded-full blur-3xl pointer-events-none -z-10 animate-pulse" />
-        <div className="absolute top-1/3 right-10 w-80 h-80 bg-[#4A8BFF]/15 rounded-full blur-3xl pointer-events-none -z-10" />
+    <span ref={ref} className={className}>
+      {val.toFixed(decimals)}
+    </span>
+  );
+};
 
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14 items-center">
-            
-            {/* Left Content Column (7 cols) */}
-            <motion.div 
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5 }}
-              className="lg:col-span-7 space-y-6"
+/** Pentagon radar; polygon grows from the centre when scrolled into view. */
+const Radar: React.FC<{
+  scores: number[];
+  labels: string[];
+  size?: number;
+  showLabels?: boolean;
+}> = ({ scores, labels, size = 220, showLabels = true }) => {
+  const ref = useRef<SVGSVGElement>(null);
+  const inView = useInView(ref, { once: true });
+  const c = size / 2;
+  const maxR = size * 0.32;
+  const pad = 48; // horizontal room so side labels never clip
+  const pt = (i: number, r: number) => {
+    const a = ((Math.PI * 2) / 5) * i - Math.PI / 2;
+    return [c + r * Math.cos(a), c + r * Math.sin(a)] as const;
+  };
+  const poly = (f: (i: number) => number) =>
+    scores.map((_, i) => pt(i, f(i)).join(',')).join(' ');
+  const target = poly((i) => (scores[i] / 4) * maxR);
+  const origin = poly(() => 0);
+
+  return (
+    <svg ref={ref} viewBox={`${-pad} -8 ${size + pad * 2} ${size + 16}`} className="w-full h-auto overflow-visible" role="img" aria-label="Grafik radar lima dimensi adaptasi">
+      {[0.25, 0.5, 0.75, 1].map((s) => (
+        <polygon key={s} points={poly(() => s * maxR)} fill="none" stroke="#D6DDF5" strokeWidth="1" />
+      ))}
+      {scores.map((_, i) => {
+        const [x, y] = pt(i, maxR);
+        return <line key={i} x1={c} y1={c} x2={x} y2={y} stroke="#D6DDF5" strokeWidth="1" />;
+      })}
+      <motion.polygon
+        initial={{ points: origin, opacity: 0 }}
+        animate={inView ? { points: target, opacity: 1 } : {}}
+        transition={{ duration: 1.1, ease: EASE, delay: 0.2 }}
+        fill="#4A8BFF"
+        fillOpacity="0.28"
+        stroke="#3F55F0"
+        strokeWidth="2.5"
+        strokeLinejoin="round"
+      />
+      {scores.map((s, i) => {
+        const [x, y] = pt(i, (s / 4) * maxR);
+        return (
+          <motion.circle
+            key={i}
+            r="4"
+            fill="#3F55F0"
+            stroke="#fff"
+            strokeWidth="1.5"
+            initial={{ cx: c, cy: c, opacity: 0 }}
+            animate={inView ? { cx: x, cy: y, opacity: 1 } : {}}
+            transition={{ duration: 1.1, ease: EASE, delay: 0.2 }}
+          />
+        );
+      })}
+      {showLabels &&
+        labels.map((l, i) => {
+          const [x, y] = pt(i, maxR + 14);
+          // Side labels hang outward from the vertex instead of centring on it.
+          const anchor = x > c + 4 ? 'start' : x < c - 4 ? 'end' : 'middle';
+          return (
+            <text
+              key={l}
+              x={x}
+              y={y}
+              textAnchor={anchor}
+              dominantBaseline="middle"
+              className="fill-[#3B4670]"
+              style={{ fontSize: 11, fontWeight: 600 }}
             >
-              
-              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white border border-[#E3E8F8] shadow-2xs text-xs font-bold text-[#3F55F0]">
-                <span className="w-2 h-2 rounded-full bg-[#4A8BFF] animate-ping" />
-                <span>Dynamic Assessment Platform Vokasi &amp; Industri</span>
-              </div>
+              {l}
+            </text>
+          );
+        })}
+    </svg>
+  );
+};
 
-              <h1 
-                className="text-3xl sm:text-4xl lg:text-5xl font-black text-[#0F1B4A] tracking-tight leading-[1.14]" 
-                style={{ textWrap: 'balance' }}
+const STEPS = [
+  { icon: ClipboardList, title: 'Tugas Dasar', desc: 'Kerjakan tugas awal.' },
+  { icon: Repeat, title: 'Kondisi Diubah', desc: 'Satu kondisi berubah (tepat satu).' },
+  { icon: Lock, title: 'Prediksi Terkunci', desc: 'Tuliskan risiko & rencana kerja sebelum bertindak.' },
+  { icon: Wrench, title: 'Penyesuaian Mandiri', desc: 'Gunakan petunjuk bertahap jika perlu.' },
+  { icon: BarChart3, title: 'Evaluasi Diri', desc: 'Bandingkan prediksi dengan hasil.' },
+  { icon: Star, title: 'Penilaian & Umpan Balik', desc: 'Dapatkan hasil & tindak lanjut.' }
+];
+
+const DIMENSIONS = [
+  { icon: Brain, title: 'Prediksi', weight: 20, tone: 'from-[#E1EEFF] to-[#F2F7FF]', fg: 'text-[#2563EB]' },
+  { icon: Settings2, title: 'Penyesuaian', weight: 30, tone: 'from-[#EEE5FF] to-[#F7F2FF]', fg: 'text-[#7C3AED]' },
+  { icon: Trophy, title: 'Hasil', weight: 25, tone: 'from-[#DDF6E5] to-[#F0FBF3]', fg: 'text-[#16A34A]' },
+  { icon: UserCheck, title: 'Kemandirian', weight: 15, tone: 'from-[#FFEBD6] to-[#FFF6EC]', fg: 'text-[#EA7A12]' },
+  { icon: CircleCheck, title: 'Evaluasi', weight: 10, tone: 'from-[#FFE1E4] to-[#FFF1F2]', fg: 'text-[#E11D48]' }
+];
+
+const AUDIENCE = [
+  { icon: Users, title: 'Peserta', sub: '(Siswa)' },
+  { icon: UserRound, title: 'Penilai', sub: '(Guru/Instruktur)' },
+  { icon: Factory, title: 'Mitra Industri', sub: '' },
+  { icon: Landmark, title: 'Admin Lembaga', sub: '' },
+  { icon: Crown, title: 'Super Admin', sub: '' }
+];
+
+const FAQS = [
+  {
+    q: 'Bagaimana Adaptiv memastikan penilai tidak mengubah lebih dari 1 kondisi sekaligus?',
+    a: 'Setiap variasi tugas melewati Task Equivalence Checklist dan ditinjau rekan sejawat. Penilai hanya dapat memilih variasi yang mengisolasi tepat satu variabel, sehingga hasil evaluasi tidak bias.'
+  },
+  {
+    q: 'Apakah sekolah atau BLK perlu membeli peralatan dan sensor baru?',
+    a: 'Tidak. Adaptiv agnostik terhadap perangkat keras: memakai papan latihan, multimeter, dan komponen yang sudah ada di bengkel. Bukti praktik berupa foto/video diunggah lewat smartphone peserta.'
+  },
+  {
+    q: 'Bagaimana keabsahan dan privasi Paspor Kemampuan siswa?',
+    a: 'Setiap paspor punya kode verifikasi unik dan QR code. Selaras dengan UU PDP, siswa di bawah 18 tahun memegang kontrol atas izin akses mitra industri.'
+  },
+  {
+    q: 'Berapa lama satu sesi penilaian dinamis?',
+    a: 'Satu sesi berurutan (fase 0 sampai 7) umumnya 35–50 menit, pas dengan jam praktikum blok maupun Uji Kompetensi Keahlian.'
+  }
+];
+
+const RADAR_LABELS = ['Prediksi', 'Penyesuaian', 'Hasil', 'Kemandirian', 'Evaluasi'];
+
+export const CompanyProfile: React.FC<CompanyProfileProps> = ({ onEnterDemo, onOpenBrandKit }) => {
+  const [openFaq, setOpenFaq] = useState<number | null>(0);
+  const [switched, setSwitched] = useState(false);
+  const reduce = useReducedMotion();
+
+  // Loop the "single → two-way switch" request card so the problem/solution panel stays alive.
+  useEffect(() => {
+    if (reduce) return;
+    const t = setInterval(() => setSwitched((s) => !s), 2600);
+    return () => clearInterval(t);
+  }, [reduce]);
+
+  const float = (delay = 0, dist = 8) =>
+    reduce
+      ? {}
+      : {
+          animate: { y: [0, -dist, 0] },
+          transition: { duration: 5, repeat: Infinity, ease: 'easeInOut' as const, delay }
+        };
+
+  return (
+    <div className="bg-[#F6F8FF] text-[#0F1B4A] font-sans overflow-x-hidden">
+      {/* ───────── HERO ───────── */}
+      <section id="beranda" className="relative scroll-mt-20">
+        <div aria-hidden className="pointer-events-none absolute -top-24 -left-24 w-[28rem] h-[28rem] rounded-full bg-[#3F55F0]/10 blur-3xl" />
+        <div aria-hidden className="pointer-events-none absolute top-10 right-0 w-[34rem] h-[34rem] rounded-full bg-[#4A8BFF]/20 blur-3xl" />
+
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-10 lg:pt-14 pb-14 grid lg:grid-cols-12 gap-10 items-center">
+          <div className="lg:col-span-6 space-y-6">
+            <motion.h1
+              initial="hidden"
+              animate="show"
+              variants={fadeUp}
+              className="text-4xl sm:text-5xl lg:text-[3.4rem] font-black tracking-tight leading-[1.08]"
+              style={{ textWrap: 'balance' }}
+            >
+              Uji Kemampuan{' '}
+              <span className="bg-gradient-to-r from-[#2A38B8] via-[#3F55F0] to-[#4A8BFF] bg-clip-text text-transparent">
+                Beradaptasi
+              </span>
+              , Raih Masa Depan Lebih Siap
+            </motion.h1>
+
+            <motion.p
+              initial="hidden"
+              animate="show"
+              variants={fadeUp}
+              custom={1}
+              className="text-base sm:text-lg text-[#3B4670] leading-relaxed max-w-xl"
+            >
+              Platform <em className="pr-0.5">dynamic assessment</em>{' '}
+              untuk pendidikan vokasi (SMK) dan industri, yang menguji
+              kemampuan beradaptasi siswa saat kondisi kerja berubah — bukan sekadar hafalan prosedur.
+            </motion.p>
+
+            <motion.div
+              initial="hidden"
+              animate="show"
+              variants={fadeUp}
+              custom={2}
+              className="flex flex-wrap gap-3"
+            >
+              <button
+                onClick={() => onEnterDemo('sesi')}
+                className="group inline-flex items-center gap-2 px-7 py-3.5 rounded-full bg-[#2455F0] hover:bg-[#1E3FC4] text-white text-sm font-bold shadow-lg shadow-[#2455F0]/30 transition-all hover:-translate-y-0.5 active:scale-95"
               >
-                Buktikan Kemampuan Beradaptasi Nyata, Bukan Sekadar Menghafal Prosedur.
-              </h1>
-
-              <p className="text-base sm:text-lg text-[#5B6585] leading-relaxed max-w-2xl">
-                Portofolio dan ujian biasa hanya membuktikan siswa bisa mengulang langkah yang sama. <strong>Adaptiv</strong> menguji proses berpikir saat kondisi kerja berubah tak terduga—menghasilkan bukti adaptabilitas nyata dan batas kemampuan yang diakui dunia industri.
-              </p>
-
-              {/* Action Buttons */}
-              <div className="pt-2 flex flex-col sm:flex-row items-stretch sm:items-center gap-3.5">
-                <button
-                  onClick={() => onEnterDemo('sesi')}
-                  className="inline-flex items-center justify-center gap-2.5 px-7 py-3.5 rounded-2xl bg-[#3F55F0] hover:bg-[#2A38B8] text-white text-sm font-bold transition-all shadow-lg shadow-[#3F55F0]/25 hover:scale-[1.02] active:scale-95 group"
-                >
-                  <Play className="w-4 h-4 fill-white text-white group-hover:scale-110 transition-transform" />
-                  <span>Jalankan Sesi Simulasi di Demo</span>
-                  <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                </button>
-                <a
-                  href="#simulator"
-                  className="inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-2xl bg-white border border-[#E3E8F8] hover:border-[#3F55F0] text-[#0F1B4A] text-sm font-semibold transition-colors shadow-2xs"
-                >
-                  <Sliders className="w-4 h-4 text-[#3F55F0]" />
-                  <span>Coba Simulator Skor Radar</span>
-                </a>
-              </div>
-
-              {/* Quantitative Rigor Stats */}
-              <div className="pt-6 border-t border-[#E3E8F8] grid grid-cols-3 gap-4">
-                <div className="p-3 bg-white/70 backdrop-blur-xs rounded-2xl border border-[#E3E8F8]">
-                  <div className="text-xl sm:text-2xl font-black text-[#0F1B4A] font-mono tabular-nums">140+</div>
-                  <div className="text-[11px] text-[#5B6585] mt-0.5 font-medium">Sesi Uji Terverifikasi</div>
-                </div>
-                <div className="p-3 bg-white/70 backdrop-blur-xs rounded-2xl border border-[#E3E8F8]">
-                  <div className="text-xl sm:text-2xl font-black text-[#16A34A] font-mono tabular-nums">0.86</div>
-                  <div className="text-[11px] text-[#5B6585] mt-0.5 font-medium">Reliabilitas Antar-Penilai</div>
-                </div>
-                <div className="p-3 bg-white/70 backdrop-blur-xs rounded-2xl border border-[#E3E8F8]">
-                  <div className="text-xl sm:text-2xl font-black text-[#3F55F0] font-mono tabular-nums">r = 0.79</div>
-                  <div className="text-[11px] text-[#5B6585] mt-0.5 font-medium">Validitas Lapangan Industri</div>
-                </div>
-              </div>
-
+                Mulai Penilaian
+                <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
+              </button>
+              <button
+                onClick={() => onEnterDemo('sesi')}
+                className="group inline-flex items-center gap-2 px-7 py-3.5 rounded-full bg-white/80 border border-[#2455F0]/50 text-[#2455F0] text-sm font-bold hover:bg-white transition-all hover:-translate-y-0.5 active:scale-95"
+              >
+                <Play className="w-3.5 h-3.5 fill-[#2455F0]" />
+                Lihat Demo
+              </button>
             </motion.div>
 
-            {/* Right Interactive Scenario Switcher (5 cols) */}
-            <motion.div 
-              initial={{ opacity: 0, scale: 0.96 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.5, delay: 0.15 }}
-              className="lg:col-span-5 space-y-3"
+            <motion.ul
+              initial="hidden"
+              animate="show"
+              variants={fadeUp}
+              custom={3}
+              className="flex flex-wrap gap-x-8 gap-y-3 pt-3"
             >
-              
-              {/* Scenario Switcher Tabs */}
-              <div className="flex items-center justify-between p-1.5 bg-white rounded-2xl border border-[#E3E8F8] shadow-xs">
-                <button
-                  onClick={() => setHeroScenario('standar')}
-                  className={`flex-1 py-2 px-3 rounded-xl text-xs font-bold transition-all ${
-                    heroScenario === 'standar'
-                      ? 'bg-[#0F1B4A] text-white shadow-xs'
-                      : 'text-[#5B6585] hover:text-[#0F1B4A]'
-                  }`}
-                >
-                  1. Kondisi Standar (Normal)
-                </button>
-                <button
-                  onClick={() => setHeroScenario('berubah')}
-                  className={`flex-1 py-2 px-3 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 ${
-                    heroScenario === 'berubah'
-                      ? 'bg-[#3F55F0] text-white shadow-xs ring-2 ring-[#4A8BFF]/30'
-                      : 'text-[#3F55F0] hover:bg-[#F6F8FF]'
-                  }`}
-                >
-                  <Zap className="w-3.5 h-3.5 text-[#4A8BFF]" />
-                  <span>2. Situasi Berubah!</span>
-                </button>
+              {[
+                { icon: ShieldCheck, a: 'Terpercaya', b: 'oleh Industri' },
+                { icon: GraduationCap, a: 'Mendukung', b: 'Pendidikan Vokasi' },
+                { icon: BarChart3, a: 'Berbasis', b: 'Analisis Mendalam' }
+              ].map(({ icon: Icon, a, b }) => (
+                <li key={a} className="flex items-center gap-2.5 text-xs leading-tight text-[#3B4670]">
+                  <span className="w-9 h-9 rounded-full bg-[#E4EAFF] text-[#2455F0] grid place-items-center">
+                    <Icon className="w-4 h-4" />
+                  </span>
+                  <span>
+                    <b className="block text-[#0F1B4A]">{a}</b>
+                    {b}
+                  </span>
+                </li>
+              ))}
+            </motion.ul>
+          </div>
+
+          {/* Hero visual */}
+          <motion.div
+            initial={{ opacity: 0, scale: 0.94, x: 30 }}
+            animate={{ opacity: 1, scale: 1, x: 0 }}
+            transition={{ duration: 0.8, ease: EASE, delay: 0.15 }}
+            className="lg:col-span-6 relative"
+          >
+            <HeroSwoosh className="absolute -right-10 -top-14 w-[115%] h-auto -z-0 pointer-events-none" />
+            <div className="relative rounded-[2rem] overflow-hidden shadow-2xl shadow-[#3F55F0]/20 ring-4 ring-white aspect-[4/3] bg-[#DCE5FF]">
+              <img
+                src="/images/hero/hero-vocational-lab.jpg"
+                alt="Siswa SMK merakit panel kendali listrik di laboratorium"
+                className="absolute inset-0 w-full h-full object-cover"
+              />
+              <div aria-hidden className="absolute inset-0 bg-gradient-to-tr from-[#3F55F0]/25 via-transparent to-transparent" />
+            </div>
+
+            {/* IA card */}
+            <motion.div
+              {...float(0, 8)}
+              className="absolute -top-4 left-2 sm:-left-6 w-44 rounded-3xl bg-white/90 backdrop-blur-md border border-white shadow-xl p-4"
+            >
+              <p className="text-[11px] font-bold text-[#0F1B4A]">Indeks Adaptasi (IA)</p>
+              <div className="flex items-center gap-3 mt-2">
+                <div className="relative w-[72px] h-[72px] shrink-0">
+                  <svg viewBox="0 0 72 72" className="-rotate-90 w-full h-full" aria-hidden>
+                    <circle cx="36" cy="36" r="30" fill="none" stroke="#E4EAFF" strokeWidth="8" />
+                    <motion.circle
+                      cx="36"
+                      cy="36"
+                      r="30"
+                      fill="none"
+                      stroke="url(#iaGrad)"
+                      strokeWidth="8"
+                      strokeLinecap="round"
+                      strokeDasharray={2 * Math.PI * 30}
+                      initial={{ strokeDashoffset: 2 * Math.PI * 30 }}
+                      animate={{ strokeDashoffset: 2 * Math.PI * 30 * (1 - 0.82) }}
+                      transition={{ duration: 1.6, ease: EASE, delay: 0.6 }}
+                    />
+                    <defs>
+                      <linearGradient id="iaGrad" x1="0" y1="0" x2="1" y2="1">
+                        <stop offset="0%" stopColor="#16A34A" />
+                        <stop offset="100%" stopColor="#4A8BFF" />
+                      </linearGradient>
+                    </defs>
+                  </svg>
+                  <div className="absolute inset-0 grid place-items-center text-center leading-none">
+                    <div>
+                      <CountUp to={82} className="text-xl font-black" />
+                      <span className="block text-[8px] text-[#5B6585]">/100</span>
+                    </div>
+                  </div>
+                </div>
+                <div className="flex items-end gap-1 h-10" aria-hidden>
+                  {[40, 62, 85].map((h, i) => (
+                    <motion.span
+                      key={h}
+                      className="w-2 rounded-sm bg-[#3F55F0]"
+                      initial={{ height: 0 }}
+                      animate={{ height: `${h}%` }}
+                      transition={{ duration: 0.7, ease: EASE, delay: 0.9 + i * 0.12 }}
+                    />
+                  ))}
+                </div>
               </div>
+              <p className="mt-2 text-xs font-extrabold text-[#2A38B8] leading-tight">Mahir Beradaptasi</p>
+            </motion.div>
+          </motion.div>
+        </div>
+      </section>
 
-              {/* Dynamic Interactive Card with Motion AnimatePresence */}
-              <div className="relative rounded-3xl overflow-hidden shadow-2xl border-2 border-white bg-slate-900 group min-h-[380px] flex flex-col justify-end">
-                <img
-                  src="/images/hero/hero-vocational-lab.jpg"
-                  alt="Modern Vocational Assessment Lab Adaptiv"
-                  referrerPolicy="no-referrer"
-                  className="absolute inset-0 w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-700 opacity-80"
-                />
+      {/* ───────── MASALAH → SOLUSI ───────── */}
+      <section id="tentang" className="scroll-mt-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        <Reveal className="relative rounded-[2rem] bg-gradient-to-br from-white via-[#EEF2FF] to-[#E2E9FF] border border-white shadow-lg shadow-[#3F55F0]/5 p-6 sm:p-10 grid lg:grid-cols-12 gap-8 items-center overflow-hidden">
+          <div className="lg:col-span-5 space-y-3">
+            <span className="inline-block px-3 py-1 rounded-full bg-[#DDE6FF] text-[#2A38B8] text-[11px] font-bold">Masalahnya?</span>
+            <h2 className="text-2xl sm:text-3xl font-extrabold leading-tight">
+              Portofolio dan ujian biasa hanya membuktikan siswa bisa{' '}
+              <span className="text-[#2455F0]">mengulang</span> langkah yang sama.
+            </h2>
+            <p className="text-sm text-[#3B4670] leading-relaxed">
+              Adaptiv memberi tugas dasar, lalu mengubah tepat satu kondisi: bahan, alat, ukuran, beban, waktu,
+              spesifikasi, lingkungan, atau komponen rusak.
+            </p>
+          </div>
 
-                <div className="absolute inset-0 bg-gradient-to-t from-[#0F1B4A] via-[#0F1B4A]/50 to-transparent" />
+          <div aria-hidden className="hidden lg:flex lg:col-span-1 justify-center">
+            <svg viewBox="0 0 80 40" className="w-20 text-[#7C8FF0]">
+              <motion.path
+                d="M2 32 C 22 4, 52 4, 74 20 M74 20 L64 18 M74 20 L68 29"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2.5"
+                strokeLinecap="round"
+                initial={{ pathLength: 0 }}
+                whileInView={{ pathLength: 1 }}
+                viewport={{ once: true }}
+                transition={{ duration: 1.2, ease: 'easeOut' }}
+              />
+            </svg>
+          </div>
 
-                {/* Animated Scenario Card Content */}
-                <AnimatePresence mode="wait">
-                  {heroScenario === 'berubah' ? (
+          <div className="lg:col-span-3 space-y-3">
+            <span className="inline-block px-3 py-1 rounded-full bg-[#DDE6FF] text-[#2A38B8] text-[11px] font-bold">Solusi!</span>
+            <h3 className="text-xl font-extrabold leading-tight">Adaptiv: Penilaian Adaptasi untuk Dunia Kerja Nyata</h3>
+            <p className="text-xs text-[#3B4670] leading-relaxed">
+              Siswa harus menyesuaikan diri, dan prosesnya dinilai melalui skenario yang dinamis dan realistis.
+            </p>
+          </div>
+
+          <div className="lg:col-span-3">
+            <div className="rounded-3xl bg-white shadow-xl border border-[#E3E8F8] p-4">
+              <p className="text-[11px] font-bold">Permintaan Klien:</p>
+              <p className="text-[11px] text-[#3B4670] leading-snug">
+                Ubah saklar menjadi <b>saklar tukar</b> (kendali 2 arah).
+              </p>
+              <div className="mt-3 flex items-center justify-between gap-2">
+                <motion.div animate={{ scale: switched ? 0.92 : 1, opacity: switched ? 0.5 : 1 }}>
+                  <WallSwitch rockers={1} className="w-12 h-15" />
+                </motion.div>
+                <ArrowRight className="w-5 h-5 text-[#2455F0] shrink-0" />
+                <motion.div animate={{ scale: switched ? 1.05 : 0.92, opacity: switched ? 1 : 0.5 }}>
+                  <WallSwitch rockers={2} className="w-12 h-15" />
+                </motion.div>
+                <motion.div animate={{ scale: switched ? 1.1 : 1 }} transition={{ duration: 0.5 }}>
+                  <Bulb on={switched} className="w-12 h-15" />
+                </motion.div>
+              </div>
+            </div>
+          </div>
+        </Reveal>
+      </section>
+
+      {/* ───────── ALUR PENILAIAN ───────── */}
+      <section id="fitur" className="scroll-mt-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14">
+        <Reveal className="text-center space-y-2 mb-8">
+          <span className="inline-block px-3 py-1 rounded-full bg-[#DDE6FF] text-[#2A38B8] text-[11px] font-bold">Alur Penilaian</span>
+          <h2 className="text-2xl sm:text-3xl font-extrabold">6 Langkah Sederhana, Penilaian Mendalam</h2>
+        </Reveal>
+
+        <motion.ol
+          initial="hidden"
+          whileInView="show"
+          viewport={{ once: true, margin: '-80px' }}
+          variants={{ show: { transition: { staggerChildren: 0.12 } } }}
+          className="relative grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 rounded-3xl bg-white/80 border border-[#E3E8F8] shadow-sm lg:divide-x divide-[#E3E8F8]"
+        >
+          {STEPS.map(({ icon: Icon, title, desc }, i) => (
+            <motion.li key={title} variants={fadeUp} className="group relative p-5 text-center space-y-2 hover:bg-[#F3F6FF] transition-colors first:rounded-l-3xl last:rounded-r-3xl">
+              <span className="absolute -top-3 left-1/2 -translate-x-1/2 w-6 h-6 rounded-full bg-[#2455F0] text-white text-[11px] font-bold grid place-items-center shadow-md ring-4 ring-[#F6F8FF]">
+                {i + 1}
+              </span>
+              <Icon className="w-6 h-6 mx-auto mt-2 text-[#1E2A63] transition-transform duration-300 group-hover:scale-125 group-hover:text-[#2455F0]" />
+              <h3 className="text-[13px] font-extrabold">{title}</h3>
+              <p className="text-[11px] text-[#5B6585] leading-snug">{desc}</p>
+            </motion.li>
+          ))}
+        </motion.ol>
+      </section>
+
+      {/* ───────── 5 DIMENSI ───────── */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-14 grid lg:grid-cols-12 gap-8 items-start">
+        <Reveal className="lg:col-span-4 space-y-3 lg:pt-4">
+          <span className="inline-block px-3 py-1 rounded-full bg-[#DDE6FF] text-[#2A38B8] text-[11px] font-bold">Sistem Penilaian</span>
+          <h2 className="text-2xl sm:text-3xl font-extrabold leading-tight">5 Dimensi Penilaian dengan Indeks Adaptasi</h2>
+          <p className="text-sm text-[#3B4670] leading-relaxed">
+            Dinilai dari 5 dimensi utama dengan bobot berbeda, dan digabung menjadi <b>Indeks Adaptasi (IA)</b> 0–100.
+          </p>
+          <button
+            onClick={() => onEnterDemo('sesi')}
+            className="group inline-flex items-center gap-2 px-5 py-2.5 rounded-full border border-[#2455F0] text-[#2455F0] text-sm font-bold hover:bg-[#2455F0] hover:text-white transition-colors"
+          >
+            Pelajari Detail
+            <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
+          </button>
+        </Reveal>
+
+        <div className="lg:col-span-8 space-y-4">
+          <motion.div
+            initial="hidden"
+            whileInView="show"
+            viewport={{ once: true, margin: '-80px' }}
+            variants={{ show: { transition: { staggerChildren: 0.1 } } }}
+            className="grid grid-cols-2 sm:grid-cols-5 gap-3"
+          >
+            {DIMENSIONS.map(({ icon: Icon, title, weight, tone, fg }) => (
+              <motion.div
+                key={title}
+                variants={fadeUp}
+                whileHover={{ y: -6, scale: 1.03 }}
+                transition={{ type: 'spring', stiffness: 300, damping: 20 }}
+                className={`rounded-3xl bg-gradient-to-b ${tone} p-4 text-center border border-white shadow-sm`}
+              >
+                <Icon className={`w-8 h-8 mx-auto ${fg}`} />
+                <p className={`mt-2 text-sm font-extrabold ${fg}`}>{title}</p>
+                <p className={`text-3xl font-black ${fg}`}>
+                  <CountUp to={weight} />%
+                </p>
+                <p className="text-[11px] text-[#5B6585] font-medium">0–4</p>
+              </motion.div>
+            ))}
+          </motion.div>
+
+          <Reveal className="grid sm:grid-cols-2 rounded-2xl bg-white/80 border border-[#E3E8F8] divide-y sm:divide-y-0 sm:divide-x divide-[#E3E8F8]">
+            <div className="flex items-center gap-3 p-4">
+              <TrendingUp className="w-6 h-6 text-[#2455F0] shrink-0" />
+              <div>
+                <p className="text-xs font-extrabold">Transfer Gap</p>
+                <p className="text-[11px] text-[#5B6585]">Selisih antara tugas dasar dan tugas yang berubah.</p>
+              </div>
+            </div>
+            <div className="flex items-center gap-3 p-4">
+              <BarChart3 className="w-6 h-6 text-[#2455F0] shrink-0" />
+              <div>
+                <p className="text-xs font-extrabold">Level Adaptasi</p>
+                <p className="text-[11px] text-[#5B6585]">
+                  Dari <b>Tergantung Prosedur</b> hingga <b>Mahir Beradaptasi</b>.
+                </p>
+              </div>
+            </div>
+          </Reveal>
+        </div>
+      </section>
+
+      {/* ───────── PASPOR KEMAMPUAN ───────── */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-14">
+        <div className="relative rounded-[2rem] bg-gradient-to-br from-[#E8EEFF] via-[#EEF2FF] to-[#DCE6FF] border border-white shadow-lg shadow-[#3F55F0]/5 p-6 sm:p-10 grid lg:grid-cols-12 gap-8 items-center overflow-hidden">
+          <motion.div
+            aria-hidden
+            animate={reduce ? {} : { rotate: [0, 6, 0] }}
+            transition={{ duration: 8, repeat: Infinity, ease: 'easeInOut' }}
+            className="absolute -right-10 -bottom-10 w-72 h-72 rounded-full bg-[#4A8BFF]/20 blur-2xl"
+          />
+
+          {/* Passport mock */}
+          <Reveal className="lg:col-span-7">
+            <motion.div
+              whileHover={reduce ? {} : { rotateX: 3, rotateY: -3 }}
+              style={{ transformPerspective: 900 }}
+              className="rounded-3xl bg-white shadow-2xl p-5 border border-[#E3E8F8]"
+            >
+              <div className="text-sm font-extrabold mb-3 flex items-center gap-2">
+                <img src="/brand/adaptiv-symbol-nobg.png" alt="" className="h-6 w-auto" /> Paspor Kemampuan
+              </div>
+              <div className="grid sm:grid-cols-5 gap-4">
+                <div className="sm:col-span-3 w-full max-w-md mx-auto self-center">
+                  <Radar scores={[3, 4, 3, 3, 4]} labels={RADAR_LABELS} showLabels size={260} />
+                </div>
+
+                <div className="sm:col-span-2 space-y-3">
+                  <div className="rounded-2xl bg-[#F3F6FF] p-3">
+                    <p className="text-[10px] text-[#5B6585] font-semibold">Level Anda</p>
+                    <div className="flex items-center gap-2 mt-1">
+                      <span className="w-9 h-9 rounded-full bg-[#FFE9A8] text-[#B7791F] grid place-items-center">
+                        <Crown className="w-5 h-5" />
+                      </span>
+                      <p className="text-sm font-extrabold leading-tight">Cakap Beradaptasi</p>
+                    </div>
+                    <div className="mt-2 h-1.5 rounded-full bg-[#DCE3F8] overflow-hidden">
+                      <motion.div
+                        className="h-full rounded-full bg-[#2455F0]"
+                        initial={{ width: 0 }}
+                        whileInView={{ width: '72%' }}
+                        viewport={{ once: true }}
+                        transition={{ duration: 1.2, ease: EASE, delay: 0.3 }}
+                      />
+                    </div>
+                    <p className="text-right text-[10px] font-bold mt-1">72 / 100</p>
+                  </div>
+                  <div className="rounded-2xl bg-[#F3F6FF] p-3">
+                    <p className="text-[10px] font-semibold mb-1">Tren Skill</p>
+                    <svg viewBox="0 0 120 40" className="w-full" aria-hidden>
+                      <motion.polyline
+                        points="2,32 25,26 48,30 72,16 96,20 118,6"
+                        fill="none"
+                        stroke="#2455F0"
+                        strokeWidth="2.5"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        initial={{ pathLength: 0 }}
+                        whileInView={{ pathLength: 1 }}
+                        viewport={{ once: true }}
+                        transition={{ duration: 1.4, ease: 'easeOut', delay: 0.4 }}
+                      />
+                    </svg>
+                  </div>
+                  <div className="rounded-2xl bg-[#F3F6FF] p-3 flex items-center gap-3">
+                    <span className="w-14 h-14 shrink-0 rounded-xl bg-white border border-[#E3E8F8] grid place-items-center text-[#0F1B4A]">
+                      <QrCode className="w-10 h-10" aria-hidden />
+                    </span>
+                    <p className="text-[11px] font-bold leading-tight">
+                      Verifikasi QR
+                      <span className="block font-medium text-[#5B6585]">Cek keaslian paspor</span>
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+          </Reveal>
+
+          <Reveal index={1} className="lg:col-span-5 space-y-4 relative">
+            <span className="inline-block px-3 py-1 rounded-full bg-[#DDE6FF] text-[#2A38B8] text-[11px] font-bold">Hasil Nyata</span>
+            <h2 className="text-2xl sm:text-3xl font-extrabold leading-tight">Paspor Kemampuan untuk Masa Depan</h2>
+            <p className="text-sm text-[#3B4670] leading-relaxed">
+              Hasil penilaian akan masuk ke Paspor Kemampuan, dilengkapi grafik radar, tren skill, dan verifikasi QR.
+            </p>
+            <ul className="space-y-2">
+              {['Visualisasi lengkap', 'Terpercaya & transparan', 'Siap untuk dunia industri'].map((t, i) => (
+                <motion.li
+                  key={t}
+                  initial={{ opacity: 0, x: -16 }}
+                  whileInView={{ opacity: 1, x: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.5, ease: EASE, delay: 0.2 + i * 0.12 }}
+                  className="flex items-center gap-2 text-sm font-semibold"
+                >
+                  <CircleCheck className="w-5 h-5 text-[#2455F0]" /> {t}
+                </motion.li>
+              ))}
+            </ul>
+            <motion.div {...float(0.5, 6)} className="absolute -right-2 -bottom-24 hidden lg:block" aria-hidden>
+              <TrophyArt className="w-28 h-auto" />
+            </motion.div>
+          </Reveal>
+        </div>
+      </section>
+
+      {/* ───────── UNTUK SIAPA ───────── */}
+      <section id="untuk-siapa" className="scroll-mt-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-14">
+        <Reveal className="rounded-3xl bg-white/80 border border-[#E3E8F8] p-5 grid lg:grid-cols-12 gap-5 items-center">
+          <div className="lg:col-span-4">
+            <span className="inline-block px-3 py-1 rounded-full bg-[#DDE6FF] text-[#2A38B8] text-[11px] font-bold">Untuk Siapa?</span>
+            <p className="text-xs text-[#3B4670] mt-2">Adaptiv hadir untuk semua pihak yang peduli pada kualitas SDM vokasi.</p>
+          </div>
+          <ul className="lg:col-span-8 grid grid-cols-2 sm:grid-cols-5 gap-3">
+            {AUDIENCE.map(({ icon: Icon, title, sub }) => (
+              <motion.li
+                key={title}
+                whileHover={{ y: -4 }}
+                className="flex flex-col items-center text-center gap-1 rounded-2xl p-3 hover:bg-[#F3F6FF] transition-colors"
+              >
+                <Icon className="w-7 h-7 text-[#1E2A63]" />
+                <span className="text-[11px] font-bold leading-tight">{title}</span>
+                {sub && <span className="text-[10px] text-[#5B6585] leading-tight">{sub}</span>}
+              </motion.li>
+            ))}
+          </ul>
+        </Reveal>
+      </section>
+
+      {/* ───────── FAQ ───────── */}
+      <section id="faq" className="scroll-mt-20 max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 pb-14">
+        <Reveal className="text-center space-y-2 mb-6">
+          <span className="inline-block px-3 py-1 rounded-full bg-[#DDE6FF] text-[#2A38B8] text-[11px] font-bold">FAQ</span>
+          <h2 className="text-2xl sm:text-3xl font-extrabold">Pertanyaan Seputar Adaptiv</h2>
+        </Reveal>
+        <div className="space-y-3">
+          {FAQS.map((f, i) => {
+            const open = openFaq === i;
+            return (
+              <Reveal key={f.q} index={i} className="rounded-2xl bg-white border border-[#E3E8F8] overflow-hidden shadow-sm">
+                <button
+                  onClick={() => setOpenFaq(open ? null : i)}
+                  aria-expanded={open}
+                  className="w-full flex items-center justify-between gap-4 p-5 text-left text-sm font-bold hover:bg-[#F6F8FF] transition-colors"
+                >
+                  {f.q}
+                  <ChevronDown className={`w-4 h-4 text-[#2455F0] shrink-0 transition-transform duration-200 ${open ? 'rotate-180' : ''}`} />
+                </button>
+                <AnimatePresence initial={false}>
+                  {open && (
                     <motion.div
-                      key="berubah"
-                      initial={{ opacity: 0, y: 15 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, y: -15 }}
-                      transition={{ duration: 0.25 }}
-                      className="relative z-10 p-5 sm:p-6 bg-[#0F1B4A]/95 backdrop-blur-md rounded-2xl m-3 border border-[#4A8BFF]/40 shadow-xl space-y-2.5 text-white"
+                      initial={{ height: 0, opacity: 0 }}
+                      animate={{ height: 'auto', opacity: 1 }}
+                      exit={{ height: 0, opacity: 0 }}
+                      transition={{ duration: 0.25, ease: EASE }}
+                      className="overflow-hidden"
                     >
-                      <div className="flex items-center justify-between">
-                        <span className="px-2.5 py-0.5 rounded-full bg-[#4A8BFF]/20 text-[#4A8BFF] text-[10px] font-extrabold uppercase tracking-wider flex items-center gap-1">
-                          <Zap className="w-3 h-3 text-[#4A8BFF]" />
-                          Tantangan Adaptasi Aktif
-                        </span>
-                        <span className="text-[10px] text-amber-300 font-mono">Tepat 1 Kondisi Diubah</span>
-                      </div>
-
-                      <h4 className="text-sm sm:text-base font-black text-white leading-snug">
-                        Permintaan Kendali 2 Arah: Saklar Tunggal dialihkan ke Saklar Tukar (SPDT)!
-                      </h4>
-
-                      <p className="text-xs text-blue-100/80 leading-relaxed">
-                        Siswa tidak boleh langsung merakit. Sistem mengunci lembar prediksi untuk memverifikasi pemahaman strapping wire dan pencegahan korsleting.
-                      </p>
-
-                      <div className="pt-2 flex items-center justify-between border-t border-white/10">
-                        <span className="text-[10px] text-blue-200">Relevan dengan proyek hotel &amp; tangga</span>
-                        <button
-                          onClick={() => onEnterDemo('sesi')}
-                          className="px-3 py-1.5 rounded-lg bg-[#4A8BFF] hover:bg-white text-[#0F1B4A] text-xs font-bold transition-all shadow-xs"
-                        >
-                          Uji di Demo →
-                        </button>
-                      </div>
-                    </motion.div>
-                  ) : (
-                    <motion.div
-                      key="standar"
-                      initial={{ opacity: 0, y: 15 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, y: -15 }}
-                      transition={{ duration: 0.25 }}
-                      className="relative z-10 p-5 sm:p-6 bg-white/95 backdrop-blur-md rounded-2xl m-3 border border-white shadow-xl space-y-2 text-[#0F1B4A]"
-                    >
-                      <div className="flex items-center justify-between">
-                        <span className="px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800 text-[10px] font-bold uppercase tracking-wider">
-                          Tugas Dasar (Garis Awal)
-                        </span>
-                        <span className="text-[10px] text-[#5B6585] font-mono">PUIL 2020</span>
-                      </div>
-
-                      <h4 className="text-sm sm:text-base font-bold text-[#0F1B4A]">
-                        Perakitan Sirkuit Saklar Tunggal 1 Lampu Standar
-                      </h4>
-
-                      <p className="text-xs text-[#5B6585] leading-relaxed">
-                        Siswa mendemonstrasikan SOP instalasi kabel NYA 1.5mm², MCB 2A, dan pembumian. Baseline tercapai dengan nilai 3.5 / 4.0.
-                      </p>
-
-                      <div className="pt-2 flex items-center justify-between border-t border-[#E3E8F8]">
-                        <span className="text-[10px] text-[#16A34A] font-bold">Lulus Prosedur Dasar</span>
-                        <button
-                          onClick={() => setHeroScenario('berubah')}
-                          className="text-xs text-[#3F55F0] font-bold hover:underline"
-                        >
-                          Coba Pemicu Berubah →
-                        </button>
-                      </div>
+                      <p className="px-5 pb-5 text-xs text-[#5B6585] leading-relaxed">{f.a}</p>
                     </motion.div>
                   )}
                 </AnimatePresence>
-
-              </div>
-
-            </motion.div>
-
-          </div>
-
+              </Reveal>
+            );
+          })}
         </div>
       </section>
 
-      {/* 2. INTERACTIVE 8-PHASE PROCESS FLOW (ANIMATED STEPPER) */}
-      <section className="py-16 bg-white border-y border-[#E3E8F8]">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          
-          <div className="text-center max-w-2xl mx-auto mb-10 space-y-2">
-            <span className="text-xs font-bold text-[#3F55F0] uppercase tracking-wider">
-              Alur Penilaian Dinamis
-            </span>
-            <h2 className="text-2xl sm:text-3xl font-extrabold text-[#0F1B4A]">
-              Dari Tugas Dasar Hingga Paspor Kemampuan
-            </h2>
-            <p className="text-xs sm:text-sm text-[#5B6585]">
-              Klik tiap tahapan di bawah untuk melihat bagaimana Adaptiv menguji proses adaptasi siswa.
-            </p>
-          </div>
-
-          {/* Stepper Buttons */}
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
-            {processSteps.map((step) => {
-              const isActive = activeStep === step.num;
-              return (
-                <button
-                  key={step.num}
-                  onClick={() => setActiveStep(step.num)}
-                  className={`p-4 rounded-2xl border text-left transition-all ${
-                    isActive
-                      ? 'bg-[#3F55F0] text-white border-[#3F55F0] shadow-md scale-[1.02]'
-                      : 'bg-[#F6F8FF] text-[#0F1B4A] border-[#E3E8F8] hover:border-[#3F55F0]/40'
-                  }`}
-                >
-                  <div className={`text-xs font-mono font-bold mb-1 ${isActive ? 'text-blue-200' : 'text-[#3F55F0]'}`}>
-                    0{step.num}.
-                  </div>
-                  <h4 className="text-xs font-bold leading-snug">{step.title}</h4>
-                  <p className={`text-[10px] mt-1.5 line-clamp-2 ${isActive ? 'text-blue-100' : 'text-[#5B6585]'}`}>
-                    {step.desc}
-                  </p>
-                </button>
-              );
-            })}
-          </div>
-
-          {/* Highlight Card for the Selected Phase */}
-          <motion.div 
-            key={activeStep}
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.2 }}
-            className="mt-6 p-6 rounded-2xl bg-[#F6F8FF] border border-[#E3E8F8] flex flex-col sm:flex-row items-center justify-between gap-4"
-          >
-            <div className="flex items-center gap-3.5">
-              <div className="w-10 h-10 rounded-xl bg-[#3F55F0] text-white font-bold flex items-center justify-center text-sm shadow-xs shrink-0">
-                {activeStep}
-              </div>
-              <div>
-                <h4 className="text-sm font-bold text-[#0F1B4A]">
-                  Fokus Pengujian Tahap {activeStep}: {processSteps[activeStep - 1].title}
-                </h4>
-                <p className="text-xs text-[#5B6585] mt-0.5">
-                  {processSteps[activeStep - 1].desc}
-                </p>
-              </div>
-            </div>
-
-            <button
-              onClick={() => onEnterDemo('sesi')}
-              className="px-4 py-2 rounded-xl bg-[#3F55F0] hover:bg-[#2A38B8] text-white text-xs font-bold transition-colors whitespace-nowrap shrink-0 flex items-center gap-1.5 shadow-2xs"
-            >
-              <span>Uji Tahap Ini di Demo</span>
-              <ArrowRight className="w-3.5 h-3.5" />
-            </button>
-          </motion.div>
-
-        </div>
-      </section>
-
-      {/* 3. SIMULATOR INTERAKTIF: UJI SKOR 5 DIMENSI SECARA LANGSUNG */}
-      <section id="simulator" className="py-20 bg-[#F6F8FF]">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          
-          <div className="max-w-3xl mb-12 space-y-2">
-            <span className="text-xs font-bold text-[#3F55F0] uppercase tracking-wider">
-              Simulator Interaktif
-            </span>
-            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-[#0F1B4A] tracking-tight">
-              Coba Simulator Indeks Adaptasi (IA)
-            </h2>
-            <p className="text-xs sm:text-sm text-[#5B6585]">
-              Ubah skor 5 dimensi di bawah ini untuk melihat bagaimana bentuk grafik radar dan status kelulusan beradaptasi berubah secara otomatis.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
-            
-            {/* Sliders Control Box (7 cols) */}
-            <div className="lg:col-span-7 p-6 sm:p-8 rounded-3xl bg-white border border-[#E3E8F8] shadow-sm space-y-5">
-              
-              <div className="flex items-center justify-between pb-3 border-b border-[#E3E8F8]">
-                <h3 className="text-sm font-bold text-[#0F1B4A] flex items-center gap-2">
-                  <Sliders className="w-4 h-4 text-[#3F55F0]" />
-                  Sesuaikan Nilai Rubrik (Skala 0 - 4)
-                </h3>
-                <span className="text-[11px] font-mono text-[#5B6585]">
-                  Formula Resmi Adaptiv
-                </span>
-              </div>
-
-              {/* Slider 1: Prediksi */}
-              <div className="space-y-1.5">
-                <div className="flex justify-between text-xs font-bold">
-                  <span className="text-[#0F1B4A]">1. Ketepatan Prediksi (Bobot 20%)</span>
-                  <span className="text-[#3F55F0] font-mono">{simScores.prediksi} / 4</span>
-                </div>
-                <input
-                  type="range"
-                  min="0"
-                  max="4"
-                  step="1"
-                  value={simScores.prediksi}
-                  onChange={(e) => setSimScores({ ...simScores, prediksi: parseInt(e.target.value) })}
-                  className="w-full accent-[#3F55F0] cursor-pointer"
-                />
-              </div>
-
-              {/* Slider 2: Penyesuaian */}
-              <div className="space-y-1.5">
-                <div className="flex justify-between text-xs font-bold">
-                  <span className="text-[#0F1B4A]">2. Kualitas Penyesuaian (Bobot 30% - Terbesar)</span>
-                  <span className="text-[#3F55F0] font-mono">{simScores.penyesuaian} / 4</span>
-                </div>
-                <input
-                  type="range"
-                  min="0"
-                  max="4"
-                  step="1"
-                  value={simScores.penyesuaian}
-                  onChange={(e) => setSimScores({ ...simScores, penyesuaian: parseInt(e.target.value) })}
-                  className="w-full accent-[#3F55F0] cursor-pointer"
-                />
-              </div>
-
-              {/* Slider 3: Hasil */}
-              <div className="space-y-1.5">
-                <div className="flex justify-between text-xs font-bold">
-                  <span className="text-[#0F1B4A]">3. Hasil Kerja Variasi (Bobot 25%)</span>
-                  <span className="text-[#3F55F0] font-mono">{simScores.hasil} / 4</span>
-                </div>
-                <input
-                  type="range"
-                  min="0"
-                  max="4"
-                  step="1"
-                  value={simScores.hasil}
-                  onChange={(e) => setSimScores({ ...simScores, hasil: parseInt(e.target.value) })}
-                  className="w-full accent-[#3F55F0] cursor-pointer"
-                />
-              </div>
-
-              {/* Slider 4: Kemandirian */}
-              <div className="space-y-1.5">
-                <div className="flex justify-between text-xs font-bold">
-                  <span className="text-[#0F1B4A]">4. Kemandirian (Bobot 15% - Tanpa Petunjuk)</span>
-                  <span className="text-[#3F55F0] font-mono">{simScores.kemandirian} / 4</span>
-                </div>
-                <input
-                  type="range"
-                  min="0"
-                  max="4"
-                  step="1"
-                  value={simScores.kemandirian}
-                  onChange={(e) => setSimScores({ ...simScores, kemandirian: parseInt(e.target.value) })}
-                  className="w-full accent-[#3F55F0] cursor-pointer"
-                />
-              </div>
-
-              {/* Slider 5: Evaluasi */}
-              <div className="space-y-1.5">
-                <div className="flex justify-between text-xs font-bold">
-                  <span className="text-[#0F1B4A]">5. Evaluasi Diri &amp; Metakognisi (Bobot 10%)</span>
-                  <span className="text-[#3F55F0] font-mono">{simScores.evaluasi} / 4</span>
-                </div>
-                <input
-                  type="range"
-                  min="0"
-                  max="4"
-                  step="1"
-                  value={simScores.evaluasi}
-                  onChange={(e) => setSimScores({ ...simScores, evaluasi: parseInt(e.target.value) })}
-                  className="w-full accent-[#3F55F0] cursor-pointer"
-                />
-              </div>
-
-            </div>
-
-            {/* Live Visual Result & Radar Preview (5 cols) */}
-            <div className="lg:col-span-5 p-6 sm:p-8 rounded-3xl bg-white border border-[#E3E8F8] shadow-lg space-y-6 text-center">
-              
-              <div>
-                <span className="text-[10px] font-bold uppercase tracking-wider text-[#5B6585]">
-                  Hasil Perhitungan Realtime
-                </span>
-                <div className="text-4xl sm:text-5xl font-black text-[#3F55F0] font-mono mt-1">
-                  {calculatedIA}
-                  <span className="text-base font-normal text-[#5B6585]"> / 100</span>
-                </div>
-                <div className="mt-2">
-                  <span className={`px-3 py-1 rounded-full text-xs font-extrabold ${simLevel.color}`}>
-                    {simLevel.title}
-                  </span>
-                </div>
-              </div>
-
-              {/* Live Morphing SVG Radar Chart */}
-              <div className="w-56 h-56 mx-auto relative flex items-center justify-center">
-                <svg viewBox="0 0 220 220" className="w-full h-full overflow-visible">
-                  {/* Concentric Grid Pentagons */}
-                  {[0.25, 0.5, 0.75, 1.0].map((scale, sIdx) => {
-                    const gridPts = radarDimensions.map((_, i) => {
-                      const angle = (Math.PI * 2 / 5) * i - Math.PI / 2;
-                      const r = scale * maxR;
-                      return `${cx + r * Math.cos(angle)},${cy + r * Math.sin(angle)}`;
-                    }).join(' ');
-                    return (
-                      <polygon
-                        key={sIdx}
-                        points={gridPts}
-                        fill="none"
-                        stroke="#E3E8F8"
-                        strokeWidth="1.2"
-                      />
-                    );
-                  })}
-
-                  {/* Dynamic Morphed Polygon */}
-                  <polygon
-                    points={polygonPoints}
-                    fill="#4A8BFF"
-                    fillOpacity="0.3"
-                    stroke="#3F55F0"
-                    strokeWidth="2.5"
-                    className="transition-all duration-300"
-                  />
-
-                  {/* Points */}
-                  {radarDimensions.map((d, i) => {
-                    const angle = (Math.PI * 2 / 5) * i - Math.PI / 2;
-                    const r = (d.score / 4) * maxR;
-                    return (
-                      <circle
-                        key={i}
-                        cx={cx + r * Math.cos(angle)}
-                        cy={cy + r * Math.sin(angle)}
-                        r="4"
-                        fill="#3F55F0"
-                        stroke="#FFF"
-                        strokeWidth="1.5"
-                        className="transition-all duration-300"
-                      />
-                    );
-                  })}
-                </svg>
-              </div>
-
-              <div className="pt-2">
-                <button
-                  onClick={() => onEnterDemo('paspor')}
-                  className="w-full py-3 rounded-xl bg-[#0F1B4A] hover:bg-[#1E2888] text-white text-xs font-bold transition-all shadow-md flex items-center justify-center gap-2"
-                >
-                  <Award className="w-4 h-4 text-[#4A8BFF]" />
-                  <span>Buka Paspor Lengkap di Demo</span>
-                  <ArrowRight className="w-3.5 h-3.5" />
-                </button>
-              </div>
-
-            </div>
-
-          </div>
-
-        </div>
-      </section>
-
-      {/* 4. SHOWCASE MITRA INDUSTRI & TESTIMONI */}
-      <section id="mitra" className="py-20 bg-white border-y border-[#E3E8F8]">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
-            
-            <div className="lg:col-span-5 rounded-3xl overflow-hidden border border-[#E3E8F8] shadow-lg">
-              <img
-                src="/images/industry/industry-engineer-tablet.jpg"
-                alt="Manajer Industri Memeriksa Paspor Kemampuan"
-                referrerPolicy="no-referrer"
-                className="w-full h-auto aspect-4/3 object-cover object-center"
-              />
-            </div>
-
-            <div className="lg:col-span-7 space-y-6">
-              <span className="text-xs font-bold text-[#3F55F0] uppercase tracking-wider">
-                Solusi Link &amp; Match Nyata
-              </span>
-              <h2 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-[#0F1B4A] tracking-tight">
-                Dipercaya Mitra Industri Penerima Magang
-              </h2>
-              <p className="text-sm sm:text-base text-[#5B6585] leading-relaxed">
-                Industri tidak lagi merekrut teknisi magang hanya berdasarkan nilai rapor. Dengan portal mitra Adaptiv, perusahaan dapat menyaring kandidat berdasarkan tingkat adaptabilitas dan memberikan umpan balik validasi kerja nyata setelah magang usai.
-              </p>
-
-              {/* Testimonial Quote */}
-              <div className="p-6 rounded-2xl bg-[#F6F8FF] border border-[#E3E8F8] space-y-3">
-                <p className="text-xs sm:text-sm text-[#0F1B4A] italic leading-relaxed">
-                  &ldquo;Siswa lulusan dengan paspor Adaptiv menunjukkan kecepatan pemahaman sirkuit 2x lebih cepat saat kami tugaskan di proyek lapangan baru. Mereka tidak panik ketika merek kontaktor atau jalur kabel di lapangan berbeda dengan di buku panduan.&rdquo;
-                </p>
-                <div className="flex items-center justify-between pt-2 border-t border-[#E3E8F8]">
-                  <div>
-                    <h5 className="text-xs font-bold text-[#0F1B4A]">Hendra Wijaya, S.T.</h5>
-                    <p className="text-[11px] text-[#5B6585]">Manajer Rekayasa Lapangan — PT Maju Daya Elektrika</p>
-                  </div>
-                  <span className="text-[10px] font-bold text-[#3F55F0] bg-white border border-[#E3E8F8] px-2.5 py-0.5 rounded-lg">
-                    PLN Group Partner
-                  </span>
-                </div>
-              </div>
-
-              <div className="flex items-center gap-3">
-                <button
-                  onClick={() => onEnterDemo('industri')}
-                  className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#3F55F0] hover:bg-[#2A38B8] text-white text-xs font-bold transition-colors shadow-2xs"
-                >
-                  <Building2 className="w-3.5 h-3.5" />
-                  <span>Lihat Portal Mitra Industri di Demo</span>
-                  <ArrowRight className="w-3.5 h-3.5" />
-                </button>
-              </div>
-
-            </div>
-
-          </div>
-
-        </div>
-      </section>
-
-      {/* 5. INTERACTIVE CIRCUIT SCHEMATIC SHOWCASE (TITL) */}
-      <section className="py-20 bg-white border-b border-[#E3E8F8]">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="max-w-3xl mb-12 space-y-2">
-            <span className="text-xs font-bold text-[#3F55F0] uppercase tracking-wider">
-              Simulasi Lapangan Interaktif
-            </span>
-            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-[#0F1B4A] tracking-tight">
-              Saksikan Bagaimana Aliran Arus Menyesuaikan Saat Kondisi Berubah
-            </h2>
-            <p className="text-xs sm:text-sm text-[#5B6585]">
-              Coba nyalakan/matikan saklar di bawah ini untuk melihat perbedaan alur fasa pada Sirkuit Dasar vs Sirkuit Variasi 2 Titik Kendali (SPDT).
-            </p>
-          </div>
-
-          <CircuitVisualizer mode="interactive" initialState="variation" />
-        </div>
-      </section>
-
-      {/* 6. FAQ & OBJECTION HANDLING ACCORDION */}
-      <section className="py-20 bg-[#F6F8FF] border-b border-[#E3E8F8]">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 space-y-10">
-          <div className="text-center space-y-2">
-            <span className="text-xs font-bold text-[#3F55F0] uppercase tracking-wider">
-              Tanya Jawab (FAQ)
-            </span>
-            <h2 className="text-2xl sm:text-3xl font-extrabold text-[#0F1B4A] tracking-tight">
-              Pertanyaan Seputar Platform Adaptiv
-            </h2>
-            <p className="text-xs sm:text-sm text-[#5B6585]">
-              Segala hal yang perlu diketahui oleh Kepala Sekolah, Guru Produktif, dan Mitra Industri.
-            </p>
-          </div>
-
-          <div className="space-y-3">
-            {[
-              {
-                q: "Bagaimana Adaptiv memastikan penilai tidak mengubah lebih dari 1 kondisi sekaligus?",
-                a: "Sistem Adaptiv menerapkan aturan validasi otomatis melalui Task Equivalence Checklist. Penilai hanya dapat memilih variasi yang telah diverifikasi rekan sejawat dengan tepat 1 variabel bebas yang diisolasi (misal: hanya spesifikasi kendali, atau hanya beban daya), sehingga hasil evaluasi tidak bias."
-              },
-              {
-                q: "Apakah sekolah atau BLK perlu membeli peralatan dan sensor baru?",
-                a: "Sama sekali tidak. Adaptiv didesain agnostik terhadap hardware. Sistem memanfaatkan papan kerja latihan, multimeter digital, pipa konduit, dan saklar yang sudah ada di bengkel sekolah. Bukti praktik berupa foto/video singkat diunggah langsung melalui smartphone peserta."
-              },
-              {
-                q: "Bagaimana keabsahan dan privasi Paspor Kemampuan bagi siswa SMK?",
-                a: "Setiap Paspor Kemampuan memiliki kode verifikasi unik (contoh: ADAPT-2026-TITL-0891) dengan QR code resmi. Selaras dengan UU Perlindungan Data Pribadi (UU PDP), siswa di bawah 18 tahun memiliki kontrol penuh terhadap izin akses perusahaan mitra industri."
-              },
-              {
-                q: "Berapa lama durasi pelaksanaan satu sesi penilaian dinamis?",
-                a: "Satu sesi berurutan (Fase 0 hingga 7) umumnya berlangsung antara 35 hingga 50 menit. Waktu ini sangat efisien dan pas dengan alokasi jam praktikum blok maupun Uji Kompetensi Keahlian (UKK) tahunan."
-              }
-            ].map((faq, idx) => {
-              const isOpen = openFaq === idx;
-              return (
-                <div
-                  key={idx}
-                  className="rounded-2xl border border-[#E3E8F8] bg-white overflow-hidden transition-all shadow-xs"
-                >
-                  <button
-                    onClick={() => setOpenFaq(isOpen ? null : idx)}
-                    className="w-full p-5 text-left flex items-center justify-between gap-4 font-bold text-xs sm:text-sm text-[#0F1B4A] hover:bg-[#F6F8FF] transition-colors"
-                  >
-                    <span>{faq.q}</span>
-                    <ChevronDown className={`w-4 h-4 text-[#3F55F0] transition-transform duration-200 shrink-0 ${isOpen ? 'rotate-180' : ''}`} />
-                  </button>
-
-                  <AnimatePresence>
-                    {isOpen && (
-                      <motion.div
-                        initial={{ opacity: 0, height: 0 }}
-                        animate={{ opacity: 1, height: 'auto' }}
-                        exit={{ opacity: 0, height: 0 }}
-                        transition={{ duration: 0.2 }}
-                        className="px-5 pb-5 text-xs text-[#5B6585] leading-relaxed border-t border-[#F6F8FF]"
-                      >
-                        {faq.a}
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-      </section>
-
-      {/* 7. BOTTOM CTA BANNER: DIRECT ACCESS INTO DEMO */}
-      <section className="py-16 bg-gradient-to-br from-[#0F1B4A] via-[#1E2888] to-[#2A38B8] text-white relative overflow-hidden">
-        
-        {/* Subtle Dynamic Arrow Motif */}
-        <div className="absolute right-0 bottom-0 opacity-10 pointer-events-none translate-x-12 translate-y-12">
-          <img
-            src="/brand/adaptiv-symbol-nobg.png"
-            alt="Motif"
-            className="w-96 h-96 object-contain"
+      {/* ───────── CTA ───────── */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-12">
+        <Reveal className="relative overflow-hidden rounded-[2rem] bg-gradient-to-r from-[#2A38B8] via-[#2455F0] to-[#4A8BFF] text-white p-8 sm:p-10 flex flex-col lg:flex-row items-center gap-6 lg:gap-10">
+          <motion.div
+            aria-hidden
+            animate={reduce ? {} : { x: ['-30%', '130%'] }}
+            transition={{ duration: 6, repeat: Infinity, ease: 'linear' }}
+            className="pointer-events-none absolute inset-y-0 w-1/4 -skew-x-12 bg-white/10 blur-md"
           />
-        </div>
-
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center space-y-6 relative z-10">
-          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold max-w-2xl mx-auto">
-            Siap Membuktikan Kemampuan Beradaptasi Nyata Siswa Anda?
-          </h2>
-          <p className="text-sm text-blue-200 max-w-xl mx-auto leading-relaxed">
-            Coba simulasi penilaian interaktif sekarang juga tanpa instalasi. Jelajahi peran sebagai Siswa SMK, Guru Penilai, atau Mitra Industri.
-          </p>
-          <div className="pt-2 flex flex-wrap justify-center gap-4">
-            <button
-              onClick={() => onEnterDemo('sesi')}
-              className="inline-flex items-center gap-2 px-8 py-4 rounded-2xl bg-[#4A8BFF] hover:bg-white text-[#0F1B4A] text-sm font-bold transition-all shadow-xl hover:scale-105 active:scale-95"
-            >
-              <span>Jelajahi Demo Interaktif Sekarang</span>
-              <ArrowRight className="w-4 h-4" />
-            </button>
-            <button
-              onClick={onOpenBrandKit}
-              className="inline-flex items-center gap-2 px-6 py-4 rounded-2xl bg-white/10 hover:bg-white/20 border border-white/20 text-white text-sm font-semibold transition-colors"
-            >
-              <Palette className="w-4 h-4 text-[#4A8BFF]" />
-              <span>Unduh Logo No-BG</span>
-            </button>
+          <Logo variant="white" size="lg" />
+          <span aria-hidden className="hidden lg:block w-px self-stretch bg-white/30" />
+          <div className="flex-1 text-center lg:text-left">
+            <h2 className="text-xl sm:text-2xl font-extrabold leading-snug">
+              Siap mengukur kemampuan adaptasi untuk masa depan yang lebih siap?
+            </h2>
+            <p className="text-sm text-blue-100 mt-1">
+              Mulai sekarang dan jadilah bagian dari pendidikan vokasi yang lebih adaptif.
+            </p>
           </div>
-        </div>
+          <button
+            onClick={() => onEnterDemo('sesi')}
+            className="group inline-flex items-center gap-2 px-8 py-3.5 rounded-full bg-white text-[#2455F0] text-sm font-bold shadow-xl hover:-translate-y-0.5 active:scale-95 transition-all"
+          >
+            Mulai Sekarang
+            <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
+          </button>
+        </Reveal>
       </section>
 
-      {/* 6. FOOTER */}
-      <footer className="py-12 bg-white border-t border-[#E3E8F8]">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-col md:flex-row items-center justify-between gap-6 pb-8 border-b border-[#E3E8F8]">
-            <Logo variant="horizontal" transparent={true} size="md" />
-            
-            <div className="flex flex-wrap items-center gap-6 text-xs text-[#5B6585] font-semibold">
-              <a href="#hero" className="hover:text-[#0F1B4A]">Beranda</a>
-              <a href="#simulator" className="hover:text-[#0F1B4A]">Simulator Radar</a>
-              <a href="#mitra" className="hover:text-[#0F1B4A]">Mitra Industri</a>
-              <button onClick={() => onEnterDemo('sesi')} className="text-[#3F55F0] hover:underline font-bold">
-                Masuk ke Demo
-              </button>
-              <button onClick={onOpenBrandKit} className="text-[#3F55F0] hover:underline">
-                Unduh Logo No-BG
-              </button>
-            </div>
-          </div>
-
-          <div className="pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-[#5B6585]">
-            <p>© 2026 Adaptiv Platform Penilaian Dinamis. Hak Cipta Dilindungi Undang-Undang.</p>
-            <p>Kepatuhan Standar PUIL 2020 &amp; UU Perlindungan Data Pribadi (UU PDP).</p>
-          </div>
+      {/* ───────── FOOTER ───────── */}
+      <footer className="border-t border-[#E3E8F8] bg-white/70">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-[#5B6585]">
+          <p>© 2026 Adaptiv. Hak cipta dilindungi undang-undang.</p>
+          <button onClick={onOpenBrandKit} className="font-semibold text-[#2455F0] hover:underline">
+            Unduh Brand Kit
+          </button>
         </div>
       </footer>
-
     </div>
   );
 };
