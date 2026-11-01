@@ -1,0 +1,6 @@
+{
+  "name": "Adaptiv",
+  "description": "Platform Penilaian Kemampuan Beradaptasi Vokasi & Keterampilan Kerja Dinamis",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
