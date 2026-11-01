@@ -81,7 +81,7 @@ export const Logo: React.FC<LogoProps> = ({
       )}
       {showTagline && (
         <div className="hidden sm:flex flex-col border-l border-[#E3E8F8] pl-2.5">
-          <span className="text-[10px] font-semibold tracking-wider text-[#3F55F0] uppercase">
+          <span className="text-[11px] font-semibold tracking-wider text-[#3F55F0] uppercase">
             Dynamic Assessment
           </span>
           <span className="text-xs text-[#5B6585] font-medium leading-none">

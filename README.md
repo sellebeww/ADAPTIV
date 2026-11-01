@@ -56,6 +56,13 @@ Distribusi tingkat adaptasi siswa, kesepakatan antar-penilai (Kappa), korelasi d
 ### Simulasi lima peran
 Ganti peran langsung dari navbar untuk melihat sudut pandang **Siswa**, **Guru Penilai**, **Mitra Industri**, **Admin Lembaga**, dan **Super Admin**.
 
+## Kualitas dan aksesibilitas
+
+- **Aksesibilitas:** 0 pelanggaran pada audit axe-core (WCAG 2.1 AA) di landing, sesi uji, paspor, pustaka, portal industri, dasbor lembaga, dan halaman verifikasi. Label form terhubung ke field, kontras warna memenuhi 4,5:1, modal memakai `role="dialog"`, dan menu peran bisa dipakai lewat keyboard maupun sentuh.
+- **Responsif:** tidak ada overflow horizontal di lebar 390, 768, dan 1440 px. Form penilaian menumpuk rapi di ponsel.
+- **Validasi:** prediksi dan refleksi tidak bisa dikunci dalam keadaan kosong, dan isian spasi saja ditolak di form variasi tugas.
+- **Ukuran teks:** teks isi minimal 12 px, label huruf kapital minimal 11 px.
+
 ## Menjalankan secara lokal
 
 Prasyarat: Node.js 20 atau lebih baru.

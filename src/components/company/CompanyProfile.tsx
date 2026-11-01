@@ -193,7 +193,7 @@ const STEPS = [
 const DIMENSIONS = [
   { icon: Brain, title: 'Prediksi', weight: 20, tone: 'from-[#E1EEFF] to-[#F2F7FF]', fg: 'text-[#2563EB]' },
   { icon: Settings2, title: 'Penyesuaian', weight: 30, tone: 'from-[#EEE5FF] to-[#F7F2FF]', fg: 'text-[#7C3AED]' },
-  { icon: Trophy, title: 'Hasil', weight: 25, tone: 'from-[#DDF6E5] to-[#F0FBF3]', fg: 'text-[#16A34A]' },
+  { icon: Trophy, title: 'Hasil', weight: 25, tone: 'from-[#DDF6E5] to-[#F0FBF3]', fg: 'text-[#15803D]' },
   { icon: UserCheck, title: 'Kemandirian', weight: 15, tone: 'from-[#FFEBD6] to-[#FFF6EC]', fg: 'text-[#EA7A12]' },
   { icon: CircleCheck, title: 'Evaluasi', weight: 10, tone: 'from-[#FFE1E4] to-[#FFF1F2]', fg: 'text-[#E11D48]' }
 ];
@@ -352,7 +352,7 @@ export const CompanyProfile: React.FC<CompanyProfileProps> = ({ onEnterDemo, onO
               {...float(0, 8)}
               className="absolute -top-4 left-2 sm:-left-6 w-44 rounded-3xl bg-white/90 backdrop-blur-md border border-white shadow-xl p-4"
             >
-              <p className="text-[11px] font-bold text-[#0F1B4A]">Indeks Adaptasi (IA)</p>
+              <p className="text-xs font-bold text-[#0F1B4A]">Indeks Adaptasi (IA)</p>
               <div className="flex items-center gap-3 mt-2">
                 <div className="relative w-[72px] h-[72px] shrink-0">
                   <svg viewBox="0 0 72 72" className="-rotate-90 w-full h-full" aria-hidden>
@@ -380,7 +380,7 @@ export const CompanyProfile: React.FC<CompanyProfileProps> = ({ onEnterDemo, onO
                   <div className="absolute inset-0 grid place-items-center text-center leading-none">
                     <div>
                       <CountUp to={82} className="text-xl font-black" />
-                      <span className="block text-[8px] text-[#5B6585]">/100</span>
+                      <span className="block text-xs text-[#5B6585]">/100</span>
                     </div>
                   </div>
                 </div>
@@ -406,7 +406,7 @@ export const CompanyProfile: React.FC<CompanyProfileProps> = ({ onEnterDemo, onO
       <section id="tentang" className="scroll-mt-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
         <Reveal className="relative rounded-[2rem] bg-gradient-to-br from-white via-[#EEF2FF] to-[#E2E9FF] border border-white shadow-lg shadow-[#3F55F0]/5 p-6 sm:p-10 grid lg:grid-cols-12 gap-8 items-center overflow-hidden">
           <div className="lg:col-span-5 space-y-3">
-            <span className="inline-block px-3 py-1 rounded-full bg-[#DDE6FF] text-[#2A38B8] text-[11px] font-bold">Masalahnya?</span>
+            <span className="inline-block px-3 py-1 rounded-full bg-[#DDE6FF] text-[#2A38B8] text-xs font-bold">Masalahnya?</span>
             <h2 className="text-2xl sm:text-3xl font-extrabold leading-tight">
               Portofolio dan ujian biasa hanya membuktikan siswa bisa{' '}
               <span className="text-[#2455F0]">mengulang</span> langkah yang sama.
@@ -434,7 +434,7 @@ export const CompanyProfile: React.FC<CompanyProfileProps> = ({ onEnterDemo, onO
           </div>
 
           <div className="lg:col-span-3 space-y-3">
-            <span className="inline-block px-3 py-1 rounded-full bg-[#DDE6FF] text-[#2A38B8] text-[11px] font-bold">Solusi!</span>
+            <span className="inline-block px-3 py-1 rounded-full bg-[#DDE6FF] text-[#2A38B8] text-xs font-bold">Solusi!</span>
             <h3 className="text-xl font-extrabold leading-tight">Adaptiv: Penilaian Adaptasi untuk Dunia Kerja Nyata</h3>
             <p className="text-xs text-[#3B4670] leading-relaxed">
               Siswa harus menyesuaikan diri, dan prosesnya dinilai melalui skenario yang dinamis dan realistis.
@@ -443,8 +443,8 @@ export const CompanyProfile: React.FC<CompanyProfileProps> = ({ onEnterDemo, onO
 
           <div className="lg:col-span-3">
             <div className="rounded-3xl bg-white shadow-xl border border-[#E3E8F8] p-4">
-              <p className="text-[11px] font-bold">Permintaan Klien:</p>
-              <p className="text-[11px] text-[#3B4670] leading-snug">
+              <p className="text-xs font-bold">Permintaan Klien:</p>
+              <p className="text-xs text-[#3B4670] leading-snug">
                 Ubah saklar menjadi <b>saklar tukar</b> (kendali 2 arah).
               </p>
               <div className="mt-3 flex items-center justify-between gap-2">
@@ -467,7 +467,7 @@ export const CompanyProfile: React.FC<CompanyProfileProps> = ({ onEnterDemo, onO
       {/* ───────── ALUR PENILAIAN ───────── */}
       <section id="fitur" className="scroll-mt-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14">
         <Reveal className="text-center space-y-2 mb-8">
-          <span className="inline-block px-3 py-1 rounded-full bg-[#DDE6FF] text-[#2A38B8] text-[11px] font-bold">Alur Penilaian</span>
+          <span className="inline-block px-3 py-1 rounded-full bg-[#DDE6FF] text-[#2A38B8] text-xs font-bold">Alur Penilaian</span>
           <h2 className="text-2xl sm:text-3xl font-extrabold">6 Langkah Sederhana, Penilaian Mendalam</h2>
         </Reveal>
 
@@ -480,12 +480,12 @@ export const CompanyProfile: React.FC<CompanyProfileProps> = ({ onEnterDemo, onO
         >
           {STEPS.map(({ icon: Icon, title, desc }, i) => (
             <motion.li key={title} variants={fadeUp} className="group relative p-5 text-center space-y-2 hover:bg-[#F3F6FF] transition-colors first:rounded-l-3xl last:rounded-r-3xl">
-              <span className="absolute -top-3 left-1/2 -translate-x-1/2 w-6 h-6 rounded-full bg-[#2455F0] text-white text-[11px] font-bold grid place-items-center shadow-md ring-4 ring-[#F6F8FF]">
+              <span className="absolute -top-3 left-1/2 -translate-x-1/2 w-6 h-6 rounded-full bg-[#2455F0] text-white text-xs font-bold grid place-items-center shadow-md ring-4 ring-[#F6F8FF]">
                 {i + 1}
               </span>
               <Icon className="w-6 h-6 mx-auto mt-2 text-[#1E2A63] transition-transform duration-300 group-hover:scale-125 group-hover:text-[#2455F0]" />
               <h3 className="text-[13px] font-extrabold">{title}</h3>
-              <p className="text-[11px] text-[#5B6585] leading-snug">{desc}</p>
+              <p className="text-xs text-[#5B6585] leading-snug">{desc}</p>
             </motion.li>
           ))}
         </motion.ol>
@@ -494,7 +494,7 @@ export const CompanyProfile: React.FC<CompanyProfileProps> = ({ onEnterDemo, onO
       {/* ───────── 5 DIMENSI ───────── */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-14 grid lg:grid-cols-12 gap-8 items-start">
         <Reveal className="lg:col-span-4 space-y-3 lg:pt-4">
-          <span className="inline-block px-3 py-1 rounded-full bg-[#DDE6FF] text-[#2A38B8] text-[11px] font-bold">Sistem Penilaian</span>
+          <span className="inline-block px-3 py-1 rounded-full bg-[#DDE6FF] text-[#2A38B8] text-xs font-bold">Sistem Penilaian</span>
           <h2 className="text-2xl sm:text-3xl font-extrabold leading-tight">5 Dimensi Penilaian dengan Indeks Adaptasi</h2>
           <p className="text-sm text-[#3B4670] leading-relaxed">
             Dinilai dari 5 dimensi utama dengan bobot berbeda, dan digabung menjadi <b>Indeks Adaptasi (IA)</b> 0–100.
@@ -529,7 +529,7 @@ export const CompanyProfile: React.FC<CompanyProfileProps> = ({ onEnterDemo, onO
                 <p className={`text-3xl font-black ${fg}`}>
                   <CountUp to={weight} />%
                 </p>
-                <p className="text-[11px] text-[#5B6585] font-medium">0–4</p>
+                <p className="text-xs text-[#5B6585] font-medium">0–4</p>
               </motion.div>
             ))}
           </motion.div>
@@ -539,14 +539,14 @@ export const CompanyProfile: React.FC<CompanyProfileProps> = ({ onEnterDemo, onO
               <TrendingUp className="w-6 h-6 text-[#2455F0] shrink-0" />
               <div>
                 <p className="text-xs font-extrabold">Transfer Gap</p>
-                <p className="text-[11px] text-[#5B6585]">Selisih antara tugas dasar dan tugas yang berubah.</p>
+                <p className="text-xs text-[#5B6585]">Selisih antara tugas dasar dan tugas yang berubah.</p>
               </div>
             </div>
             <div className="flex items-center gap-3 p-4">
               <BarChart3 className="w-6 h-6 text-[#2455F0] shrink-0" />
               <div>
                 <p className="text-xs font-extrabold">Level Adaptasi</p>
-                <p className="text-[11px] text-[#5B6585]">
+                <p className="text-xs text-[#5B6585]">
                   Dari <b>Tergantung Prosedur</b> hingga <b>Mahir Beradaptasi</b>.
                 </p>
               </div>
@@ -582,7 +582,7 @@ export const CompanyProfile: React.FC<CompanyProfileProps> = ({ onEnterDemo, onO
 
                 <div className="sm:col-span-2 space-y-3">
                   <div className="rounded-2xl bg-[#F3F6FF] p-3">
-                    <p className="text-[10px] text-[#5B6585] font-semibold">Level Anda</p>
+                    <p className="text-xs text-[#5B6585] font-semibold">Level Anda</p>
                     <div className="flex items-center gap-2 mt-1">
                       <span className="w-9 h-9 rounded-full bg-[#FFE9A8] text-[#B7791F] grid place-items-center">
                         <Crown className="w-5 h-5" />
@@ -598,10 +598,10 @@ export const CompanyProfile: React.FC<CompanyProfileProps> = ({ onEnterDemo, onO
                         transition={{ duration: 1.2, ease: EASE, delay: 0.3 }}
                       />
                     </div>
-                    <p className="text-right text-[10px] font-bold mt-1">72 / 100</p>
+                    <p className="text-right text-xs font-bold mt-1">72 / 100</p>
                   </div>
                   <div className="rounded-2xl bg-[#F3F6FF] p-3">
-                    <p className="text-[10px] font-semibold mb-1">Tren Skill</p>
+                    <p className="text-xs font-semibold mb-1">Tren Skill</p>
                     <svg viewBox="0 0 120 40" className="w-full" aria-hidden>
                       <motion.polyline
                         points="2,32 25,26 48,30 72,16 96,20 118,6"
@@ -621,7 +621,7 @@ export const CompanyProfile: React.FC<CompanyProfileProps> = ({ onEnterDemo, onO
                     <span className="w-14 h-14 shrink-0 rounded-xl bg-white border border-[#E3E8F8] grid place-items-center text-[#0F1B4A]">
                       <QrCode className="w-10 h-10" aria-hidden />
                     </span>
-                    <p className="text-[11px] font-bold leading-tight">
+                    <p className="text-xs font-bold leading-tight">
                       Verifikasi QR
                       <span className="block font-medium text-[#5B6585]">Cek keaslian paspor</span>
                     </p>
@@ -632,7 +632,7 @@ export const CompanyProfile: React.FC<CompanyProfileProps> = ({ onEnterDemo, onO
           </Reveal>
 
           <Reveal index={1} className="lg:col-span-5 space-y-4 relative">
-            <span className="inline-block px-3 py-1 rounded-full bg-[#DDE6FF] text-[#2A38B8] text-[11px] font-bold">Hasil Nyata</span>
+            <span className="inline-block px-3 py-1 rounded-full bg-[#DDE6FF] text-[#2A38B8] text-xs font-bold">Hasil Nyata</span>
             <h2 className="text-2xl sm:text-3xl font-extrabold leading-tight">Paspor Kemampuan untuk Masa Depan</h2>
             <p className="text-sm text-[#3B4670] leading-relaxed">
               Hasil penilaian akan masuk ke Paspor Kemampuan, dilengkapi grafik radar, tren skill, dan verifikasi QR.
@@ -662,7 +662,7 @@ export const CompanyProfile: React.FC<CompanyProfileProps> = ({ onEnterDemo, onO
       <section id="untuk-siapa" className="scroll-mt-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-14">
         <Reveal className="rounded-3xl bg-white/80 border border-[#E3E8F8] p-5 grid lg:grid-cols-12 gap-5 items-center">
           <div className="lg:col-span-4">
-            <span className="inline-block px-3 py-1 rounded-full bg-[#DDE6FF] text-[#2A38B8] text-[11px] font-bold">Untuk Siapa?</span>
+            <span className="inline-block px-3 py-1 rounded-full bg-[#DDE6FF] text-[#2A38B8] text-xs font-bold">Untuk Siapa?</span>
             <p className="text-xs text-[#3B4670] mt-2">Adaptiv hadir untuk semua pihak yang peduli pada kualitas SDM vokasi.</p>
           </div>
           <ul className="lg:col-span-8 grid grid-cols-2 sm:grid-cols-5 gap-3">
@@ -673,8 +673,8 @@ export const CompanyProfile: React.FC<CompanyProfileProps> = ({ onEnterDemo, onO
                 className="flex flex-col items-center text-center gap-1 rounded-2xl p-3 hover:bg-[#F3F6FF] transition-colors"
               >
                 <Icon className="w-7 h-7 text-[#1E2A63]" />
-                <span className="text-[11px] font-bold leading-tight">{title}</span>
-                {sub && <span className="text-[10px] text-[#5B6585] leading-tight">{sub}</span>}
+                <span className="text-xs font-bold leading-tight">{title}</span>
+                {sub && <span className="text-xs text-[#5B6585] leading-tight">{sub}</span>}
               </motion.li>
             ))}
           </ul>
@@ -684,7 +684,7 @@ export const CompanyProfile: React.FC<CompanyProfileProps> = ({ onEnterDemo, onO
       {/* ───────── FAQ ───────── */}
       <section id="faq" className="scroll-mt-20 max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 pb-14">
         <Reveal className="text-center space-y-2 mb-6">
-          <span className="inline-block px-3 py-1 rounded-full bg-[#DDE6FF] text-[#2A38B8] text-[11px] font-bold">FAQ</span>
+          <span className="inline-block px-3 py-1 rounded-full bg-[#DDE6FF] text-[#2A38B8] text-xs font-bold">FAQ</span>
           <h2 className="text-2xl sm:text-3xl font-extrabold">Pertanyaan Seputar Adaptiv</h2>
         </Reveal>
         <div className="space-y-3">

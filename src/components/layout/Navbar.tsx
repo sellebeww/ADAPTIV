@@ -51,7 +51,9 @@ export const Navbar: React.FC<NavbarProps> = ({
 }) => {
   const [openDropdown, setOpenDropdown] = useState<'metodologi' | 'solusi' | 'kasus' | null>(null);
   const [isMobileOpen, setIsMobileOpen] = useState(false);
+  const [roleOpen, setRoleOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const roleRef = useRef<HTMLDivElement>(null);
 
   // Close dropdown on click outside
   useEffect(() => {
@@ -64,6 +66,21 @@ export const Navbar: React.FC<NavbarProps> = ({
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
+  // Role menu: close on outside click or Escape
+  useEffect(() => {
+    if (!roleOpen) return;
+    const onDown = (e: MouseEvent) => {
+      if (roleRef.current && !roleRef.current.contains(e.target as Node)) setRoleOpen(false);
+    };
+    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') setRoleOpen(false); };
+    document.addEventListener('mousedown', onDown);
+    document.addEventListener('keydown', onKey);
+    return () => {
+      document.removeEventListener('mousedown', onDown);
+      document.removeEventListener('keydown', onKey);
+    };
+  }, [roleOpen]);
+
   const roleConfig: Record<UserRole, { label: string; icon: React.ReactNode; badge: string }> = {
     peserta: {
       label: 'Siswa SMK (Peserta)',
@@ -72,7 +89,7 @@ export const Navbar: React.FC<NavbarProps> = ({
     },
     penilai: {
       label: 'Guru Produktif (Penilai)',
-      icon: <UserCheck className="w-4 h-4 text-[#16A34A]" />,
+      icon: <UserCheck className="w-4 h-4 text-[#15803D]" />,
       badge: 'Ir. Suryadi, S.T.'
     },
     mitra_industri: {
@@ -100,12 +117,13 @@ export const Navbar: React.FC<NavbarProps> = ({
         <div className="flex items-center justify-between gap-6 h-20">
           
           {/* Brand Logo */}
-          <div className="flex items-center gap-6">
+          <div className="flex items-center gap-6 min-w-0">
             <button
               onClick={() => {
                 if (viewMode === 'demo') onBackToCompanyProfile();
               }}
-              className="text-left focus:outline-hidden group"
+              aria-label="Adaptiv, kembali ke Company Profile"
+              className="text-left focus:outline-hidden group shrink-0"
             >
               <Logo variant="horizontal" transparent={true} size="md" />
             </button>
@@ -136,7 +154,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                       transition={{ duration: 0.15 }}
                       className="absolute left-0 mt-2 w-[440px] p-3.5 bg-white rounded-2xl shadow-2xl border border-[#E3E8F8] z-50"
                     >
-                      <div className="text-[10px] font-bold uppercase tracking-wider text-[#5B6585] px-2.5 py-1">
+                      <div className="text-[11px] font-bold uppercase tracking-wider text-[#5B6585] px-2.5 py-1">
                         Fondasi Ilmiah Adaptiv
                       </div>
                       
@@ -154,9 +172,9 @@ export const Navbar: React.FC<NavbarProps> = ({
                           <div className="flex-1">
                             <div className="text-xs font-bold text-[#0F1B4A] group-hover:text-[#3F55F0] transition-colors flex items-center justify-between">
                               <span>Dynamic Assessment Lapangan</span>
-                              <span className="text-[10px] text-[#3F55F0] font-normal">Coba di Demo →</span>
+                              <span className="text-xs text-[#3F55F0] font-normal">Coba di Demo →</span>
                             </div>
-                            <p className="text-[11px] text-[#5B6585] mt-0.5 leading-snug">
+                            <p className="text-xs text-[#5B6585] mt-0.5 leading-snug">
                               Menguji proses berpikir dan reaksi saat 1 kondisi mendadak berubah di bengkel.
                             </p>
                           </div>
@@ -169,14 +187,14 @@ export const Navbar: React.FC<NavbarProps> = ({
                           }}
                           className="flex items-start gap-3 p-2.5 rounded-xl hover:bg-[#F6F8FF] text-left transition-colors group"
                         >
-                          <div className="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0 mt-0.5 group-hover:scale-105 transition-transform">
+                          <div className="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-700 flex items-center justify-center shrink-0 mt-0.5 group-hover:scale-105 transition-transform">
                             <Layers className="w-4 h-4" />
                           </div>
                           <div className="flex-1">
                             <div className="text-xs font-bold text-[#0F1B4A] group-hover:text-[#3F55F0] transition-colors">
                               Rubrik 5 Dimensi Adaptasi
                             </div>
-                            <p className="text-[11px] text-[#5B6585] mt-0.5 leading-snug">
+                            <p className="text-xs text-[#5B6585] mt-0.5 leading-snug">
                               Prediksi (20%), Penyesuaian (30%), Hasil (25%), Kemandirian (15%), Evaluasi (10%).
                             </p>
                           </div>
@@ -195,9 +213,9 @@ export const Navbar: React.FC<NavbarProps> = ({
                           <div className="flex-1">
                             <div className="text-xs font-bold text-[#0F1B4A] group-hover:text-[#3F55F0] transition-colors flex items-center justify-between">
                               <span>Pemeriksa Kesetaraan Tugas</span>
-                              <span className="text-[10px] text-[#3F55F0] font-normal">Pustaka →</span>
+                              <span className="text-xs text-[#3F55F0] font-normal">Pustaka →</span>
                             </div>
-                            <p className="text-[11px] text-[#5B6585] mt-0.5 leading-snug">
+                            <p className="text-xs text-[#5B6585] mt-0.5 leading-snug">
                               Checklist kepastian hanya 1 variabel yang berubah tanpa bias merek alat.
                             </p>
                           </div>
@@ -231,7 +249,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                       transition={{ duration: 0.15 }}
                       className="absolute left-0 mt-2 w-[420px] p-3.5 bg-white rounded-2xl shadow-2xl border border-[#E3E8F8] z-50"
                     >
-                      <div className="text-[10px] font-bold uppercase tracking-wider text-[#5B6585] px-2.5 py-1">
+                      <div className="text-[11px] font-bold uppercase tracking-wider text-[#5B6585] px-2.5 py-1">
                         Implementasi &amp; Output Terverifikasi
                       </div>
 
@@ -249,9 +267,9 @@ export const Navbar: React.FC<NavbarProps> = ({
                           <div className="flex-1">
                             <div className="text-xs font-bold text-[#0F1B4A] group-hover:text-[#3F55F0] transition-colors flex items-center justify-between">
                               <span>Paspor Kemampuan Digital</span>
-                              <span className="text-[10px] text-[#3F55F0] font-normal">Buka Sampel →</span>
+                              <span className="text-xs text-[#3F55F0] font-normal">Buka Sampel →</span>
                             </div>
-                            <p className="text-[11px] text-[#5B6585] mt-0.5 leading-snug">
+                            <p className="text-xs text-[#5B6585] mt-0.5 leading-snug">
                               Grafik Radar 5 Dimensi, Peta Batas Kemampuan, dan QR Code Publik.
                             </p>
                           </div>
@@ -264,15 +282,15 @@ export const Navbar: React.FC<NavbarProps> = ({
                           }}
                           className="flex items-start gap-3 p-2.5 rounded-xl hover:bg-[#F6F8FF] text-left transition-colors group"
                         >
-                          <div className="w-8 h-8 rounded-lg bg-amber-50 text-amber-600 flex items-center justify-center shrink-0 mt-0.5 group-hover:scale-105 transition-transform">
+                          <div className="w-8 h-8 rounded-lg bg-amber-50 text-amber-700 flex items-center justify-center shrink-0 mt-0.5 group-hover:scale-105 transition-transform">
                             <Building2 className="w-4 h-4" />
                           </div>
                           <div className="flex-1">
                             <div className="text-xs font-bold text-[#0F1B4A] group-hover:text-[#3F55F0] transition-colors flex items-center justify-between">
                               <span>Portal Mitra Industri</span>
-                              <span className="text-[10px] text-[#3F55F0] font-normal">Industri →</span>
+                              <span className="text-xs text-[#3F55F0] font-normal">Industri →</span>
                             </div>
-                            <p className="text-[11px] text-[#5B6585] mt-0.5 leading-snug">
+                            <p className="text-xs text-[#5B6585] mt-0.5 leading-snug">
                               Perekrutan magang &amp; pengiriman tantangan riil bengkel ke kurikulum SMK.
                             </p>
                           </div>
@@ -291,9 +309,9 @@ export const Navbar: React.FC<NavbarProps> = ({
                           <div className="flex-1">
                             <div className="text-xs font-bold text-[#0F1B4A] group-hover:text-[#3F55F0] transition-colors flex items-center justify-between">
                               <span>Dasbor Manajemen Sekolah</span>
-                              <span className="text-[10px] text-[#3F55F0] font-normal">Admin →</span>
+                              <span className="text-xs text-[#3F55F0] font-normal">Admin →</span>
                             </div>
-                            <p className="text-[11px] text-[#5B6585] mt-0.5 leading-snug">
+                            <p className="text-xs text-[#5B6585] mt-0.5 leading-snug">
                               Analitik Cohen's Kappa antar-guru dan sebaran tingkat adaptasi siswa.
                             </p>
                           </div>
@@ -327,20 +345,20 @@ export const Navbar: React.FC<NavbarProps> = ({
                       transition={{ duration: 0.15 }}
                       className="absolute left-0 mt-2 w-[380px] p-3.5 bg-white rounded-2xl shadow-2xl border border-[#E3E8F8] z-50"
                     >
-                      <div className="text-[10px] font-bold uppercase tracking-wider text-[#5B6585] px-2.5 py-1">
+                      <div className="text-[11px] font-bold uppercase tracking-wider text-[#5B6585] px-2.5 py-1">
                         Simulasi Aktif di Demo
                       </div>
                       
                       <div className="p-3 bg-[#F6F8FF] rounded-xl border border-[#E3E8F8] space-y-2 mt-1">
                         <div className="flex items-center gap-2">
-                          <span className="px-2 py-0.5 rounded bg-[#3F55F0] text-white text-[10px] font-bold">
+                          <span className="px-2 py-0.5 rounded bg-[#3F55F0] text-white text-xs font-bold">
                             TITL
                           </span>
                           <span className="text-xs font-bold text-[#0F1B4A]">
                             Instalasi Penerangan Rumah Tinggal
                           </span>
                         </div>
-                        <p className="text-[11px] text-[#5B6585] leading-relaxed">
+                        <p className="text-xs text-[#5B6585] leading-relaxed">
                           Siswa merakit saklar tunggal dasar, lalu kondisi diubah menjadi saklar tukar (2 titik kendali) sesuai standar PUIL 2020.
                         </p>
                         <button
@@ -401,9 +419,10 @@ export const Navbar: React.FC<NavbarProps> = ({
                 onClick={onBackToCompanyProfile}
                 className="inline-flex items-center gap-2 whitespace-nowrap px-3.5 sm:px-4 py-2.5 rounded-xl border border-[#3F55F0]/30 bg-[#3F55F0]/5 hover:bg-[#3F55F0]/10 hover:border-[#3F55F0] text-xs font-bold text-[#3F55F0] transition-all shadow-2xs group"
                 title="Kembali ke Halaman Company Profile"
+                aria-label="Kembali ke Company Profile"
               >
                 <ArrowLeft className="w-3.5 h-3.5 group-hover:-translate-x-0.5 transition-transform" />
-                <span>Company Profile</span>
+                <span className="hidden sm:inline">Company Profile</span>
               </button>
             ) : (
               <button
@@ -417,31 +436,39 @@ export const Navbar: React.FC<NavbarProps> = ({
 
             {/* Role Switcher (in Demo mode) */}
             {viewMode === 'demo' && (
-              <div className="relative group">
-                <div tabIndex={0} role="button" aria-haspopup="menu" aria-label="Ganti peran simulasi" className="flex items-center gap-2 whitespace-nowrap pl-3 pr-2.5 py-1.5 rounded-xl border border-[#E3E8F8] bg-[#F6F8FF] hover:border-[#3F55F0]/50 transition-colors cursor-pointer">
+              <div className="relative" ref={roleRef}>
+                <button
+                  type="button"
+                  aria-expanded={roleOpen}
+                  aria-label={`Ganti peran simulasi, peran aktif ${roleConfig[currentRole].label}`}
+                  onClick={() => setRoleOpen((o) => !o)}
+                  className="flex items-center gap-2 whitespace-nowrap pl-3 pr-2.5 py-1.5 rounded-xl border border-[#E3E8F8] bg-[#F6F8FF] hover:border-[#3F55F0]/50 transition-colors cursor-pointer"
+                >
                   <div className="w-7 h-7 rounded-lg bg-white shadow-2xs flex items-center justify-center">
                     {roleConfig[currentRole].icon}
                   </div>
                   <div className="text-left hidden xl:block">
-                    <div className="text-[9px] font-bold text-[#5B6585] uppercase tracking-wider leading-none">
+                    <div className="text-[11px] font-bold text-[#5B6585] uppercase tracking-wider leading-none">
                       Peran Aktif
                     </div>
                     <div className="text-xs font-bold text-[#0F1B4A] leading-tight">
                       {roleConfig[currentRole].badge}
                     </div>
                   </div>
-                  <ChevronDown className="w-3.5 h-3.5 text-[#5B6585]" />
-                </div>
+                  <ChevronDown className={`w-3.5 h-3.5 text-[#5B6585] transition-transform duration-200 ${roleOpen ? 'rotate-180' : ''}`} />
+                </button>
 
                 {/* Dropdown Menu */}
-                <div className="absolute right-0 mt-1 w-64 p-2 bg-white rounded-2xl shadow-xl border border-[#E3E8F8] opacity-0 invisible group-hover:opacity-100 group-hover:visible group-focus-within:opacity-100 group-focus-within:visible transition-all duration-150 z-50">
-                  <div className="px-3 py-1.5 text-[10px] font-bold text-[#5B6585] uppercase tracking-wider">
+                <div className={`absolute right-0 mt-1 w-64 max-w-[calc(100vw-2rem)] p-2 bg-white rounded-2xl shadow-xl border border-[#E3E8F8] transition-all duration-150 z-50 ${roleOpen ? 'opacity-100 visible' : 'opacity-0 invisible'}`}>
+                  <div className="px-3 py-1.5 text-[11px] font-bold text-[#5B6585] uppercase tracking-wider">
                     Ganti Simulasi Peran (RBAC)
                   </div>
                   {(Object.keys(roleConfig) as UserRole[]).map((r) => (
                     <button
                       key={r}
+                      aria-current={currentRole === r}
                       onClick={() => {
+                        setRoleOpen(false);
                         onRoleChange(r);
                         if (r === 'mitra_industri') onTabChange('industri');
                         else if (r === 'admin_lembaga') onTabChange('admin');
@@ -458,7 +485,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                       </div>
                       <div className="flex-1">
                         <div>{roleConfig[r].label}</div>
-                        <div className="text-[10px] text-[#5B6585] font-normal">
+                        <div className="text-xs text-[#5B6585] font-normal">
                           {roleConfig[r].badge}
                         </div>
                       </div>
@@ -472,7 +499,8 @@ export const Navbar: React.FC<NavbarProps> = ({
             <button
               onClick={() => setIsMobileOpen(!isMobileOpen)}
               className="xl:hidden p-2 rounded-xl text-[#0F1B4A] hover:bg-[#F6F8FF] border border-[#E3E8F8] transition-colors"
-              aria-label="Toggle Menu"
+              aria-label={isMobileOpen ? 'Tutup menu' : 'Buka menu'}
+              aria-expanded={isMobileOpen}
             >
               {isMobileOpen ? <X className="w-5 h-5 text-[#3F55F0]" /> : <Menu className="w-5 h-5" />}
             </button>
@@ -533,7 +561,7 @@ export const Navbar: React.FC<NavbarProps> = ({
 
               {/* Metodologi Items */}
               <div className="space-y-1">
-                <span className="text-[10px] font-bold text-[#5B6585] uppercase tracking-wider block px-1">
+                <span className="text-[11px] font-bold text-[#5B6585] uppercase tracking-wider block px-1">
                   Metodologi Penilaian
                 </span>
                 <button
@@ -557,7 +585,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                   className="w-full text-left p-2.5 rounded-xl hover:bg-[#F6F8FF] text-xs font-bold text-[#0F1B4A] flex items-center justify-between"
                 >
                   <span className="flex items-center gap-2">
-                    <FileCheck2 className="w-3.5 h-3.5 text-emerald-600" />
+                    <FileCheck2 className="w-3.5 h-3.5 text-emerald-700" />
                     Pustaka Tugas &amp; Kesetaraan
                   </span>
                   <ChevronRight className="w-3.5 h-3.5 text-[#5B6585]" />
@@ -566,7 +594,7 @@ export const Navbar: React.FC<NavbarProps> = ({
 
               {/* Solusi & Paspor */}
               <div className="space-y-1 pt-2 border-t border-[#E3E8F8]">
-                <span className="text-[10px] font-bold text-[#5B6585] uppercase tracking-wider block px-1">
+                <span className="text-[11px] font-bold text-[#5B6585] uppercase tracking-wider block px-1">
                   Solusi &amp; Output
                 </span>
                 <button
@@ -590,7 +618,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                   className="w-full text-left p-2.5 rounded-xl hover:bg-[#F6F8FF] text-xs font-bold text-[#0F1B4A] flex items-center justify-between"
                 >
                   <span className="flex items-center gap-2">
-                    <Building2 className="w-3.5 h-3.5 text-amber-600" />
+                    <Building2 className="w-3.5 h-3.5 text-amber-700" />
                     Portal Mitra Industri Magang
                   </span>
                   <ChevronRight className="w-3.5 h-3.5 text-[#5B6585]" />

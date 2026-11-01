@@ -95,15 +95,22 @@ export const HeroSwoosh: React.FC<{ className?: string }> = ({ className }) => (
         <stop offset="0" stopColor="#2455F0" stopOpacity="0.55" />
         <stop offset="1" stopColor="#7C9BFF" stopOpacity="0.25" />
       </linearGradient>
+      <linearGradient id="swoosh-fade" x1="0" x2="1" y1="0" y2="0">
+        <stop offset="0.7" stopColor="#fff" />
+        <stop offset="1" stopColor="#000" />
+      </linearGradient>
+      <mask id="swoosh-mask"><rect width="520" height="480" fill="url(#swoosh-fade)" /></mask>
       <linearGradient id="swoosh-b" x1="0" y1="0" x2="1" y2="1">
         <stop offset="0" stopColor="#4A8BFF" stopOpacity="0.35" />
         <stop offset="1" stopColor="#2455F0" stopOpacity="0.1" />
       </linearGradient>
     </defs>
-    <path d="M520 0v480H240C330 400 300 250 380 160 430 105 480 70 520 0z" fill="url(#swoosh-a)" />
-    <path d="M400 0C470 40 500 120 440 210 390 285 330 330 250 380 330 270 300 130 400 0z" fill="url(#swoosh-b)" />
-    <g stroke="#2455F0" strokeWidth="6" strokeLinecap="round">
-      <path d="M452 42l-6 20M486 56l16-10" />
+    <g mask="url(#swoosh-mask)">
+      <path d="M520 0v480H240C330 400 300 250 380 160 430 105 480 70 520 0z" fill="url(#swoosh-a)" />
+      <path d="M400 0C470 40 500 120 440 210 390 285 330 330 250 380 330 270 300 130 400 0z" fill="url(#swoosh-b)" />
+      <g stroke="#2455F0" strokeWidth="6" strokeLinecap="round">
+        <path d="M452 42l-6 20M486 56l16-10" />
+      </g>
     </g>
   </svg>
 );

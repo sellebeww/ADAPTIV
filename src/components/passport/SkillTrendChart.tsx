@@ -90,36 +90,36 @@ export const SkillTrendChart: React.FC<SkillTrendChartProps> = ({
         <div className="p-3.5 bg-white/95 backdrop-blur-md rounded-2xl shadow-xl border border-[#E3E8F8] text-xs space-y-2 min-w-[220px]">
           <div className="flex items-center justify-between border-b border-[#E3E8F8] pb-1.5">
             <span className="font-bold text-[#0F1B4A]">{data.sessionCode}</span>
-            <span className="text-[10px] text-[#5B6585]">{data.name}</span>
+            <span className="text-xs text-[#5B6585]">{data.name}</span>
           </div>
           <div>
             <div className="font-bold text-[#0F1B4A] text-xs line-clamp-1">{data.fullName}</div>
-            <div className="text-[10px] text-[#5B6585]">{data.variationType}</div>
+            <div className="text-xs text-[#5B6585]">{data.variationType}</div>
           </div>
           
           <div className="p-2 rounded-xl bg-[#F6F8FF] border border-[#E3E8F8] space-y-1">
             <div className="flex justify-between items-center">
-              <span className="text-[10px] text-[#5B6585]">Indeks Adaptasi:</span>
+              <span className="text-xs text-[#5B6585]">Indeks Adaptasi:</span>
               <span className="font-mono font-bold text-[#3F55F0] text-sm">
                 {data.adaptationIndex} / 100
               </span>
             </div>
             <div className="flex justify-between items-center">
-              <span className="text-[10px] text-[#5B6585]">Tingkat:</span>
-              <span className="font-semibold text-emerald-700 text-[10px]">
+              <span className="text-xs text-[#5B6585]">Tingkat:</span>
+              <span className="font-semibold text-emerald-700 text-xs">
                 {data.level}
               </span>
             </div>
             <div className="flex justify-between items-center">
-              <span className="text-[10px] text-[#5B6585]">Selisih Transfer:</span>
-              <span className="font-mono font-bold text-[#0F1B4A] text-[11px]">
+              <span className="text-xs text-[#5B6585]">Selisih Transfer:</span>
+              <span className="font-mono font-bold text-[#0F1B4A] text-xs">
                 {data.transferGap}
               </span>
             </div>
           </div>
 
           {viewMode === 'dimensions' && (
-            <div className="grid grid-cols-2 gap-1 text-[10px] pt-1">
+            <div className="grid grid-cols-2 gap-1 text-xs pt-1">
               <div className="text-[#8B5CF6]">Prediksi: {data.prediksi}/4</div>
               <div className="text-[#10B981]">Penyesuaian: {data.penyesuaian}/4</div>
               <div className="text-[#F59E0B]">Hasil: {data.hasil}/4</div>
@@ -140,7 +140,7 @@ export const SkillTrendChart: React.FC<SkillTrendChartProps> = ({
       <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 pb-4 border-b border-[#E3E8F8]">
         <div>
           <div className="flex items-center gap-2">
-            <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-[#3F55F0]/10 text-[#3F55F0] uppercase tracking-wider flex items-center gap-1.5">
+            <span className="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-[#3F55F0]/10 text-[#3F55F0] uppercase tracking-wider flex items-center gap-1.5">
               <TrendingUp className="w-3.5 h-3.5" />
               Riwayat Tren Perkembangan Adaptabilitas
             </span>
@@ -191,25 +191,25 @@ export const SkillTrendChart: React.FC<SkillTrendChartProps> = ({
       {/* KPI Growth Cards */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
         <div className="p-3.5 rounded-2xl bg-[#F6F8FF] border border-[#E3E8F8]">
-          <span className="text-[10px] font-bold text-[#5B6585] uppercase tracking-wider block">
+          <span className="text-[11px] font-bold text-[#5B6585] uppercase tracking-wider block">
             Pertumbuhan Skor IA
           </span>
           <div className="flex items-baseline gap-1.5 mt-1">
             <span className="text-xl font-black text-[#3F55F0] font-mono">
               +{scoreDiff}
             </span>
-            <span className="text-xs font-bold text-emerald-600 flex items-center">
+            <span className="text-xs font-bold text-emerald-700 flex items-center">
               <ArrowUpRight className="w-3.5 h-3.5" />
               +{percentGrowth}%
             </span>
           </div>
-          <span className="text-[10px] text-[#5B6585] mt-0.5 block">
+          <span className="text-xs text-[#5B6585] mt-0.5 block">
             Dari {firstSession.adaptationIndex} ke {latestSession.adaptationIndex}
           </span>
         </div>
 
         <div className="p-3.5 rounded-2xl bg-[#F6F8FF] border border-[#E3E8F8]">
-          <span className="text-[10px] font-bold text-[#5B6585] uppercase tracking-wider block">
+          <span className="text-[11px] font-bold text-[#5B6585] uppercase tracking-wider block">
             Reduksi Transfer Gap
           </span>
           <div className="flex items-baseline gap-1.5 mt-1">
@@ -217,13 +217,13 @@ export const SkillTrendChart: React.FC<SkillTrendChartProps> = ({
               {firstSession.transferGap} → {latestSession.transferGap}
             </span>
           </div>
-          <span className="text-[10px] text-emerald-600 font-semibold mt-0.5 block">
+          <span className="text-xs text-emerald-700 font-semibold mt-0.5 block">
             Penurunan {gapDiff} poin (Makin Adaptif)
           </span>
         </div>
 
         <div className="p-3.5 rounded-2xl bg-[#F6F8FF] border border-[#E3E8F8]">
-          <span className="text-[10px] font-bold text-[#5B6585] uppercase tracking-wider block">
+          <span className="text-[11px] font-bold text-[#5B6585] uppercase tracking-wider block">
             Kenaikan Status Level
           </span>
           <div className="flex items-baseline gap-1 mt-1">
@@ -231,13 +231,13 @@ export const SkillTrendChart: React.FC<SkillTrendChartProps> = ({
               {latestSession.level}
             </span>
           </div>
-          <span className="text-[10px] text-[#5B6585] mt-0.5 block">
+          <span className="text-xs text-[#5B6585] mt-0.5 block">
             Awal: {firstSession.level}
           </span>
         </div>
 
         <div className="p-3.5 rounded-2xl bg-[#F6F8FF] border border-[#E3E8F8]">
-          <span className="text-[10px] font-bold text-[#5B6585] uppercase tracking-wider block">
+          <span className="text-[11px] font-bold text-[#5B6585] uppercase tracking-wider block">
             Ambang Industri
           </span>
           <div className="flex items-baseline gap-1 mt-1">
@@ -245,7 +245,7 @@ export const SkillTrendChart: React.FC<SkillTrendChartProps> = ({
               ≥ 70.0
             </span>
           </div>
-          <span className="text-[10px] text-emerald-600 font-semibold mt-0.5 block">
+          <span className="text-xs text-emerald-700 font-semibold mt-0.5 block">
             Terlampaui ({latestSession.adaptationIndex - 70} poin di atas batas)
           </span>
         </div>
@@ -401,7 +401,7 @@ export const SkillTrendChart: React.FC<SkillTrendChartProps> = ({
             <History className="w-4 h-4 text-[#3F55F0]" />
             Daftar Sesi Terverifikasi dalam Paspor
           </span>
-          <span className="text-[11px] text-[#5B6585]">
+          <span className="text-xs text-[#5B6585]">
             Klik sesi untuk melihat catatan evaluator
           </span>
         </div>
@@ -420,10 +420,10 @@ export const SkillTrendChart: React.FC<SkillTrendChartProps> = ({
                 }`}
               >
                 <div className="flex items-center justify-between mb-1">
-                  <span className="text-[10px] font-bold text-[#3F55F0]">
+                  <span className="text-xs font-bold text-[#3F55F0]">
                     {sess.sessionCode}
                   </span>
-                  <span className="text-[10px] text-[#5B6585]">
+                  <span className="text-xs text-[#5B6585]">
                     {sess.date}
                   </span>
                 </div>
@@ -431,7 +431,7 @@ export const SkillTrendChart: React.FC<SkillTrendChartProps> = ({
                   {sess.title}
                 </div>
                 <div className="flex items-center justify-between mt-2 pt-1.5 border-t border-[#E3E8F8]/60">
-                  <span className="text-[10px] text-[#5B6585]">Skor IA:</span>
+                  <span className="text-xs text-[#5B6585]">Skor IA:</span>
                   <span className="font-mono font-bold text-xs text-[#3F55F0]">
                     {sess.adaptationIndex}
                   </span>
@@ -449,16 +449,16 @@ export const SkillTrendChart: React.FC<SkillTrendChartProps> = ({
                 <span className="font-bold text-[#0F1B4A]">
                   {activeSessionDetail.sessionCode} • {activeSessionDetail.title}
                 </span>
-                <span className="px-2 py-0.2 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800">
+                <span className="px-2 py-0.2 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800">
                   {activeSessionDetail.level}
                 </span>
               </div>
-              <span className="text-[11px] text-[#5B6585]">
+              <span className="text-xs text-[#5B6585]">
                 {activeSessionDetail.variationType} (Tingkat {activeSessionDetail.difficulty}/5)
               </span>
             </div>
             {activeSessionDetail.notes && (
-              <p className="text-[11px] text-[#5B6585] leading-relaxed">
+              <p className="text-xs text-[#5B6585] leading-relaxed">
                 <strong>Catatan Evaluator:</strong> {activeSessionDetail.notes}
               </p>
             )}

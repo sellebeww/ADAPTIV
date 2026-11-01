@@ -20,6 +20,7 @@ import {
   Printer,
   Layers,
   ArrowLeft,
+  Target,
 } from 'lucide-react';
 
 interface PassportViewProps {
@@ -158,7 +159,7 @@ export const PassportView: React.FC<PassportViewProps> = ({
             <div className="text-xs font-mono text-[#5B6585]">
               Nomor Verifikasi: <strong className="text-[#0F1B4A]">{passport.publicCode}</strong>
             </div>
-            <div className="text-[11px] text-[#5B6585]">
+            <div className="text-xs text-[#5B6585]">
               Diterbitkan: {passport.issuedAt} | {passport.participant.institutionName}
             </div>
           </div>
@@ -182,7 +183,7 @@ export const PassportView: React.FC<PassportViewProps> = ({
           </div>
 
           <div className="p-4 rounded-xl bg-white border border-[#E3E8F8] flex flex-col justify-center items-center text-center shadow-xs">
-            <span className="text-[10px] font-bold text-[#5B6585] uppercase tracking-wider">
+            <span className="text-[11px] font-bold text-[#5B6585] uppercase tracking-wider">
               Indeks Adaptasi Resmi (IA)
             </span>
             <div className="text-3xl font-black text-[#3F55F0] font-mono mt-1">
@@ -283,7 +284,7 @@ export const PassportView: React.FC<PassportViewProps> = ({
                       y={y}
                       textAnchor={side}
                       dominantBaseline="central"
-                      className="text-[10px] font-bold fill-[#0F1B4A]"
+                      className="text-xs font-bold fill-[#0F1B4A]"
                     >
                       <tspan x={x} dy="-0.6em">{dim.label}</tspan>
                       <tspan x={x} dy="1.3em" className="fill-[#5B6585] font-semibold">({dim.score}/4)</tspan>
@@ -292,49 +293,62 @@ export const PassportView: React.FC<PassportViewProps> = ({
                 })}
               </svg>
             </div>
-            <div className="text-[11px] text-[#5B6585] text-center mt-2">
+            <div className="text-xs text-[#5B6585] text-center mt-2">
               Formula: IA = 100 × (0.20P + 0.30K + 0.25H + 0.15M + 0.10E) / 4
             </div>
           </div>
 
           {/* Breakdown Metrics */}
-          <div className="space-y-4">
-            <h4 className="text-xs font-bold text-[#0F1B4A] uppercase tracking-wider">
-              Rincian Dimensi Kemampuan
-            </h4>
-            <div className="space-y-3">
+          <div className="space-y-6">
+            <div className="flex items-end justify-between gap-3">
+              <h4 className="text-xs font-bold text-[#0F1B4A] uppercase tracking-wider">
+                Rincian Dimensi Kemampuan
+              </h4>
+              <span className="text-xs text-[#5B6585]">Skala 0 sampai {dimensions[0]?.maxScore ?? 4}</span>
+            </div>
+            <div className="space-y-6">
               {dimensions.map((dim) => (
-                <div key={dim.key} className="space-y-1">
-                  <div className="flex justify-between text-xs font-semibold">
-                    <span className="text-[#0F1B4A]">{dim.label}</span>
-                    <span className="text-[#3F55F0] font-mono font-bold">
-                      {dim.score} / {dim.maxScore}
+                <div key={dim.key} className="space-y-2.5">
+                  <div className="flex items-baseline justify-between gap-3">
+                    <span className="text-sm font-semibold text-[#0F1B4A]">{dim.label}</span>
+                    <span className="font-mono text-sm text-[#5B6585]">
+                      <span className="text-lg font-bold text-[#3F55F0]">{dim.score}</span>
+                      <span className="mx-1 opacity-60">/</span>
+                      {dim.maxScore}
                     </span>
                   </div>
-                  <div className="w-full h-2 rounded-full bg-[#E3E8F8] overflow-hidden">
+                  <div className="relative w-full h-3 rounded-full bg-[#E3E8F8] overflow-hidden">
                     <div
                       className="h-full bg-gradient-to-r from-[#3F55F0] to-[#4A8BFF] rounded-full"
                       style={{ width: `${(dim.score / dim.maxScore) * 100}%` }}
                     />
+                    {Array.from({ length: dim.maxScore - 1 }, (_, n) => (
+                      <span
+                        key={n}
+                        aria-hidden="true"
+                        className="absolute top-0 bottom-0 w-0.5 bg-white/80"
+                        style={{ left: `${((n + 1) / dim.maxScore) * 100}%` }}
+                      />
+                    ))}
                   </div>
                 </div>
               ))}
             </div>
 
-            <div className="pt-3 border-t border-[#E3E8F8] grid grid-cols-2 gap-3 text-xs">
+            <div className="pt-6 border-t border-[#E3E8F8] grid grid-cols-2 gap-4 text-xs">
               <div className="p-3 rounded-xl bg-[#F6F8FF] border border-[#E3E8F8]">
-                <span className="text-[#5B6585] block text-[11px]">Selisih Transfer</span>
+                <span className="text-[#5B6585] block text-xs">Selisih Transfer</span>
                 <span className="font-bold text-[#0F1B4A] text-sm font-mono">
                   {passport.result.transferGap}
                 </span>
-                <p className="text-[10px] text-[#5B6585] mt-0.5">Penurunan skor minimal saat variasi.</p>
+                <p className="text-xs text-[#5B6585] mt-0.5">Penurunan skor minimal saat variasi.</p>
               </div>
               <div className="p-3 rounded-xl bg-[#F6F8FF] border border-[#E3E8F8]">
-                <span className="text-[#5B6585] block text-[11px]">Kalibrasi Diri</span>
+                <span className="text-[#5B6585] block text-xs">Kalibrasi Diri</span>
                 <span className="font-bold text-[#0F1B4A] text-sm font-mono">
                   {passport.result.calibration}
                 </span>
-                <p className="text-[10px] text-[#5B6585] mt-0.5">Akurasi estimasi vs performa nyata.</p>
+                <p className="text-xs text-[#5B6585] mt-0.5">Akurasi estimasi vs performa nyata.</p>
               </div>
             </div>
           </div>
@@ -348,42 +362,71 @@ export const PassportView: React.FC<PassportViewProps> = ({
         />
 
         {/* Peta Batas Kemampuan (Matriks Kategori Perubahan) */}
-        <div className="space-y-3">
-          <div className="flex items-center justify-between">
+        <div className="space-y-5">
+          <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-1">
             <h4 className="text-xs font-bold text-[#0F1B4A] uppercase tracking-wider flex items-center gap-2">
               <Sparkles className="w-4 h-4 text-[#3F55F0]" />
               Peta Batas Kemampuan (Adaptability Boundary Matrix)
             </h4>
-            <span className="text-[11px] text-[#5B6585]">
+            <span className="text-xs text-[#5B6585]">
               Menandai kategori variasi yang sudah dikuasai dan batas tantangan
             </span>
           </div>
 
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-            {passport.categoryMastery.map((item) => (
-              <div
-                key={item.category}
-                className={`p-3.5 rounded-2xl border transition-all ${
-                  item.mastered
-                    ? 'bg-emerald-50/50 border-emerald-200 text-emerald-950'
-                    : 'bg-amber-50/50 border-amber-200 text-amber-950'
-                }`}
-              >
-                <div className="flex items-center justify-between mb-1">
-                  <span className="text-xs font-bold">{item.label}</span>
-                  {item.mastered ? (
-                    <CheckCircle2 className="w-4 h-4 text-emerald-600" />
-                  ) : (
-                    <span className="text-[10px] font-bold px-1.5 py-0.2 rounded bg-amber-200 text-amber-800">
-                      Batas
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-3">
+            {passport.categoryMastery.map((item) => {
+              const slots = Math.max(3, item.testedCount);
+              return (
+                <div
+                  key={item.category}
+                  className={`flex flex-col gap-2.5 sm:gap-3 p-3 sm:p-4 rounded-2xl border transition-shadow hover:shadow-md ${
+                    item.mastered
+                      ? 'bg-emerald-50/60 border-emerald-200 text-emerald-950'
+                      : 'bg-amber-50/60 border-amber-200 text-amber-950'
+                  }`}
+                >
+                  <div className="flex items-start justify-between gap-2">
+                    <span
+                      className={`w-8 h-8 sm:w-9 sm:h-9 rounded-xl flex items-center justify-center ${
+                        item.mastered ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'
+                      }`}
+                    >
+                      {item.mastered ? <CheckCircle2 className="w-5 h-5" /> : <Target className="w-5 h-5" />}
                     </span>
-                  )}
+                    <span
+                      className={`text-xs sm:text-xs font-bold px-2 sm:px-2.5 py-1 rounded-full ${
+                        item.mastered ? 'bg-emerald-200/70 text-emerald-800' : 'bg-amber-200 text-amber-800'
+                      }`}
+                    >
+                      {item.mastered ? 'Dikuasai' : 'Batas'}
+                    </span>
+                  </div>
+
+                  <div>
+                    <div className="text-sm font-bold leading-snug">{item.label}</div>
+                    <div className="text-xs opacity-80 mt-0.5">
+                      {item.mastered ? 'Terbukti Adaptif' : 'Perlu Penguatan Lanjutan'}
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-2 pt-2.5 border-t border-current/10 text-xs font-semibold opacity-80">
+                    <span className="flex items-center gap-1" aria-hidden="true">
+                      {Array.from({ length: slots }, (_, n) => (
+                        <span
+                          key={n}
+                          className={`w-2 h-2 rounded-full ${
+                            n < item.testedCount
+                              ? item.mastered ? 'bg-emerald-500' : 'bg-amber-500'
+                              : 'bg-current/15'
+                          }`}
+                        />
+                      ))}
+                    </span>
+                    <span>{item.testedCount}× uji</span>
+                  </div>
                 </div>
-                <div className="text-[10px] opacity-75">
-                  {item.mastered ? 'Terbukti Adaptif' : 'Perlu Penguatan Lanjutan'} ({item.testedCount}x uji)
-                </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
 
@@ -398,7 +441,7 @@ export const PassportView: React.FC<PassportViewProps> = ({
                 <ShieldCheck className="w-4 h-4 text-[#4A8BFF]" />
                 Verifikasi Integritas Publik
               </div>
-              <p className="text-[11px] text-blue-200">
+              <p className="text-xs text-blue-200">
                 Pindai kode QR atau buka tautan resmi: <span className="font-mono underline text-white">{link}</span>
               </p>
             </div>

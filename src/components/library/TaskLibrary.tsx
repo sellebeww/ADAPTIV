@@ -36,7 +36,7 @@ const CATEGORY_LABEL: Record<ChangeCategory, string> = {
   kegagalan_komponen: 'Kegagalan Komponen'
 };
 
-const ACCENTS = ['#3F55F0', '#D97706', '#0E9F6E', '#9333EA', '#DB2777', '#0891B2'];
+const ACCENTS = ['#3F55F0', '#B45309', '#0E9F6E', '#9333EA', '#DB2777', '#0891B2'];
 
 interface Item {
   v: TaskVariation;
@@ -83,6 +83,12 @@ const VariationModal: React.FC<{ onClose: () => void; onSave: (item: Item) => vo
     return () => window.removeEventListener('keydown', onKey);
   }, [onClose]);
 
+  // `required` accepts whitespace-only text; flag it with the native validation message
+  const noBlank = (set: (v: string) => void) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    e.target.setCustomValidity(e.target.value && !e.target.value.trim() ? 'Isian tidak boleh hanya spasi.' : '');
+    set(e.target.value);
+  };
+
   const submit = (e: React.FormEvent) => {
     e.preventDefault();
     const id = `var-custom-${Date.now()}`;
@@ -126,12 +132,12 @@ const VariationModal: React.FC<{ onClose: () => void; onSave: (item: Item) => vo
 
         <label className="block space-y-1.5">
           <span className="text-xs font-bold text-[#0F1B4A]">Judul singkat</span>
-          <input required value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Contoh: Kabel NYA diganti NYM 3x1.5" className={FIELD} />
+          <input required autoFocus value={title} onChange={noBlank(setTitle)} placeholder="Contoh: Kabel NYA diganti NYM 3x1.5" className={FIELD} />
         </label>
 
         <label className="block space-y-1.5">
           <span className="text-xs font-bold text-[#0F1B4A]">Kondisi yang diubah (tepat satu)</span>
-          <textarea required rows={3} value={condition} onChange={(e) => setCondition(e.target.value)} placeholder="Jelaskan satu kondisi yang berubah dari tugas dasar." className={FIELD} />
+          <textarea required rows={3} value={condition} onChange={noBlank(setCondition)} placeholder="Jelaskan satu kondisi yang berubah dari tugas dasar." className={FIELD} />
         </label>
 
         <div className="grid sm:grid-cols-2 gap-4">
@@ -151,7 +157,7 @@ const VariationModal: React.FC<{ onClose: () => void; onSave: (item: Item) => vo
 
         <label className="block space-y-1.5">
           <span className="text-xs font-bold text-[#0F1B4A]">Alasan relevansi industri</span>
-          <textarea required rows={2} value={relevance} onChange={(e) => setRelevance(e.target.value)} placeholder="Mengapa perubahan ini sering terjadi di dunia kerja?" className={FIELD} />
+          <textarea required rows={2} value={relevance} onChange={noBlank(setRelevance)} placeholder="Mengapa perubahan ini sering terjadi di dunia kerja?" className={FIELD} />
         </label>
 
         <fieldset className="space-y-2">
@@ -226,7 +232,7 @@ export const TaskLibrary: React.FC = () => {
               ].map((s) => (
                 <div key={s.k} className="rounded-2xl bg-white/10 px-4 py-3 text-center backdrop-blur">
                   <dd className="text-2xl font-extrabold leading-none">{s.v}</dd>
-                  <dt className="mt-1.5 text-[11px] text-white/70">{s.k}</dt>
+                  <dt className="mt-1.5 text-xs text-white/70">{s.k}</dt>
                 </div>
               ))}
             </dl>
@@ -263,8 +269,8 @@ export const TaskLibrary: React.FC = () => {
                     Variasi {String.fromCharCode(65 + idx)} · {CATEGORY_LABEL[v.changeCategory]}
                   </span>
                   <span className="flex items-center gap-1.5">
-                    {v.status === 'draft' && <span className="text-[11px] font-semibold px-2.5 py-1 rounded-full bg-amber-100 text-amber-800">Draf</span>}
-                    <span className="text-[11px] font-semibold px-2.5 py-1 rounded-full bg-[#F1F4FF] text-[#3B4670]">Tingkat {v.difficulty}/5</span>
+                    {v.status === 'draft' && <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-amber-100 text-amber-800">Draf</span>}
+                    <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-[#F1F4FF] text-[#3B4670]">Tingkat {v.difficulty}/5</span>
                   </span>
                 </span>
                 <span className="block mt-2 text-base font-bold leading-snug text-[#0F1B4A]">{title}</span>
@@ -283,7 +289,7 @@ export const TaskLibrary: React.FC = () => {
               <BookOpen className="w-4 h-4 text-[#3F55F0]" />
               Tugas Dasar
             </span>
-            <span className="inline-flex items-center gap-1.5 text-[11px] font-bold px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-800">
+            <span className="inline-flex items-center gap-1.5 text-xs font-bold px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-800">
               <ShieldCheck className="w-3.5 h-3.5" />
               Terverifikasi SOP
             </span>
@@ -303,7 +309,7 @@ export const TaskLibrary: React.FC = () => {
             <ul className="space-y-3">
               {SEED_BASE_TASK.successCriteria.map((c, i) => (
                 <li key={i} className="flex items-start gap-3 text-sm text-[#3B4670] leading-relaxed">
-                  <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0 mt-1" />
+                  <CheckCircle2 className="w-4 h-4 text-emerald-700 shrink-0 mt-1" />
                   <span>{c}</span>
                 </li>
               ))}
@@ -370,7 +376,7 @@ export const TaskLibrary: React.FC = () => {
               <div className="flex items-center gap-3 shrink-0">
                 <div className="text-right">
                   <p className="text-2xl font-extrabold leading-none text-[#0F1B4A]">{passed}/{CHECKS.length}</p>
-                  <p className="text-[11px] text-[#5B6585] mt-1">kriteria lolos</p>
+                  <p className="text-xs text-[#5B6585] mt-1">kriteria lolos</p>
                 </div>
                 <svg viewBox="0 0 44 44" className="w-12 h-12 -rotate-90" aria-hidden>
                   <circle cx="22" cy="22" r="18" fill="none" stroke="#E3E8F8" strokeWidth="5" />
@@ -392,7 +398,7 @@ export const TaskLibrary: React.FC = () => {
                     className={`flex items-start gap-3 rounded-2xl border p-4 ${ok ? 'bg-emerald-50/60 border-emerald-200' : 'bg-[#F6F8FF] border-[#E3E8F8]'}`}
                   >
                     {ok ? (
-                      <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0 mt-0.5" />
+                      <CheckCircle2 className="w-5 h-5 text-emerald-700 shrink-0 mt-0.5" />
                     ) : (
                       <Circle className="w-5 h-5 text-[#9AA5C8] shrink-0 mt-0.5" />
                     )}
@@ -441,7 +447,7 @@ export const TaskLibrary: React.FC = () => {
                   <div className="flex-1 rounded-2xl bg-[#F6F8FF] border border-[#E3E8F8] p-4 space-y-2">
                     <div className="flex flex-wrap items-center justify-between gap-2">
                       <p className="text-sm font-bold text-[#0F1B4A]">{h.levelTitle}</p>
-                      <span className={`text-[11px] font-bold px-2.5 py-1 rounded-full border ${HINT_TONE[i] ?? HINT_TONE[2]}`}>
+                      <span className={`text-xs font-bold px-2.5 py-1 rounded-full border ${HINT_TONE[i] ?? HINT_TONE[2]}`}>
                         -{h.penalty} Kemandirian
                       </span>
                     </div>

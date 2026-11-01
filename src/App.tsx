@@ -30,6 +30,14 @@ import {
   ArrowLeft,
 } from 'lucide-react';
 
+const TAB_TITLES: Record<string, string> = {
+  sesi: 'Sesi Penilaian Adaptiv',
+  paspor: 'Paspor Kemampuan',
+  pustaka: 'Pustaka Variasi Tugas',
+  industri: 'Portal Mitra Industri',
+  admin: 'Dasbor Lembaga'
+};
+
 export default function App() {
   // 'company_profile' or 'demo'
   const [viewMode, setViewMode] = useState<'company_profile' | 'demo'>('company_profile');
@@ -188,11 +196,11 @@ export default function App() {
                   <Sparkles className="w-5 h-5" />
                 </div>
                 <div>
-                  <div className="flex items-center gap-2">
+                  <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
                     <span className="text-xs font-bold text-[#0F1B4A]">
                       Simulasi Aktif: {CURRENT_INSTITUTION.name}
                     </span>
-                    <span className="px-2 py-0.2 rounded-full text-[10px] font-bold bg-[#16A34A]/10 text-[#16A34A]">
+                    <span className="whitespace-nowrap px-2 py-0.5 rounded-full text-xs font-bold bg-[#16A34A]/10 text-[#166534]">
                       Role: {currentRole.toUpperCase()}
                     </span>
                   </div>
@@ -205,13 +213,15 @@ export default function App() {
               <div className="flex items-center gap-2 shrink-0">
                 <button
                   onClick={() => setIsBrandKitOpen(true)}
-                  className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-[#0F1B4A] hover:bg-[#1E2888] text-white text-xs font-semibold transition-all shadow-xs"
+                  className="hidden sm:inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-[#0F1B4A] hover:bg-[#1E2888] text-white text-xs font-semibold transition-all shadow-xs"
                 >
                   <Palette className="w-3.5 h-3.5 text-[#4A8BFF]" />
                   Logo No-BG &amp; Brand Kit
                 </button>
               </div>
             </div>
+
+            <h1 className="sr-only">{TAB_TITLES[activeTab]}</h1>
 
             {/* Tab View Routing: key per tab -> fade/slide keluar-masuk */}
             <AnimatePresence mode="wait" initial={false}>

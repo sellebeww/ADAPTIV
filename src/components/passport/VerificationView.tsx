@@ -10,16 +10,16 @@ import { Logo } from '../brand/Logo';
 
 /** Public page opened by the passport QR code / `?verifikasi=CODE` link. */
 export const VerificationView: React.FC<{ code: string; passport?: AbilityPassport; onClose: () => void }> = ({ code, passport, onClose }) => (
-  <div className="min-h-screen grid place-items-center bg-[#F6F8FF] p-4">
+  <main className="min-h-screen grid place-items-center bg-[#F6F8FF] p-4">
     <div className="w-full max-w-lg rounded-3xl bg-white border border-[#E3E8F8] shadow-xl p-8 space-y-6">
       <Logo variant="horizontal" transparent size="md" />
 
       {passport ? (
         <>
           <div className="flex items-start gap-3 rounded-2xl bg-emerald-50 border border-emerald-200 p-4">
-            <BadgeCheck className="w-6 h-6 text-emerald-600 shrink-0" />
+            <BadgeCheck className="w-6 h-6 text-emerald-700 shrink-0" />
             <div>
-              <p className="text-sm font-bold text-emerald-900">Paspor Kemampuan terverifikasi</p>
+              <h1 className="text-sm font-bold text-emerald-900">Paspor Kemampuan terverifikasi</h1>
               <p className="text-xs text-emerald-800 mt-1 leading-relaxed">Kode ini terdaftar di Adaptiv dan diterbitkan oleh lembaga pendidikan di bawah.</p>
             </div>
           </div>
@@ -45,7 +45,7 @@ export const VerificationView: React.FC<{ code: string; passport?: AbilityPasspo
         <div className="flex items-start gap-3 rounded-2xl bg-red-50 border border-red-200 p-4">
           <ShieldAlert className="w-6 h-6 text-red-600 shrink-0" />
           <div>
-            <p className="text-sm font-bold text-red-900">Kode tidak ditemukan</p>
+            <h1 className="text-sm font-bold text-red-900">Kode tidak ditemukan</h1>
             <p className="text-xs text-red-800 mt-1 leading-relaxed">
               Tidak ada paspor dengan kode <span className="font-mono">{code}</span>. Periksa kembali tautan atau QR code.
             </p>
@@ -58,5 +58,5 @@ export const VerificationView: React.FC<{ code: string; passport?: AbilityPasspo
         Kembali ke Adaptiv
       </button>
     </div>
-  </div>
+  </main>
 );

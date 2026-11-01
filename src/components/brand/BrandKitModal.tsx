@@ -152,8 +152,8 @@ export const BrandKitModal: React.FC<BrandKitModalProps> = ({ isOpen, onClose })
   ];
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#0F1B4A]/60 backdrop-blur-sm animate-in fade-in duration-200">
-      <div className="relative w-full max-w-5xl max-h-[92vh] overflow-y-auto bg-white rounded-3xl shadow-2xl border border-[#E3E8F8]">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#0F1B4A]/60 backdrop-blur-sm animate-in fade-in duration-200" onMouseDown={(e) => e.target === e.currentTarget && onClose()}>
+      <div role="dialog" aria-modal="true" aria-labelledby="brandkit-title" className="relative w-full max-w-5xl max-h-[92vh] overflow-y-auto bg-white rounded-3xl shadow-2xl border border-[#E3E8F8]">
         
         {/* Header Modal */}
         <div className="sticky top-0 z-20 flex items-center justify-between px-6 py-5 bg-white/95 backdrop-blur-md border-b border-[#E3E8F8]">
@@ -163,8 +163,8 @@ export const BrandKitModal: React.FC<BrandKitModalProps> = ({ isOpen, onClose })
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <h2 className="text-xl font-bold text-[#0F1B4A]">Identitas Merek & Studio Logo Adaptiv</h2>
-                <span className="px-2.5 py-0.5 text-xs font-semibold rounded-full bg-[#4A8BFF]/15 text-[#3F55F0]">
+                <h2 id="brandkit-title" className="text-lg sm:text-xl font-bold text-[#0F1B4A]">Identitas Merek & Studio Logo Adaptiv</h2>
+                <span className="hidden sm:inline px-2.5 py-0.5 text-xs font-semibold rounded-full bg-[#4A8BFF]/15 text-[#3F55F0]">
                   Official Assets & No-BG
                 </span>
               </div>
@@ -175,6 +175,8 @@ export const BrandKitModal: React.FC<BrandKitModalProps> = ({ isOpen, onClose })
           </div>
           <button
             onClick={onClose}
+            autoFocus
+            aria-label="Tutup"
             className="p-2 rounded-xl text-[#5B6585] hover:text-[#0F1B4A] hover:bg-[#F6F8FF] transition-colors"
           >
             <X className="w-5 h-5" />
@@ -261,7 +263,7 @@ export const BrandKitModal: React.FC<BrandKitModalProps> = ({ isOpen, onClose })
                           referrerPolicy="no-referrer"
                           className="max-h-28 max-w-[85%] object-contain drop-shadow-sm transition-transform duration-300 hover:scale-105"
                         />
-                        <span className="absolute top-2.5 right-2.5 px-2 py-0.5 text-[10px] font-bold rounded-md bg-white/90 text-[#0F1B4A] shadow-xs backdrop-blur-xs">
+                        <span className="absolute top-2.5 right-2.5 px-2 py-0.5 text-xs font-bold rounded-md bg-white/90 text-[#0F1B4A] shadow-xs backdrop-blur-xs">
                           {asset.badge}
                         </span>
                       </div>
@@ -331,7 +333,7 @@ export const BrandKitModal: React.FC<BrandKitModalProps> = ({ isOpen, onClose })
                       className="w-full h-14 rounded-xl mb-2.5 flex items-end justify-end p-1.5 shadow-inner border border-black/5"
                       style={{ backgroundColor: c.hex }}
                     >
-                      <span className={`text-[10px] font-mono font-bold px-1.5 py-0.5 rounded bg-black/30 backdrop-blur-xs text-white`}>
+                      <span className={`text-xs font-mono font-bold px-1.5 py-0.5 rounded bg-black/30 backdrop-blur-xs text-white`}>
                         {c.hex}
                       </span>
                     </div>
@@ -345,7 +347,7 @@ export const BrandKitModal: React.FC<BrandKitModalProps> = ({ isOpen, onClose })
                         <Copy className="w-3.5 h-3.5 text-[#5B6585] opacity-0 group-hover:opacity-100 transition-opacity" />
                       )}
                     </div>
-                    <p className="text-[11px] text-[#5B6585] mt-0.5 line-clamp-1">
+                    <p className="text-xs text-[#5B6585] mt-0.5 line-clamp-1">
                       {c.role}
                     </p>
                   </button>

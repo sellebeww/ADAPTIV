@@ -91,9 +91,9 @@ export const InstitutionDashboard: React.FC = () => {
           </p>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2" aria-live="polite">
           <button onClick={exportCsv} className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-2xl border border-[#E3E8F8] hover:border-[#3F55F0] bg-white text-xs font-semibold text-[#0F1B4A] transition-colors shadow-2xs">
-            {done === 'csv' ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Download className="w-3.5 h-3.5 text-[#5B6585]" />}
+            {done === 'csv' ? <Check className="w-3.5 h-3.5 text-emerald-700" /> : <Download className="w-3.5 h-3.5 text-[#5B6585]" />}
             {done === 'csv' ? 'Terunduh' : 'Ekspor CSV'}
           </button>
           <button onClick={exportReport} className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-2xl bg-[#3F55F0] hover:bg-[#2A38B8] text-white text-xs font-semibold transition-colors shadow-xs">
@@ -108,22 +108,22 @@ export const InstitutionDashboard: React.FC = () => {
         <div className="p-5 rounded-2xl bg-white border border-[#E3E8F8] shadow-xs">
           <span className="text-xs text-[#5B6585] block">Total Sesi Diuji</span>
           <div className="text-2xl font-black text-[#0F1B4A] font-mono mt-1">142</div>
-          <span className="text-[10px] text-emerald-600 font-semibold mt-1 block">Kuotaterpakai: 28.4%</span>
+          <span className="text-xs text-emerald-700 font-semibold mt-1 block">Kuota terpakai: 28.4%</span>
         </div>
         <div className="p-5 rounded-2xl bg-white border border-[#E3E8F8] shadow-xs">
           <span className="text-xs text-[#5B6585] block">Rata-rata Indeks Adaptasi</span>
           <div className="text-2xl font-black text-[#3F55F0] font-mono mt-1">71.8</div>
-          <span className="text-[10px] text-[#3F55F0] font-semibold mt-1 block">Tingkat: Cakap Beradaptasi</span>
+          <span className="text-xs text-[#3F55F0] font-semibold mt-1 block">Tingkat: Cakap Beradaptasi</span>
         </div>
         <div className="p-5 rounded-2xl bg-white border border-[#E3E8F8] shadow-xs">
           <span className="text-xs text-[#5B6585] block">Kesepakatan Penilai (Kappa)</span>
-          <div className="text-2xl font-black text-[#16A34A] font-mono mt-1">0.86</div>
-          <span className="text-[10px] text-[#16A34A] font-semibold mt-1 block">Reliabilitas Sangat Tinggi</span>
+          <div className="text-2xl font-black text-[#15803D] font-mono mt-1">0.86</div>
+          <span className="text-xs text-[#15803D] font-semibold mt-1 block">Reliabilitas Sangat Tinggi</span>
         </div>
         <div className="p-5 rounded-2xl bg-white border border-[#E3E8F8] shadow-xs">
           <span className="text-xs text-[#5B6585] block">Korelasi Kinerja Lapangan</span>
           <div className="text-2xl font-black text-[#2A38B8] font-mono mt-1">r = 0.79</div>
-          <span className="text-[10px] text-emerald-600 font-semibold mt-1 block">Validitas Prediktif Kuat</span>
+          <span className="text-xs text-emerald-700 font-semibold mt-1 block">Validitas Prediktif Kuat</span>
         </div>
       </div>
 
@@ -171,7 +171,7 @@ export const InstitutionDashboard: React.FC = () => {
               <div key={i} className="p-3.5 rounded-2xl bg-[#F6F8FF] border border-[#E3E8F8] flex items-start justify-between gap-3 text-xs">
                 <div>
                   <h4 className="font-bold text-[#0F1B4A]">{c.category}</h4>
-                  <p className="text-[11px] text-[#5B6585] mt-0.5">{c.note}</p>
+                  <p className="text-xs text-[#5B6585] mt-0.5">{c.note}</p>
                 </div>
                 <span className="px-2.5 py-1 rounded-lg bg-amber-100 text-amber-900 font-bold shrink-0 font-mono">
                   {c.failureRate}
@@ -180,7 +180,7 @@ export const InstitutionDashboard: React.FC = () => {
             ))}
           </div>
 
-          <div className="text-[11px] text-[#5B6585] pt-1">
+          <div className="text-xs text-[#5B6585] pt-1">
             Sistem otomatis merekomendasikan penambahan modul praktik perhitungan daya untuk kelas XII TITL.
           </div>
         </div>

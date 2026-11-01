@@ -33,7 +33,7 @@ export const CircuitVisualizer: React.FC<CircuitVisualizerProps> = ({
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-[#E3E8F8]">
         <div>
           <div className="flex items-center gap-2">
-            <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-[#3F55F0]/10 text-[#3F55F0] uppercase tracking-wider">
+            <span className="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-[#3F55F0]/10 text-[#3F55F0] uppercase tracking-wider">
               Visualizer Sirkuit Dinamis
             </span>
             <span className="text-xs text-[#5B6585]">
@@ -80,7 +80,7 @@ export const CircuitVisualizer: React.FC<CircuitVisualizerProps> = ({
             onClick={() => setPowerOn(!powerOn)}
             className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl font-bold transition-all ${
               powerOn 
-                ? 'bg-emerald-600 text-white shadow-xs' 
+                ? 'bg-emerald-700 text-white shadow-xs' 
                 : 'bg-slate-300 text-slate-700'
             }`}
           >
@@ -91,7 +91,7 @@ export const CircuitVisualizer: React.FC<CircuitVisualizerProps> = ({
           <span className="text-[#5B6585] hidden sm:inline">•</span>
 
           <span className="text-[#5B6585]">
-            Status Lampu: <strong className={isLampOn ? 'text-amber-600' : 'text-slate-500'}>
+            Status Lampu: <strong className={isLampOn ? 'text-amber-700' : 'text-slate-600'}>
               {isLampOn ? 'MENYALA TERANG (15W)' : 'PADAM'}
             </strong>
           </span>

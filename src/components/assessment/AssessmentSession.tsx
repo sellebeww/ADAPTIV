@@ -143,7 +143,11 @@ export const AssessmentSession: React.FC<AssessmentSessionProps> = ({
     }
   };
 
+  const predictionIncomplete = [changeSummary, mainRisk, plan].some((v) => !v.trim());
+  const reflectionIncomplete = [reflectionOutcome, reflectionWorked, reflectionMissed, reflectionNextTime].some((v) => !v.trim());
+
   const handleLockPrediction = () => {
+    if (predictionIncomplete) return;
     const updatedPrediction = {
       changeSummary,
       expectedEffects: [
@@ -174,6 +178,7 @@ export const AssessmentSession: React.FC<AssessmentSessionProps> = ({
   };
 
   const handleSaveReflection = () => {
+    if (reflectionIncomplete) return;
     const updatedReflection = {
       outcomeVsPrediction: reflectionOutcome,
       worked: reflectionWorked,
@@ -233,7 +238,7 @@ export const AssessmentSession: React.FC<AssessmentSessionProps> = ({
                 <span className="text-xs font-semibold text-[#3F55F0] uppercase tracking-wider">
                   Sesi Penilaian Adaptiv # {session.id}
                 </span>
-                <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-[#16A34A]/10 text-[#16A34A]">
+                <span className="px-2 py-0.5 rounded-full text-xs font-bold bg-[#16A34A]/10 text-[#166534]">
                   {session.status.toUpperCase()}
                 </span>
               </div>
@@ -251,8 +256,8 @@ export const AssessmentSession: React.FC<AssessmentSessionProps> = ({
         </div>
 
         {/* 8-Phase Visual Flow Connected by Dynamic Curve Motif */}
-        <div className="mt-5 overflow-x-auto pb-2">
-          <div className="flex items-center min-w-[700px] justify-between">
+        <div className="mt-5 overflow-x-auto px-4 pt-3 pb-5">
+          <div className="flex items-start min-w-260 justify-between">
             {phasesList.map((p, idx) => {
               const isCurrent = session.currentPhase === p.phase;
               const isPassed = session.currentPhase > p.phase;
@@ -261,16 +266,16 @@ export const AssessmentSession: React.FC<AssessmentSessionProps> = ({
                   <button
                     onClick={() => onUpdateSession({ ...session, currentPhase: p.phase })}
                     disabled={p.phase > reached}
-                    className={`flex flex-col items-center gap-1.5 transition-all text-center focus:outline-hidden ${
+                    className={`flex flex-col items-center gap-2.5 transition-all text-center focus:outline-hidden ${
                       isCurrent
                         ? 'scale-105 font-bold text-[#3F55F0]'
                         : isPassed
-                        ? 'text-[#16A34A] hover:text-[#0F1B4A]'
+                        ? 'text-[#15803D] hover:text-[#0F1B4A]'
                         : 'text-[#5B6585] opacity-60'
                     } disabled:cursor-not-allowed`}
                   >
                     <div
-                      className={`w-9 h-9 rounded-xl flex items-center justify-center text-xs font-bold transition-all ${
+                      className={`w-12 h-12 rounded-2xl flex items-center justify-center text-sm font-bold transition-all ${
                         isCurrent
                           ? 'bg-[#3F55F0] text-white shadow-md shadow-[#3F55F0]/30 ring-4 ring-[#4A8BFF]/20'
                           : isPassed
@@ -278,12 +283,12 @@ export const AssessmentSession: React.FC<AssessmentSessionProps> = ({
                           : 'bg-[#F6F8FF] text-[#5B6585] border border-[#E3E8F8]'
                       }`}
                     >
-                      {isPassed ? <CheckCircle2 className="w-4 h-4" /> : p.phase}
+                      {isPassed ? <CheckCircle2 className="w-5 h-5" /> : p.phase}
                     </div>
-                    <span className="text-[11px] whitespace-nowrap">{p.label}</span>
+                    <span className="text-xs whitespace-nowrap">{p.label}</span>
                   </button>
                   {idx < phasesList.length - 1 && (
-                    <div className="flex-1 mx-2 h-0.5 bg-[#E3E8F8] relative">
+                    <div className="flex-1 min-w-8 mx-3 mt-[22px] h-1 rounded-full bg-[#E3E8F8] relative overflow-hidden">
                       <div
                         className="h-full bg-gradient-to-r from-[#3F55F0] to-[#4A8BFF] transition-all duration-300"
                         style={{
@@ -352,7 +357,7 @@ export const AssessmentSession: React.FC<AssessmentSessionProps> = ({
                 </h4>
                 <div className="flex flex-wrap gap-1.5">
                   {session.baseTask.materials.map((m, i) => (
-                    <span key={i} className="px-2.5 py-1 rounded-lg bg-white border border-[#E3E8F8] text-[11px] text-[#0F1B4A]">
+                    <span key={i} className="px-2.5 py-1 rounded-lg bg-white border border-[#E3E8F8] text-xs text-[#0F1B4A]">
                       {m}
                     </span>
                   ))}
@@ -365,7 +370,7 @@ export const AssessmentSession: React.FC<AssessmentSessionProps> = ({
                 </h4>
                 <div className="flex flex-wrap gap-1.5">
                   {session.baseTask.tools.map((t, i) => (
-                    <span key={i} className="px-2.5 py-1 rounded-lg bg-white border border-[#E3E8F8] text-[11px] text-[#3F55F0] font-medium">
+                    <span key={i} className="px-2.5 py-1 rounded-lg bg-white border border-[#E3E8F8] text-xs text-[#3F55F0] font-medium">
                       {t}
                     </span>
                   ))}
@@ -391,7 +396,7 @@ export const AssessmentSession: React.FC<AssessmentSessionProps> = ({
         <div className="p-6 sm:p-8 rounded-3xl bg-white border border-[#E3E8F8] shadow-xs space-y-6">
           <div className="flex items-start justify-between">
             <div>
-              <span className="px-3 py-1 rounded-full text-xs font-semibold bg-[#16A34A]/10 text-[#16A34A]">
+              <span className="px-3 py-1 rounded-full text-xs font-semibold bg-[#16A34A]/10 text-[#166534]">
                 Fase 1: Pengerjaan Tugas Dasar
               </span>
               <h2 className="text-xl font-bold text-[#0F1B4A] mt-2">
@@ -411,10 +416,10 @@ export const AssessmentSession: React.FC<AssessmentSessionProps> = ({
           <div className="p-5 rounded-2xl border border-[#E3E8F8] bg-[#F6F8FF] space-y-3">
             <div className="flex items-center justify-between">
               <span className="text-xs font-bold text-[#0F1B4A] uppercase tracking-wider flex items-center gap-2">
-                <FileCheck className="w-4 h-4 text-[#16A34A]" />
+                <FileCheck className="w-4 h-4 text-[#15803D]" />
                 Bukti Pengerjaan Tugas Dasar Terverifikasi
               </span>
-              <span className="text-[11px] text-[#16A34A] font-semibold bg-[#16A34A]/10 px-2 py-0.5 rounded-md">
+              <span className="text-xs text-[#166534] font-semibold bg-[#16A34A]/10 px-2 py-0.5 rounded-md">
                 Baseline Lulus (Skor 3.5 / 4.0)
               </span>
             </div>
@@ -430,8 +435,8 @@ export const AssessmentSession: React.FC<AssessmentSessionProps> = ({
                   />
                   <div className="flex-1 min-w-0">
                     <h5 className="text-xs font-bold text-[#0F1B4A] truncate">{ev.title}</h5>
-                    <p className="text-[11px] text-[#5B6585] line-clamp-1">{ev.note}</p>
-                    <div className="text-[10px] text-[#3F55F0] font-mono mt-0.5">
+                    <p className="text-xs text-[#5B6585] line-clamp-1">{ev.note}</p>
+                    <div className="text-xs text-[#3F55F0] font-mono mt-0.5">
                       V: 221.4V | Isolasi: &gt;100 MΩ
                     </div>
                   </div>
@@ -441,7 +446,7 @@ export const AssessmentSession: React.FC<AssessmentSessionProps> = ({
           </div>
 
           <div className="p-4 rounded-2xl bg-amber-50 border border-amber-200 text-xs text-amber-900 flex items-center gap-3">
-            <Info className="w-5 h-5 text-amber-600 shrink-0" />
+            <Info className="w-5 h-5 text-amber-700 shrink-0" />
             <div>
               <strong>Garis Awal Tercapai:</strong> Peserta telah membuktikan mampu mengulang prosedur dasar dengan baik. Penilai kini dapat memicu <em>Perubahan Kondisi</em> untuk menguji adaptabilitas.
             </div>
@@ -509,15 +514,15 @@ export const AssessmentSession: React.FC<AssessmentSessionProps> = ({
 
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-3 border-t border-white/10 text-xs">
               <div className="p-3 rounded-xl bg-black/20">
-                <span className="text-blue-200 block text-[10px] uppercase font-bold">Kategori Variasi</span>
+                <span className="text-blue-200 block text-[11px] uppercase font-bold">Kategori Variasi</span>
                 <span className="font-semibold text-white capitalize">{session.variation.changeCategory}</span>
               </div>
               <div className="p-3 rounded-xl bg-black/20">
-                <span className="text-blue-200 block text-[10px] uppercase font-bold">Tingkat Kesulitan</span>
+                <span className="text-blue-200 block text-[11px] uppercase font-bold">Tingkat Kesulitan</span>
                 <span className="font-semibold text-white">Level {session.variation.difficulty} dari 5</span>
               </div>
               <div className="p-3 rounded-xl bg-black/20">
-                <span className="text-blue-200 block text-[10px] uppercase font-bold">Aturan Penilaian</span>
+                <span className="text-blue-200 block text-[11px] uppercase font-bold">Aturan Penilaian</span>
                 <span className="font-semibold text-white">Prediksi Wajib Terkunci Dahulu</span>
               </div>
             </div>
@@ -567,10 +572,10 @@ export const AssessmentSession: React.FC<AssessmentSessionProps> = ({
             
             {/* 1. Apa yang berubah */}
             <div>
-              <label className="block text-xs font-bold text-[#0F1B4A] uppercase tracking-wider mb-1.5">
+              <label htmlFor="as-field-0" className="block text-xs font-bold text-[#0F1B4A] uppercase tracking-wider mb-1.5">
                 1. Apa saja yang berubah dari konfigurasi awal?
               </label>
-              <textarea
+              <textarea id="as-field-0"
                 value={changeSummary}
                 onChange={(e) => setChangeSummary(e.target.value)}
                 rows={2}
@@ -581,11 +586,11 @@ export const AssessmentSession: React.FC<AssessmentSessionProps> = ({
 
             {/* 2. Risiko Terbesar */}
             <div>
-              <label className="block text-xs font-bold text-[#0F1B4A] uppercase tracking-wider mb-1.5">
+              <label htmlFor="as-field-1" className="block text-xs font-bold text-[#0F1B4A] uppercase tracking-wider mb-1.5">
                 2. Apa risiko bahaya / kegagalan teknis terbesar jika salah pasang?
               </label>
-              <input
-                type="text"
+              <textarea id="as-field-1"
+                rows={2}
                 value={mainRisk}
                 onChange={(e) => setMainRisk(e.target.value)}
                 className="w-full p-3.5 rounded-2xl border border-[#E3E8F8] bg-[#F6F8FF] text-xs text-[#0F1B4A] focus:bg-white focus:border-[#3F55F0] focus:ring-2 focus:ring-[#3F55F0]/20 transition-all"
@@ -595,10 +600,10 @@ export const AssessmentSession: React.FC<AssessmentSessionProps> = ({
 
             {/* 3. Rencana Penyesuaian */}
             <div>
-              <label className="block text-xs font-bold text-[#0F1B4A] uppercase tracking-wider mb-1.5">
+              <label htmlFor="as-field-2" className="block text-xs font-bold text-[#0F1B4A] uppercase tracking-wider mb-1.5">
                 3. Apa rencana langkah penyesuaianmu?
               </label>
-              <textarea
+              <textarea id="as-field-2"
                 value={plan}
                 onChange={(e) => setPlan(e.target.value)}
                 rows={3}
@@ -610,40 +615,48 @@ export const AssessmentSession: React.FC<AssessmentSessionProps> = ({
             {/* 4. Tingkat Keyakinan (Kalibrasi Diri) */}
             <div className="p-4 rounded-2xl bg-[#F6F8FF] border border-[#E3E8F8] space-y-2">
               <div className="flex items-center justify-between">
-                <label className="text-xs font-bold text-[#0F1B4A] uppercase tracking-wider">
+                <label id="lbl-keyakinan" className="text-xs font-bold text-[#0F1B4A] uppercase tracking-wider">
                   4. Seberapa yakin kamu dengan rencanamu? (Untuk mengukur Kalibrasi Diri)
                 </label>
                 <span className="text-xs font-extrabold text-[#3F55F0] bg-white px-2.5 py-0.5 rounded-lg border border-[#E3E8F8]">
                   Skala {confidence} / 5
                 </span>
               </div>
-              <div className="grid grid-cols-5 gap-2">
+              <div role="group" aria-labelledby="lbl-keyakinan" className="grid grid-cols-5 gap-2">
                 {[1, 2, 3, 4, 5].map((level) => (
                   <button
                     key={level}
                     type="button"
                     onClick={() => setConfidence(level)}
+                    aria-pressed={confidence === level}
                     className={`py-2 rounded-xl text-xs font-bold transition-all ${
                       confidence === level
                         ? 'bg-[#3F55F0] text-white shadow-sm'
                         : 'bg-white text-[#5B6585] border border-[#E3E8F8] hover:border-[#3F55F0]'
                     }`}
                   >
-                    {level === 1 ? '1 - Ragu' : level === 5 ? '5 - Sangat Yakin' : level}
+                    {level}
                   </button>
                 ))}
+              </div>
+              <div className="flex justify-between text-xs text-[#5B6585]" aria-hidden>
+                <span>1 = Ragu</span>
+                <span>5 = Sangat yakin</span>
               </div>
             </div>
 
           </div>
 
-          <div className="flex items-center justify-between pt-4 border-t border-[#E3E8F8]">
-            <span className="text-xs text-[#5B6585]">
-              Setelah dikirim, jawaban tidak dapat disunting kembali.
+          <div className="flex flex-col-reverse sm:flex-row sm:items-center justify-between gap-3 pt-4 border-t border-[#E3E8F8]">
+            <span className={`text-xs ${predictionIncomplete ? 'font-semibold text-[#DC2626]' : 'text-[#5B6585]'}`} role={predictionIncomplete ? 'alert' : undefined}>
+              {predictionIncomplete
+                ? 'Lengkapi semua isian prediksi sebelum mengunci.'
+                : 'Setelah dikirim, jawaban tidak dapat disunting kembali.'}
             </span>
             <button
               onClick={handleLockPrediction}
-              className="inline-flex items-center gap-2 px-6 py-3 rounded-2xl bg-[#3F55F0] hover:bg-[#2A38B8] text-white text-sm font-semibold transition-all shadow-md shadow-[#3F55F0]/20"
+              disabled={predictionIncomplete}
+              className="inline-flex items-center justify-center gap-2 whitespace-nowrap px-6 py-3 rounded-2xl bg-[#3F55F0] hover:bg-[#2A38B8] disabled:opacity-50 disabled:hover:bg-[#3F55F0] text-white text-sm font-semibold transition-all shadow-md shadow-[#3F55F0]/20"
             >
               <Lock className="w-4 h-4" />
               Kunci &amp; Kirim Prediksi
@@ -699,7 +712,7 @@ export const AssessmentSession: React.FC<AssessmentSessionProps> = ({
                       <span className="text-xs font-bold text-[#0F1B4A]">
                         {hint.levelTitle}
                       </span>
-                      <span className="text-[10px] font-semibold px-2 py-0.5 rounded-md bg-white border border-[#E3E8F8] text-[#DC2626]">
+                      <span className="text-xs font-semibold px-2 py-0.5 rounded-md bg-white border border-[#E3E8F8] text-[#DC2626]">
                         -{hint.penalty} Kemandirian
                       </span>
                     </div>
@@ -710,7 +723,7 @@ export const AssessmentSession: React.FC<AssessmentSessionProps> = ({
                       </p>
                     ) : (
                       <div className="space-y-2 pt-1">
-                        <p className="text-[11px] text-[#5B6585]">
+                        <p className="text-xs text-[#5B6585]">
                           Terkunci. Buka jika Anda membutuhkan panduan teknis.
                         </p>
                         <button
@@ -751,7 +764,7 @@ export const AssessmentSession: React.FC<AssessmentSessionProps> = ({
                   <div className="text-xs font-bold text-[#0F1B4A] truncate">
                     Hasil Modifikasi Saklar Tukar 2 Titik
                   </div>
-                  <div className="text-[11px] text-[#5B6585]">
+                  <div className="text-xs text-[#5B6585]">
                     Pengujian kontinuitas 0.02 Ω lulus
                   </div>
                 </div>
@@ -760,7 +773,7 @@ export const AssessmentSession: React.FC<AssessmentSessionProps> = ({
               <div className="border-2 border-dashed border-[#E3E8F8] rounded-xl p-4 flex flex-col items-center justify-center text-center hover:bg-white transition-colors cursor-pointer">
                 <Upload className="w-5 h-5 text-[#5B6585] mb-1" />
                 <span className="text-xs font-semibold text-[#3F55F0]">Unggah Foto/Video Tambahan</span>
-                <span className="text-[10px] text-[#5B6585]">Maks 100MB (Kompresi otomatis)</span>
+                <span className="text-xs text-[#5B6585]">Maks 100MB (Kompresi otomatis)</span>
               </div>
             </div>
           </div>
@@ -799,10 +812,10 @@ export const AssessmentSession: React.FC<AssessmentSessionProps> = ({
 
           <div className="space-y-4">
             <div>
-              <label className="block text-xs font-bold text-[#0F1B4A] uppercase tracking-wider mb-1.5">
+              <label htmlFor="as-field-3" className="block text-xs font-bold text-[#0F1B4A] uppercase tracking-wider mb-1.5">
                 1. Bagaimana hasil nyata pengujian dibandingkan dengan prediksimu awal?
               </label>
-              <textarea
+              <textarea id="as-field-3"
                 value={reflectionOutcome}
                 onChange={(e) => setReflectionOutcome(e.target.value)}
                 rows={2}
@@ -811,10 +824,10 @@ export const AssessmentSession: React.FC<AssessmentSessionProps> = ({
             </div>
 
             <div>
-              <label className="block text-xs font-bold text-[#0F1B4A] uppercase tracking-wider mb-1.5">
+              <label htmlFor="as-field-4" className="block text-xs font-bold text-[#0F1B4A] uppercase tracking-wider mb-1.5">
                 2. Apa bagian rencana yang berjalan sukses?
               </label>
-              <input
+              <input id="as-field-4"
                 type="text"
                 value={reflectionWorked}
                 onChange={(e) => setReflectionWorked(e.target.value)}
@@ -823,10 +836,10 @@ export const AssessmentSession: React.FC<AssessmentSessionProps> = ({
             </div>
 
             <div>
-              <label className="block text-xs font-bold text-[#0F1B4A] uppercase tracking-wider mb-1.5">
+              <label htmlFor="as-field-5" className="block text-xs font-bold text-[#0F1B4A] uppercase tracking-wider mb-1.5">
                 3. Apa bagian yang meleset atau tak terduga saat praktik?
               </label>
-              <input
+              <input id="as-field-5"
                 type="text"
                 value={reflectionMissed}
                 onChange={(e) => setReflectionMissed(e.target.value)}
@@ -835,10 +848,10 @@ export const AssessmentSession: React.FC<AssessmentSessionProps> = ({
             </div>
 
             <div>
-              <label className="block text-xs font-bold text-[#0F1B4A] uppercase tracking-wider mb-1.5">
+              <label htmlFor="as-field-6" className="block text-xs font-bold text-[#0F1B4A] uppercase tracking-wider mb-1.5">
                 4. Apa yang akan kamu lakukan berbeda jika menghadapi situasi serupa di proyek berikutnya?
               </label>
-              <textarea
+              <textarea id="as-field-6"
                 value={reflectionNextTime}
                 onChange={(e) => setReflectionNextTime(e.target.value)}
                 rows={2}
@@ -847,10 +860,16 @@ export const AssessmentSession: React.FC<AssessmentSessionProps> = ({
             </div>
           </div>
 
-          <div className="flex justify-end pt-4 border-t border-[#E3E8F8]">
+          <div className="flex flex-col-reverse sm:flex-row sm:items-center sm:justify-end gap-3 sm:gap-4 pt-4 border-t border-[#E3E8F8]">
+            {reflectionIncomplete && (
+              <span role="alert" className="text-xs font-semibold text-[#DC2626]">
+                Lengkapi semua isian refleksi terlebih dahulu.
+              </span>
+            )}
             <button
               onClick={handleSaveReflection}
-              className="inline-flex items-center gap-2 px-6 py-3 rounded-2xl bg-[#3F55F0] hover:bg-[#2A38B8] text-white text-sm font-semibold transition-all shadow-md shadow-[#3F55F0]/20"
+              disabled={reflectionIncomplete}
+              className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-2xl bg-[#3F55F0] hover:bg-[#2A38B8] disabled:opacity-50 disabled:hover:bg-[#3F55F0] text-white text-sm font-semibold transition-all shadow-md shadow-[#3F55F0]/20"
             >
               Simpan Refleksi &amp; Menuju Rubrik Penilai (Fase 6)
               <ArrowRight className="w-4 h-4" />
@@ -869,7 +888,7 @@ export const AssessmentSession: React.FC<AssessmentSessionProps> = ({
         <div className="p-6 sm:p-8 rounded-3xl bg-white border border-[#E3E8F8] shadow-xs space-y-6">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
-              <span className="px-3 py-1 rounded-full text-xs font-semibold bg-[#16A34A]/10 text-[#16A34A]">
+              <span className="px-3 py-1 rounded-full text-xs font-semibold bg-[#16A34A]/10 text-[#166534]">
                 Fase 6: Pengisian Rubrik &amp; Umpan Balik Penilai
               </span>
               <h2 className="text-xl font-bold text-[#0F1B4A] mt-2">
@@ -882,7 +901,7 @@ export const AssessmentSession: React.FC<AssessmentSessionProps> = ({
 
             {/* Realtime Live Calculated Adaptation Index Badge */}
             <div className="p-4 rounded-2xl bg-gradient-to-br from-[#3F55F0] to-[#2A38B8] text-white text-center shadow-lg">
-              <span className="text-[10px] uppercase font-bold tracking-wider text-blue-200">
+              <span className="text-[11px] uppercase font-bold tracking-wider text-blue-200">
                 Indeks Adaptasi (IA)
               </span>
               <div className="text-2xl font-black font-mono">
@@ -942,10 +961,10 @@ export const AssessmentSession: React.FC<AssessmentSessionProps> = ({
                     {/* Rationale if 0 or 4 */}
                     {(scoreVal === 0 || scoreVal === 4) && (
                       <div className="pt-2">
-                        <label className="block text-[11px] font-bold text-[#DC2626] uppercase mb-1">
+                        <label htmlFor={`rationale-${idx}`} className="block text-[11px] font-bold text-[#DC2626] uppercase mb-1">
                           Alasan Tertulis Wajib (Skor {scoreVal}):
                         </label>
-                        <input
+                        <input id={`rationale-${idx}`}
                           type="text"
                           value={currentScoreObj?.rationale ?? ''}
                           onChange={(e) => handleRationaleChange(idx, e.target.value)}
@@ -962,7 +981,7 @@ export const AssessmentSession: React.FC<AssessmentSessionProps> = ({
 
             {/* Right Column: Sticky Live Radar Scorecard (4 cols) */}
             <div className="lg:col-span-4 sticky top-24 p-5 rounded-2xl bg-white border border-[#E3E8F8] shadow-sm space-y-4 text-center">
-              <span className="text-[10px] font-bold uppercase tracking-wider text-[#5B6585] block">
+              <span className="text-[11px] font-bold uppercase tracking-wider text-[#5B6585] block">
                 Visualisasi Live Radar Sesi
               </span>
 
@@ -1008,7 +1027,7 @@ export const AssessmentSession: React.FC<AssessmentSessionProps> = ({
               </div>
 
               <div className="p-3 bg-[#F6F8FF] rounded-xl border border-[#E3E8F8] text-xs">
-                <div className="text-[10px] font-semibold text-[#5B6585]">Prediksi Tingkat:</div>
+                <div className="text-xs font-semibold text-[#5B6585]">Prediksi Tingkat:</div>
                 <div className="font-bold text-[#3F55F0]">
                   {calculateAdaptationIndex(currentScores) >= 80 ? 'Mahir Beradaptasi' : calculateAdaptationIndex(currentScores) >= 60 ? 'Cakap Beradaptasi' : 'Berkembang'}
                 </div>
@@ -1023,7 +1042,7 @@ export const AssessmentSession: React.FC<AssessmentSessionProps> = ({
                 <span>Terbitkan Paspor (Fase 7)</span>
               </button>
               {missingRationale > 0 && (
-                <p role="alert" className="text-[11px] font-semibold text-[#DC2626]">
+                <p role="alert" className="text-xs font-semibold text-[#DC2626]">
                   Isi alasan tertulis untuk {missingRationale} dimensi bernilai 0 atau 4.
                 </p>
               )}
@@ -1076,7 +1095,7 @@ export const AssessmentSession: React.FC<AssessmentSessionProps> = ({
               <span className="text-2xl font-black text-white font-mono">
                 {session.result?.adaptationIndex || 82.5}
               </span>
-              <span className="text-[10px] text-emerald-300 block font-semibold mt-0.5">
+              <span className="text-xs text-emerald-300 block font-semibold mt-0.5">
                 {session.result?.level || 'Mahir Beradaptasi'}
               </span>
             </div>
@@ -1085,7 +1104,7 @@ export const AssessmentSession: React.FC<AssessmentSessionProps> = ({
               <span className="text-2xl font-black text-white font-mono">
                 {session.result?.transferGap || 0.3}
               </span>
-              <span className="text-[10px] text-blue-200 block mt-0.5">
+              <span className="text-xs text-blue-200 block mt-0.5">
                 Tahan terhadap variasi
               </span>
             </div>
@@ -1094,7 +1113,7 @@ export const AssessmentSession: React.FC<AssessmentSessionProps> = ({
               <span className="text-2xl font-black text-white font-mono">
                 {session.result?.calibration || 0.2}
               </span>
-              <span className="text-[10px] text-blue-200 block mt-0.5">
+              <span className="text-xs text-blue-200 block mt-0.5">
                 Akurasi prediksi seimbang
               </span>
             </div>
@@ -1103,7 +1122,7 @@ export const AssessmentSession: React.FC<AssessmentSessionProps> = ({
               <span className="text-sm font-bold text-amber-300 block capitalize mt-1 truncate">
                 {session.result?.weakestCategory || 'Beban / Daya Tinggi'}
               </span>
-              <span className="text-[10px] text-blue-200 block mt-0.5">
+              <span className="text-xs text-blue-200 block mt-0.5">
                 Area target pelatihan
               </span>
             </div>
@@ -1117,7 +1136,7 @@ export const AssessmentSession: React.FC<AssessmentSessionProps> = ({
       {activeHintModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#0F1B4A]/60 backdrop-blur-xs animate-in fade-in">
           <div className="w-full max-w-md p-6 bg-white rounded-3xl shadow-2xl border border-[#E3E8F8] space-y-4">
-            <div className="w-12 h-12 rounded-2xl bg-amber-100 text-amber-600 flex items-center justify-center">
+            <div className="w-12 h-12 rounded-2xl bg-amber-100 text-amber-700 flex items-center justify-center">
               <AlertTriangle className="w-6 h-6" />
             </div>
             <div>

@@ -48,9 +48,9 @@ export const IndustryPortal: React.FC<{ onSelectPassport: (candidateId: string) 
         </div>
 
         <div className="p-4 rounded-2xl bg-white/10 backdrop-blur-md text-center">
-          <span className="text-[10px] uppercase font-bold text-blue-200">Kandidat Teruji Siap Kerja</span>
-          <div className="text-2xl font-black font-mono">18 Siswa</div>
-          <span className="text-[10px] text-emerald-300">Izin Akses PDP Aktif</span>
+          <span className="text-[11px] uppercase font-bold text-blue-200">Kandidat Teruji Siap Kerja</span>
+          <div className="text-2xl font-black font-mono">{candidates.length} Siswa</div>
+          <span className="text-xs text-emerald-300">Izin Akses PDP Aktif</span>
         </div>
       </div>
 
@@ -68,6 +68,7 @@ export const IndustryPortal: React.FC<{ onSelectPassport: (candidateId: string) 
                 <button
                   key={lvl}
                   onClick={() => setFilterLevel(lvl)}
+                  aria-pressed={filterLevel === lvl}
                   className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition-all ${
                     filterLevel === lvl
                       ? 'bg-[#3F55F0] text-white shadow-xs'
@@ -89,14 +90,14 @@ export const IndustryPortal: React.FC<{ onSelectPassport: (candidateId: string) 
                 <div className="space-y-1">
                   <div className="flex items-center gap-2">
                     <h3 className="text-base font-bold text-[#0F1B4A]">{c.name}</h3>
-                    <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-[#3F55F0]/10 text-[#3F55F0]">
+                    <span className="px-2 py-0.5 rounded-full text-xs font-bold bg-[#3F55F0]/10 text-[#3F55F0]">
                       {c.level}
                     </span>
                   </div>
                   <div className="text-xs text-[#5B6585]">
                     {c.school} • {c.major}
                   </div>
-                  <div className="text-[11px] text-amber-700 font-medium">
+                  <div className="text-xs text-amber-700 font-medium">
                     Batas Performa Terdeteksi: <span className="font-semibold">{c.weakest}</span>
                   </div>
                 </div>
@@ -135,10 +136,11 @@ export const IndustryPortal: React.FC<{ onSelectPassport: (candidateId: string) 
 
           <form onSubmit={handleSubmitRequest} className="space-y-3">
             <div>
-              <label className="block text-[11px] font-bold text-[#0F1B4A] uppercase mb-1">
+              <label htmlFor="variasi-industri" className="block text-[11px] font-bold text-[#0F1B4A] uppercase mb-1">
                 Deskripsi Situasi / Perubahan Nyata:
               </label>
               <textarea
+                id="variasi-industri"
                 value={variationDescription}
                 onChange={(e) => setVariationDescription(e.target.value)}
                 rows={4}
@@ -157,8 +159,8 @@ export const IndustryPortal: React.FC<{ onSelectPassport: (candidateId: string) 
             </button>
 
             {submittedRequest && (
-              <div className="p-2.5 rounded-xl bg-emerald-50 border border-emerald-200 text-xs text-emerald-800 flex items-center gap-2">
-                <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+              <div role="status" className="p-2.5 rounded-xl bg-emerald-50 border border-emerald-200 text-xs text-emerald-800 flex items-center gap-2">
+                <CheckCircle2 className="w-4 h-4 text-emerald-700 shrink-0" />
                 Permintaan berhasil dikirim ke Kurikulum SMK Negeri 2!
               </div>
             )}
@@ -171,7 +173,7 @@ export const IndustryPortal: React.FC<{ onSelectPassport: (candidateId: string) 
                 {requests.map((r, i) => (
                   <li key={i} className="p-3 rounded-xl bg-[#F6F8FF] border border-[#E3E8F8] text-xs text-[#3B4670] leading-relaxed">
                     {r.text}
-                    <span className="block mt-1.5 text-[10px] text-[#5B6585]">{r.at} · Menunggu tinjauan Kurikulum</span>
+                    <span className="block mt-1.5 text-xs text-[#5B6585]">{r.at} · Menunggu tinjauan Kurikulum</span>
                   </li>
                 ))}
               </ul>
