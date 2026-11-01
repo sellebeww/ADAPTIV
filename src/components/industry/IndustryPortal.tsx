@@ -4,7 +4,7 @@
  */
 
 import React, { useState } from 'react';
-import { Building2, Search, Filter, CheckCircle2, Send, Star, ExternalLink, ShieldCheck } from 'lucide-react';
+import { Building2, Filter, CheckCircle2, Send, ExternalLink } from 'lucide-react';
 import { SEED_CANDIDATES } from '../../data/seedData';
 
 export const IndustryPortal: React.FC<{ onSelectPassport: (candidateId: string) => void }> = ({ onSelectPassport }) => {

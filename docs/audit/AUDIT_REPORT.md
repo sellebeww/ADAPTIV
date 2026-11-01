@@ -15,4 +15,3 @@
 
 **Tidak dilakukan:** audit dependensi, uji responsif/kontras, refactor file besar (AssessmentSession 1083 baris), red-team pass penuh.
 
-**Pembatalan:** lihat ROLLBACK.md.

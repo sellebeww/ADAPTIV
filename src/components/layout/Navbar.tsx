@@ -7,33 +7,24 @@ import React, { useState, useRef, useEffect } from 'react';
 import { UserRole } from '../../types/adaptiv';
 import { Logo } from '../brand/Logo';
 import { LandingNav } from './LandingNav';
-import { 
-  Palette, 
-  UserCheck, 
-  GraduationCap, 
-  Building2, 
-  ShieldCheck, 
+import {
+  Palette,
+  UserCheck,
+  GraduationCap,
+  Building2,
+  ShieldCheck,
   SlidersHorizontal,
-  FileBadge2,
   ChevronDown,
   ChevronRight,
   ArrowLeft,
   ArrowRight,
   Zap,
-  Sparkles,
   Layers,
-  Compass,
-  CheckCircle2,
-  BookOpen,
   Award,
-  AlertTriangle,
-  RotateCcw,
   BarChart3,
-  Cpu,
-  HelpCircle,
   FileCheck2,
   Menu,
-  X
+  X,
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 

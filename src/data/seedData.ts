@@ -4,7 +4,7 @@
  */
 
 import { AbilityPassport, AdaptationLevel, AssessmentSession, BaseTask, Competency, HistoricalSessionRecord, TaskVariation, User } from '../types/adaptiv';
-import { computeSessionResult, RUBRIC_DIMENSIONS } from '../utils/scoring';
+import { computeSessionResult } from '../utils/scoring';
 
 export const CURRENT_INSTITUTION = {
   id: 'inst-smk-01',

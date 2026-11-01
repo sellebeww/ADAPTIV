@@ -4,8 +4,7 @@
  */
 
 import React, { useState } from 'react';
-import { motion, AnimatePresence } from 'motion/react';
-import { Zap, CheckCircle2, AlertTriangle, ArrowRight, Info, ShieldCheck, Power } from 'lucide-react';
+import { Zap, Info, Power } from 'lucide-react';
 
 interface CircuitVisualizerProps {
   mode?: 'interactive' | 'compact';

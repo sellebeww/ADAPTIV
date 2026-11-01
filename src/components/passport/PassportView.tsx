@@ -9,22 +9,17 @@ import { verifyUrl } from '../../utils/passports';
 import { AbilityPassport, HistoricalSessionRecord } from '../../types/adaptiv';
 import { Logo } from '../brand/Logo';
 import { SkillTrendChart } from './SkillTrendChart';
-import { 
-  QrCode, 
-  Download, 
-  Share2, 
-  ExternalLink, 
-  ShieldCheck, 
-  Award, 
-  Sparkles, 
-  CheckCircle2, 
-  XCircle, 
-  Printer, 
-  Copy,
-  Clock,
+import {
+  QrCode,
+  Share2,
+  ExternalLink,
+  ShieldCheck,
+  Award,
+  Sparkles,
+  CheckCircle2,
+  Printer,
   Layers,
-  FileCheck,
-  ArrowLeft
+  ArrowLeft,
 } from 'lucide-react';
 
 interface PassportViewProps {

@@ -14,21 +14,13 @@ import {
   CartesianGrid,
   Tooltip,
   Legend,
-  ReferenceLine
+  ReferenceLine,
 } from 'recharts';
 import { HistoricalSessionRecord } from '../../types/adaptiv';
-import { 
-  TrendingUp, 
-  Calendar, 
-  Award, 
-  ArrowUpRight, 
-  Sparkles, 
-  SlidersHorizontal, 
-  Layers, 
-  CheckCircle2, 
-  Info,
-  Clock,
-  History
+import {
+  TrendingUp,
+  ArrowUpRight,
+  History,
 } from 'lucide-react';
 
 interface SkillTrendChartProps {

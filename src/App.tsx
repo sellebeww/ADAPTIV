@@ -3,14 +3,14 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { UserRole, AssessmentSession as SessionType, AbilityPassport } from './types/adaptiv';
-import { 
-  INITIAL_COMPLETED_SESSION, 
-  INITIAL_ABILITY_PASSPORT, 
+import {
+  INITIAL_COMPLETED_SESSION,
+  INITIAL_ABILITY_PASSPORT,
   CURRENT_INSTITUTION,
-  SEED_CANDIDATES
+  SEED_CANDIDATES,
 } from './data/seedData';
 import { findPassportByCode, passportForCandidate } from './utils/passports';
 import { VerificationView } from './components/passport/VerificationView';
@@ -23,17 +23,11 @@ import { TaskLibrary } from './components/library/TaskLibrary';
 import { IndustryPortal } from './components/industry/IndustryPortal';
 import { InstitutionDashboard } from './components/admin/InstitutionDashboard';
 import { Logo } from './components/brand/Logo';
-import { 
-  Palette, 
-  Sparkles, 
-  Download, 
+import {
+  Palette,
+  Sparkles,
+  Download,
   ArrowLeft,
-  GraduationCap,
-  FileBadge2,
-  BookOpen,
-  Building2,
-  ShieldCheck,
-  Zap
 } from 'lucide-react';
 
 export default function App() {

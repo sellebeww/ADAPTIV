@@ -6,18 +6,12 @@
 import React, { useState } from 'react';
 import { downloadText, toCsv, escapeHtml } from '../../utils/download';
 import { CURRENT_INSTITUTION } from '../../data/seedData';
-import { 
-  BarChart3, 
-  Users, 
-  FileSpreadsheet, 
-  TrendingUp, 
-  AlertTriangle, 
-  CheckCircle2, 
-  ShieldCheck, 
+import {
+  BarChart3,
+  FileSpreadsheet,
+  AlertTriangle,
   Download,
-  Percent,
-  Sliders,
-  Check
+  Check,
 } from 'lucide-react';
 
 const DISTRIBUTION = [

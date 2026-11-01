@@ -50,20 +50,6 @@
   background: #94A3B8;
 }
 
-/* Dynamic Curved Arrow Pulse / Flow Animations */
-@keyframes arrowFloat {
-  0%, 100% {
-    transform: translateY(0px) rotate(0deg);
-  }
-  50% {
-    transform: translateY(-4px) rotate(2deg);
-  }
-}
-
-.animate-arrow-float {
-  animation: arrowFloat 3s ease-in-out infinite;
-}
-
 /* Subtle checkerboard pattern for transparent asset preview */
 .bg-transparency-grid {
   background-color: #ffffff;

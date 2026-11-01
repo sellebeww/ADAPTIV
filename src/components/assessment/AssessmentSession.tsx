@@ -4,35 +4,29 @@
  */
 
 import React, { useState } from 'react';
-import { 
-  AssessmentPhase, 
-  AssessmentSession as SessionType, 
+import {
+  AssessmentPhase,
+  AssessmentSession as SessionType,
   UserRole,
-  RubricDimensionScore 
+  RubricDimensionScore,
 } from '../../types/adaptiv';
-import { 
-  computeSessionResult, 
+import {
+  computeSessionResult,
   RUBRIC_DIMENSIONS,
-  calculateAdaptationIndex 
+  calculateAdaptationIndex,
 } from '../../utils/scoring';
-import { 
-  CheckCircle2, 
-  AlertTriangle, 
-  ArrowRight, 
-  Sparkles, 
-  Lock, 
-  HelpCircle, 
-  Upload, 
-  FileCheck, 
-  RotateCcw, 
-  Clock, 
-  Lightbulb, 
-  ShieldCheck, 
-  Layers, 
-  ChevronRight,
-  TrendingUp,
-  Zap,
-  Info
+import {
+  CheckCircle2,
+  AlertTriangle,
+  ArrowRight,
+  Sparkles,
+  Lock,
+  Upload,
+  FileCheck,
+  Clock,
+  Lightbulb,
+  ShieldCheck,
+  Info,
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 

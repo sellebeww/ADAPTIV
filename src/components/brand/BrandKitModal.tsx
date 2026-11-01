@@ -4,18 +4,17 @@
  */
 
 import React, { useState, useEffect } from 'react';
-import { 
-  X, 
-  Download, 
-  Check, 
-  Copy, 
-  Sparkles, 
-  Palette, 
-  Eye, 
-  Layers, 
-  ArrowUpRight, 
-  FileCheck2, 
-  ShieldCheck 
+import {
+  X,
+  Download,
+  Check,
+  Copy,
+  Sparkles,
+  Palette,
+  Eye,
+  Layers,
+  ArrowUpRight,
+  ShieldCheck,
 } from 'lucide-react';
 
 interface BrandKitModalProps {
