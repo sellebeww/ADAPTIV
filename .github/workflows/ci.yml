@@ -30,3 +30,21 @@ jobs:
       - run: npm run typecheck
       - run: npm test
       - run: npm run build
+
+  layout:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      TZ: UTC
+      CI: true
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - run: npx playwright install --with-deps chromium
+      # Gagal bila ada gulir horizontal pada lebar 320, 360, 390, dan 768 px.
+      - run: npm run check:layout
