@@ -207,7 +207,12 @@ export const PassportView: React.FC<PassportViewProps> = ({
             </h4>
             
             <div className="relative w-full max-w-[440px] aspect-[22/16]">
-              <svg viewBox="-70 -20 440 320" className="w-full h-full overflow-visible">
+              <svg
+                viewBox="-70 -20 440 320"
+                className="w-full h-full overflow-visible"
+                role="img"
+                aria-label={`Grafik radar lima dimensi adaptasi: ${dimensions.map((d) => `${d.label} ${d.score} dari ${d.maxScore}`).join(', ')}`}
+              >
                 {/* Background grid concentric pentagons */}
                 {[0.25, 0.5, 0.75, 1.0].map((level, lIdx) => {
                   const gridPoints = dimensions.map((_, i) => {

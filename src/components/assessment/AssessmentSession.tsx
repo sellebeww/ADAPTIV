@@ -14,6 +14,8 @@ import {
   computeSessionResult,
   RUBRIC_DIMENSIONS,
   calculateAdaptationIndex,
+  describeResult,
+  getAdaptationLevel,
 } from '../../utils/scoring';
 import {
   CheckCircle2,
@@ -223,6 +225,8 @@ export const AssessmentSession: React.FC<AssessmentSessionProps> = ({
     setFurthest(7);
   };
 
+  const shown = describeResult(session.result);
+
   return (
     <div className="space-y-6">
       
@@ -266,13 +270,14 @@ export const AssessmentSession: React.FC<AssessmentSessionProps> = ({
                   <button
                     onClick={() => onUpdateSession({ ...session, currentPhase: p.phase })}
                     disabled={p.phase > reached}
+                    aria-current={isCurrent ? 'step' : undefined}
                     className={`flex flex-col items-center gap-2.5 transition-all text-center focus:outline-hidden ${
                       isCurrent
                         ? 'scale-105 font-bold text-[#3F55F0]'
                         : isPassed
                         ? 'text-[#15803D] hover:text-[#0F1B4A]'
-                        : 'text-[#5B6585] opacity-60'
-                    } disabled:cursor-not-allowed`}
+                        : 'text-[#5B6585]'
+                    } disabled:opacity-60 disabled:cursor-not-allowed`}
                   >
                     <div
                       className={`w-12 h-12 rounded-2xl flex items-center justify-center text-sm font-bold transition-all ${
@@ -987,7 +992,12 @@ export const AssessmentSession: React.FC<AssessmentSessionProps> = ({
 
               {/* Dynamic SVG Radar */}
               <div className="w-44 h-44 mx-auto relative flex items-center justify-center">
-                <svg viewBox="0 0 160 160" className="w-full h-full overflow-visible">
+                <svg
+                  viewBox="0 0 160 160"
+                  className="w-full h-full overflow-visible"
+                  role="img"
+                  aria-label={`Radar skor rubrik: ${currentScores.map((c) => `${c.label} ${c.score} dari 4`).join(', ')}`}
+                >
                   {[0.25, 0.5, 0.75, 1.0].map((scale, sIdx) => {
                     const pts = [0, 1, 2, 3, 4].map(i => {
                       const angle = (Math.PI * 2 / 5) * i - Math.PI / 2;
@@ -1029,7 +1039,7 @@ export const AssessmentSession: React.FC<AssessmentSessionProps> = ({
               <div className="p-3 bg-[#F6F8FF] rounded-xl border border-[#E3E8F8] text-xs">
                 <div className="text-xs font-semibold text-[#5B6585]">Prediksi Tingkat:</div>
                 <div className="font-bold text-[#3F55F0]">
-                  {calculateAdaptationIndex(currentScores) >= 80 ? 'Mahir Beradaptasi' : calculateAdaptationIndex(currentScores) >= 60 ? 'Cakap Beradaptasi' : 'Berkembang'}
+                  {getAdaptationLevel(calculateAdaptationIndex(currentScores))}
                 </div>
               </div>
 
@@ -1093,16 +1103,16 @@ export const AssessmentSession: React.FC<AssessmentSessionProps> = ({
             <div className="p-4 rounded-2xl bg-white/10 backdrop-blur-md">
               <span className="text-xs text-blue-200 block">Indeks Adaptasi (IA)</span>
               <span className="text-2xl font-black text-white font-mono">
-                {session.result?.adaptationIndex || 82.5}
+                {shown.adaptationIndex}
               </span>
               <span className="text-xs text-emerald-300 block font-semibold mt-0.5">
-                {session.result?.level || 'Mahir Beradaptasi'}
+                {shown.level}
               </span>
             </div>
             <div className="p-4 rounded-2xl bg-white/10 backdrop-blur-md">
               <span className="text-xs text-blue-200 block">Selisih Transfer</span>
               <span className="text-2xl font-black text-white font-mono">
-                {session.result?.transferGap || 0.3}
+                {shown.transferGap}
               </span>
               <span className="text-xs text-blue-200 block mt-0.5">
                 Tahan terhadap variasi
@@ -1111,7 +1121,7 @@ export const AssessmentSession: React.FC<AssessmentSessionProps> = ({
             <div className="p-4 rounded-2xl bg-white/10 backdrop-blur-md">
               <span className="text-xs text-blue-200 block">Kalibrasi Diri</span>
               <span className="text-2xl font-black text-white font-mono">
-                {session.result?.calibration || 0.2}
+                {shown.calibration}
               </span>
               <span className="text-xs text-blue-200 block mt-0.5">
                 Akurasi prediksi seimbang
@@ -1120,7 +1130,7 @@ export const AssessmentSession: React.FC<AssessmentSessionProps> = ({
             <div className="p-4 rounded-2xl bg-white/10 backdrop-blur-md">
               <span className="text-xs text-blue-200 block">Batas Kemampuan Teridentifikasi</span>
               <span className="text-sm font-bold text-amber-300 block capitalize mt-1 truncate">
-                {session.result?.weakestCategory || 'Beban / Daya Tinggi'}
+                {shown.weakestCategory}
               </span>
               <span className="text-xs text-blue-200 block mt-0.5">
                 Area target pelatihan

@@ -61,9 +61,11 @@ export const LandingNav: React.FC<LandingNavProps> = ({ onEnterDemo }) => {
         scrolled ? 'bg-white/85 border-b border-[#E3E8F8] shadow-[0_6px_24px_-12px_rgba(63,85,240,0.25)]' : 'bg-transparent border-b border-transparent'
       }`}
     >
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-[72px] flex items-center justify-between gap-6">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-[72px] flex items-center justify-between gap-3 sm:gap-6">
         <a href="#beranda" onClick={go('beranda')} aria-label="Adaptiv — ke beranda" className="shrink-0">
-          <Logo variant="horizontal" transparent size="md" />
+          {/* Logo lebih kecil di ponsel supaya header muat di 360 px tanpa memotong konten */}
+          <span className="sm:hidden"><Logo variant="horizontal" transparent size="sm" /></span>
+          <span className="hidden sm:inline"><Logo variant="horizontal" transparent size="md" /></span>
         </a>
 
         <nav aria-label="Navigasi utama" className="hidden lg:flex items-center gap-1">
@@ -89,7 +91,7 @@ export const LandingNav: React.FC<LandingNavProps> = ({ onEnterDemo }) => {
           ))}
         </nav>
 
-        <div className="flex items-center gap-2.5">
+        <div className="flex items-center gap-2 sm:gap-2.5">
           <button
             onClick={() => onEnterDemo('sesi')}
             className="hidden sm:inline-flex px-5 py-2 rounded-full border border-[#2455F0]/60 text-[#2455F0] text-xs font-bold hover:bg-[#2455F0] hover:text-white transition-colors"
@@ -98,10 +100,10 @@ export const LandingNav: React.FC<LandingNavProps> = ({ onEnterDemo }) => {
           </button>
           <button
             onClick={() => onEnterDemo('sesi')}
-            className="group inline-flex items-center gap-1.5 whitespace-nowrap px-4 sm:px-5 py-2.5 rounded-full bg-[#2455F0] hover:bg-[#1E3FC4] text-white text-xs font-bold shadow-md shadow-[#2455F0]/25 transition-colors"
+            className="group inline-flex items-center gap-1.5 whitespace-nowrap px-3 sm:px-5 py-2.5 rounded-full bg-[#2455F0] hover:bg-[#1E3FC4] text-white text-xs font-bold shadow-md shadow-[#2455F0]/25 transition-colors"
           >
             Mulai Sekarang
-            <ArrowRight className="w-3.5 h-3.5 transition-transform group-hover:translate-x-0.5" />
+            <ArrowRight className="hidden sm:block w-3.5 h-3.5 transition-transform group-hover:translate-x-0.5" />
           </button>
           <button
             onClick={() => setOpen((o) => !o)}

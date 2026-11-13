@@ -58,14 +58,17 @@ Ganti peran langsung dari navbar untuk melihat sudut pandang **Siswa**, **Guru P
 
 ## Kualitas dan aksesibilitas
 
-- **Aksesibilitas:** 0 pelanggaran pada audit axe-core (WCAG 2.1 AA) di landing, sesi uji, paspor, pustaka, portal industri, dasbor lembaga, dan halaman verifikasi. Label form terhubung ke field, kontras warna memenuhi 4,5:1, modal memakai `role="dialog"`, dan menu peran bisa dipakai lewat keyboard maupun sentuh.
-- **Responsif:** tidak ada overflow horizontal di lebar 390, 768, dan 1440 px. Form penilaian menumpuk rapi di ponsel.
+- **Tes otomatis:** 37 tes untuk logika penilaian (`src/utils/scoring.ts`): bobot rubrik, Indeks Adaptasi, tingkat adaptasi, selisih transfer, kalibrasi, kasus tepi (tanpa jawaban, semua benar, semua salah), dan urutan acak dengan seed. CI menjalankan typecheck, tes, build, dan pemeriksaan layout.
+- **Aksesibilitas:** pemeriksaan otomatis axe-core (WCAG 2.1 A/AA) pada beranda, sesi uji, paspor, pustaka, portal industri, dasbor lembaga, dan verifikasi tidak menemukan pelanggaran. Grafik tren punya ringkasan teks dan tabel data, radar dan diagram sirkuit punya label teks, dan fokus keyboard terlihat. Deteksi otomatis tidak menggantikan uji dengan pembaca layar, yang belum dilakukan.
+- **Responsif:** tidak ada gulir horizontal pada halaman di lebar 320, 360, 390, dan 768 px (`npm run check:layout`).
 - **Validasi:** prediksi dan refleksi tidak bisa dikunci dalam keadaan kosong, dan isian spasi saja ditolak di form variasi tugas.
 - **Ukuran teks:** teks isi minimal 12 px, label huruf kapital minimal 11 px.
 
+Temuan audit dan keputusan yang belum diambil ada di [docs/AUDIT.md](docs/AUDIT.md).
+
 ## Menjalankan secara lokal
 
-Prasyarat: Node.js 20 atau lebih baru.
+Prasyarat: Node.js 22 (versi yang diuji di CI).
 
 ```bash
 npm install
@@ -75,9 +78,38 @@ npm run dev        # http://localhost:3000
 | Perintah | Fungsi |
 |---|---|
 | `npm run dev` | server pengembangan |
-| `npm run typecheck` | pemeriksaan tipe (`tsc --noEmit`) |
+| `npm run typecheck` | pemeriksaan tipe (`tsc --noEmit`, mode strict) |
+| `npm run lint` | saat ini alias `typecheck`; belum ada ESLint |
+| `npm test` | tes unit (Vitest), zona waktu dikunci UTC |
+| `npm run test:watch` | tes dalam mode watch |
 | `npm run build` | build produksi ke `dist/` |
 | `npm run preview` | pratinjau hasil build |
+| `npm run check:layout` | memeriksa tidak ada gulir horizontal di 320 sampai 768 px (butuh `npm run build` dan Chromium Playwright) |
+
+### Tes
+
+Tes ditulis deterministik: tanpa `Math.random` (pengacakan memakai PRNG ber-seed di `src/test/prng.ts`), waktu memakai fake timer, dan zona waktu dikunci UTC di `src/test/global-setup.ts`. `check:layout` memakai Chromium; jika belum ada, jalankan `npx playwright install chromium`.
+
+## Konsep penilaian
+
+Satu sesi mengikuti fase 0 sampai 7: persiapan, tugas dasar, perubahan kondisi, prediksi terkunci, penyesuaian dengan petunjuk bertingkat, evaluasi diri, penilaian rubrik, dan penerbitan paspor. Penilai memberi skor 0 sampai 4 pada lima dimensi, lalu:
+
+```
+IA = 100 x (0,20 P + 0,30 K + 0,25 H + 0,15 M + 0,10 E) / 4
+```
+
+P = prediksi, K = penyesuaian, H = hasil, M = kemandirian, E = evaluasi diri. Tingkat: IA < 40 Tergantung Prosedur, 40 sampai < 60 Berkembang, 60 sampai < 80 Cakap Beradaptasi, 80 ke atas Mahir Beradaptasi. Selisih transfer dan kalibrasi diri dihitung dari rata-rata skor; cara menghitungnya dan hal yang masih perlu diputuskan ada di [docs/AUDIT.md](docs/AUDIT.md).
+
+## Batasan dan validitas
+
+Adaptiv saat ini adalah prototipe demonstrasi, bukan instrumen yang sudah divalidasi.
+
+- Bobot rubrik, ambang tingkat, dan rumus IA adalah rancangan, belum diuji secara psikometrik (reliabilitas, validitas konstruk, atau norma). Tidak ada klaim bahwa IA memprediksi kinerja kerja.
+- Angka di dasbor lembaga (Kappa, korelasi kinerja lapangan, jumlah sesi, tingkat gagal per kategori) adalah data contoh yang ditulis langsung di kode, bukan hasil pengukuran.
+- "Verifikasi" paspor mencocokkan kode dengan data contoh di peramban. Belum ada tanda tangan digital, basis data, atau autentikasi, sehingga belum bisa dipercaya sebagai bukti kemampuan.
+- Skor rubrik diberikan manual oleh penilai; penalti petunjuk belum otomatis mengurangi skor Kemandirian, dan skor tugas dasar masih konstanta.
+
+## Data dan deployment
 
 Aplikasi ini SPA statis tanpa backend. Seluruh data contoh ada di [src/data/seedData.ts](src/data/seedData.ts) dan tidak ada variabel lingkungan yang wajib diisi.
 
@@ -93,9 +125,12 @@ src/
                 company, industry, layout, library, passport
   data/         data contoh (seed)
   types/        tipe TypeScript domain
-  utils/        logika skor, paspor, unduhan
+  utils/        logika skor (+ tes), paspor, unduhan
+  test/         pembantu tes (PRNG ber-seed, setup zona waktu)
+scripts/        check-layout.mjs (pemeriksa gulir horizontal)
+.github/        workflow CI
 public/         logo, ikon, dan foto
-docs/           dokumentasi, laporan audit, dan screenshot
+docs/           dokumentasi, AUDIT.md, laporan audit lama, dan screenshot
 ```
 
 ## Catatan
