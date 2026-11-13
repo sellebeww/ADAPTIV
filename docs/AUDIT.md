@@ -55,7 +55,7 @@ Belum diverifikasi: urutan fokus dan perilaku Escape pada menu peran dan modal, 
 
 ## 3. Tampilan 360 px
 
-Beranda bergulir horizontal di 360 px (scrollWidth 371) dan 320 px. Penyebab: lebar logo 141 + jarak 24 + aksi 186 + padding 32 = 383 px, lebih besar dari lebar layar. Diperbaiki di akarnya (logo lebih kecil di bawah `sm`, jarak dan padding tombol dikurangi), tanpa `overflow-x:hidden`. Halaman lain sudah lolos. `npm run check:layout` kini memeriksa 8 tampilan di 320/360/390/768 px dan berjalan di CI; sudah dibuktikan gagal pada kode lama.
+Beranda bergulir horizontal di 360 px (scrollWidth 371) dan 320 px. Penyebab: lebar logo 141 + jarak 24 + aksi 186 + padding 32 = 383 px, lebih besar dari lebar layar. Diperbaiki di akarnya (logo lebih kecil di bawah `sm`, jarak dan padding tombol dikurangi), tanpa `overflow-x:hidden`. Halaman lain sudah lolos. `npm run check:layout` kini memeriksa sekitar 19 tampilan di 9 lebar (320 sampai 1920 px) dan berjalan di CI; sudah dibuktikan gagal pada kode lama. Fase 7 (hasil akhir) belum tercakup karena tombol finalisasi rubrik belum terjangkau oleh skrip.
 
 Catatan: stepper 8 fase memakai wadah gulir horizontal sendiri (`min-w-260`) di dalam kartu. Itu gulir yang disengaja di dalam komponen, bukan gulir halaman.
 

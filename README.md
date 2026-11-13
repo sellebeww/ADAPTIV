@@ -60,7 +60,7 @@ Ganti peran langsung dari navbar untuk melihat sudut pandang **Siswa**, **Guru P
 
 - **Tes otomatis:** 37 tes untuk logika penilaian (`src/utils/scoring.ts`): bobot rubrik, Indeks Adaptasi, tingkat adaptasi, selisih transfer, kalibrasi, kasus tepi (tanpa jawaban, semua benar, semua salah), dan urutan acak dengan seed. CI menjalankan typecheck, tes, build, dan pemeriksaan layout.
 - **Aksesibilitas:** pemeriksaan otomatis axe-core (WCAG 2.1 A/AA) pada beranda, sesi uji, paspor, pustaka, portal industri, dasbor lembaga, dan verifikasi tidak menemukan pelanggaran. Grafik tren punya ringkasan teks dan tabel data, radar dan diagram sirkuit punya label teks, dan fokus keyboard terlihat. Deteksi otomatis tidak menggantikan uji dengan pembaca layar, yang belum dilakukan.
-- **Responsif:** tidak ada gulir horizontal pada halaman di lebar 320, 360, 390, dan 768 px (`npm run check:layout`).
+- **Responsif:** tidak ada gulir horizontal pada halaman di lebar 320, 360, 390, 480, 768, 1024, 1280, 1440, dan 1920 px, mencakup beranda, verifikasi, semua fase sesi yang bisa dibuka, menu, pustaka, paspor, portal industri, dasbor lembaga, dan modal Brand Kit (`npm run check:layout`).
 - **Validasi:** prediksi dan refleksi tidak bisa dikunci dalam keadaan kosong, dan isian spasi saja ditolak di form variasi tugas.
 - **Ukuran teks:** teks isi minimal 12 px, label huruf kapital minimal 11 px.
 
@@ -84,7 +84,7 @@ npm run dev        # http://localhost:3000
 | `npm run test:watch` | tes dalam mode watch |
 | `npm run build` | build produksi ke `dist/` |
 | `npm run preview` | pratinjau hasil build |
-| `npm run check:layout` | memeriksa tidak ada gulir horizontal di 320 sampai 768 px (butuh `npm run build` dan Chromium Playwright) |
+| `npm run check:layout` | memeriksa tidak ada gulir horizontal di 320 sampai 1920 px (butuh `npm run build` dan Chromium Playwright) |
 
 ### Tes
 

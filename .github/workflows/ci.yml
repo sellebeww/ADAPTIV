@@ -46,5 +46,5 @@ jobs:
       - run: npm ci
       - run: npm run build
       - run: npx playwright install --with-deps chromium
-      # Gagal bila ada gulir horizontal pada lebar 320, 360, 390, dan 768 px.
+      # Gagal bila ada gulir horizontal pada lebar 320 sampai 1920 px.
       - run: npm run check:layout
