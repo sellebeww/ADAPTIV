@@ -6,6 +6,46 @@
 import React, { useState } from 'react';
 import { Zap, Info, Power } from 'lucide-react';
 
+/** Kabel dengan warna aktif; saat dialiri arus, titik putih bergerak mengikuti arah arus. */
+const Wire: React.FC<{ d: string; on: boolean; color: string }> = ({ d, on, color }) => (
+  <g fill="none" strokeLinecap="round" strokeLinejoin="round">
+    <path d={d} stroke={on ? color : '#94A3B8'} strokeOpacity={on ? 1 : 0.6} strokeWidth={5} />
+    {on && <path d={d} stroke="#FFFFFF" strokeOpacity={0.9} strokeWidth={2.5} strokeDasharray="1 16" className="circuit-flow" />}
+  </g>
+);
+
+/** Titik terminal. */
+const Dot: React.FC<{ x: number; y: number }> = ({ x, y }) => (
+  <circle cx={x} cy={y} r={7} fill="#0F1B4A" stroke="#E2E8F0" strokeWidth={3} />
+);
+
+/** Saklar tukar (SPDT): terminal common di satu sisi, T-1 dan T-2 di sisi lain, tuas menunjuk posisi aktif. */
+const SpdtSwitch: React.FC<{ x: number; y: number; mirrored: boolean; title: string; on: boolean; powerOn: boolean }> = ({
+  x, y, mirrored, title, on, powerOn,
+}) => {
+  const w = 140;
+  const commonX = mirrored ? x + w : x;
+  const throwX = mirrored ? x : x + w;
+  const targetY = on ? y + 70 : y + 120; // T-1 (atas) atau T-2 (bawah)
+  return (
+    <g>
+      <rect x={x} y={y} width={w} height={160} rx={12} fill="#1E2888" stroke="#6D80FF" strokeWidth={3} />
+      <text x={x + w / 2} y={y + 25} fill="#FFFFFF" fontSize="16" fontWeight="800" textAnchor="middle">{title}</text>
+      <text x={x + w / 2} y={y + 44} fill="#93C5FD" fontSize="13" fontWeight="600" textAnchor="middle">Common [0]</text>
+      <line
+        x1={commonX} y1={y + 95} x2={throwX} y2={targetY}
+        stroke={powerOn ? '#FBBF24' : '#E2E8F0'} strokeWidth={6} strokeLinecap="round"
+      />
+      <Dot x={commonX} y={y + 95} />
+      <Dot x={throwX} y={y + 70} />
+      <Dot x={throwX} y={y + 120} />
+      <text x={x + w / 2} y={y + 150} fill="#FFFFFF" fontSize="14" fontWeight="700" textAnchor="middle">
+        Posisi: {on ? 'T-1 (Atas)' : 'T-2 (Bawah)'}
+      </text>
+    </g>
+  );
+};
+
 interface CircuitVisualizerProps {
   mode?: 'interactive' | 'compact';
   initialState?: 'base' | 'variation';
@@ -29,7 +69,7 @@ export const CircuitVisualizer: React.FC<CircuitVisualizerProps> = ({
   const circuitSummary =
     circuitType === 'base'
       ? `Sirkuit dasar satu saklar. Daya ${powerOn ? 'hidup' : 'mati'}, saklar ${switch1On ? 'tertutup' : 'terbuka'}, lampu ${isLampOn ? 'menyala' : 'padam'}.`
-      : `Sirkuit variasi dua saklar tukar. Daya ${powerOn ? 'hidup' : 'mati'}, saklar tukar 1 posisi ${switch1On ? 'A' : 'B'}, saklar tukar 2 posisi ${switch2On ? 'A' : 'B'}, lampu ${isLampOn ? 'menyala' : 'padam'}.`;
+      : `Sirkuit variasi dua saklar tukar. Daya ${powerOn ? 'hidup' : 'mati'}, saklar tukar 1 posisi ${switch1On ? 'T-1' : 'T-2'}, saklar tukar 2 posisi ${switch2On ? 'T-1' : 'T-2'}, lampu ${isLampOn ? 'menyala' : 'padam'}.`;
 
   return (
     <div className="p-5 sm:p-6 rounded-3xl bg-white border border-[#E3E8F8] shadow-xs space-y-5">
@@ -126,194 +166,123 @@ export const CircuitVisualizer: React.FC<CircuitVisualizerProps> = ({
         </div>
       </div>
 
-      {/* Circuit Schematic SVG Canvas with Animated Current Flow */}
-      <div className="relative w-full h-64 sm:h-72 bg-[#0F1B4A] rounded-2xl p-4 overflow-hidden border border-[#E3E8F8] flex items-center justify-center">
-        
-        {/* Subtle grid lines background */}
+      {/* Skema sirkuit: area gulir fokusable di layar sempit agar teks tetap terbaca */}
+      <div className="relative w-full bg-[#0F1B4A] rounded-2xl border border-[#E3E8F8] overflow-hidden">
         <div className="absolute inset-0 opacity-10 bg-[radial-gradient(#4A8BFF_1px,transparent_1px)] [background-size:16px_16px]" />
+        <div
+          role="region"
+          aria-label="Diagram sirkuit, geser ke samping bila terpotong"
+          tabIndex={0}
+          className="relative overflow-x-auto p-3 sm:p-5"
+        >
+          <p role="status" className="sr-only">{circuitSummary}</p>
+          <svg
+            viewBox="0 0 800 395"
+            className="block w-full min-w-[600px] h-auto"
+            role="img"
+            aria-label={circuitSummary}
+          >
+            <defs>
+              <radialGradient id="lamp-glow">
+                <stop offset="0%" stopColor="#FDE047" stopOpacity="0.75" />
+                <stop offset="100%" stopColor="#FDE047" stopOpacity="0" />
+              </radialGradient>
+            </defs>
 
-        <p role="status" className="sr-only">{circuitSummary}</p>
-        <svg viewBox="0 0 600 240" className="w-full h-full max-w-lg" role="img" aria-label={circuitSummary}>
-          <defs>
-            {/* Animated flow pattern for Phase wire */}
-            <pattern id="flow-line" width="20" height="20" patternUnits="userSpaceOnUse">
-              <circle cx="5" cy="10" r="2" fill="#4A8BFF" />
-            </pattern>
-          </defs>
-
-          {/* Neutral Wire (Blue #4A8BFF / Cyan) - Always connected to Lamp Shell */}
-          <path
-            d="M 60 190 L 520 190 L 520 115"
-            fill="none"
-            stroke="#4A8BFF"
-            strokeWidth="3"
-            strokeDasharray={powerOn ? "4,4" : "none"}
-            className={powerOn ? "animate-pulse" : ""}
-          />
-          <text x="70" y="210" fill="#4A8BFF" fontSize="10" fontWeight="bold">
-            Kawat Netral (N - Biru)
-          </text>
-
-          {/* Phase Wire from MCB to Switch 1 */}
-          <path
-            d="M 60 70 L 140 70"
-            fill="none"
-            stroke={powerOn ? "#F59E0B" : "#64748B"}
-            strokeWidth="3.5"
-          />
-          <text x="65" y="55" fill="#F59E0B" fontSize="10" fontWeight="bold">
-            Fasa (L - Hitam 220V)
-          </text>
-
-          {/* MCB Icon Box */}
-          <rect x="90" y="52" width="36" height="36" rx="6" fill="#1E2888" stroke="#3F55F0" strokeWidth="2" />
-          <text x="108" y="74" fill="#FFFFFF" fontSize="9" fontWeight="bold" textAnchor="middle">
-            MCB
-          </text>
-
-          {/* Render circuit logic based on circuitType */}
-          {circuitType === 'base' ? (
-            /* BASE TASK: SINGLE SWITCH */
-            <g>
-              {/* Switch 1 Box */}
-              <rect x="220" y="45" width="80" height="50" rx="10" fill="#1E2888" stroke="#3F55F0" strokeWidth="2" />
-              <text x="260" y="65" fill="#FFFFFF" fontSize="10" fontWeight="bold" textAnchor="middle">
-                Saklar Tunggal
-              </text>
-              <text x="260" y="82" fill={switch1On ? "#10B981" : "#EF4444"} fontSize="9" textAnchor="middle">
-                {switch1On ? "TERTUTUP (ON)" : "TERBUKA (OFF)"}
-              </text>
-
-              {/* Wire: MCB to Switch */}
-              <line x1="140" y1="70" x2="220" y2="70" stroke={powerOn ? "#F59E0B" : "#64748B"} strokeWidth="3" />
-
-              {/* Wire: Switch to Lamp */}
-              <path
-                d="M 300 70 L 480 70 L 480 85"
-                fill="none"
-                stroke={powerOn && switch1On ? "#F59E0B" : "#64748B"}
-                strokeWidth="3"
-                strokeDasharray={powerOn && switch1On ? "6,4" : "none"}
-              />
-
-              <text x="360" y="60" fill="#E2E8F0" fontSize="9">
-                Fasa Terputus ke Fiting
-              </text>
-            </g>
-          ) : (
-            /* VARIATION: TWO-WAY SWITCHES (SPDT) WITH STRAPPING WIRES */
-            <g>
-              {/* Switch Tukar 1 */}
-              <rect x="170" y="40" width="80" height="60" rx="10" fill="#1E2888" stroke="#3F55F0" strokeWidth="2" />
-              <text x="210" y="58" fill="#FFFFFF" fontSize="9" fontWeight="bold" textAnchor="middle">
-                Saklar Tukar 1
-              </text>
-              <text x="210" y="74" fill="#4A8BFF" fontSize="8" textAnchor="middle">
-                Common [0]
-              </text>
-              <text x="210" y="88" fill="#93C5FD" fontSize="8" textAnchor="middle">
-                Posisi: {switch1On ? "T-1 (Atas)" : "T-2 (Bawah)"}
-              </text>
-
-              {/* Wire MCB to Switch 1 Common */}
-              <line x1="140" y1="70" x2="170" y2="70" stroke={powerOn ? "#F59E0B" : "#64748B"} strokeWidth="3" />
-
-              {/* Switch Tukar 2 */}
-              <rect x="360" y="40" width="80" height="60" rx="10" fill="#1E2888" stroke="#3F55F0" strokeWidth="2" />
-              <text x="400" y="58" fill="#FFFFFF" fontSize="9" fontWeight="bold" textAnchor="middle">
-                Saklar Tukar 2
-              </text>
-              <text x="400" y="74" fill="#4A8BFF" fontSize="8" textAnchor="middle">
-                Common [0]
-              </text>
-              <text x="400" y="88" fill="#93C5FD" fontSize="8" textAnchor="middle">
-                Posisi: {switch2On ? "T-1 (Atas)" : "T-2 (Bawah)"}
-              </text>
-
-              {/* Strapping Wire 1 (Top: Terminal 1 to 1) */}
-              <path
-                d="M 250 55 L 360 55"
-                fill="none"
-                stroke={powerOn && switch1On ? "#F59E0B" : "#475569"}
-                strokeWidth="2.5"
-                strokeDasharray="4,4"
-              />
-              <text x="305" y="48" fill="#94A3B8" fontSize="8" textAnchor="middle">
-                Strapping Wire 1 [T-1]
-              </text>
-
-              {/* Strapping Wire 2 (Bottom: Terminal 2 to 2) */}
-              <path
-                d="M 250 85 L 360 85"
-                fill="none"
-                stroke={powerOn && !switch1On ? "#F59E0B" : "#475569"}
-                strokeWidth="2.5"
-                strokeDasharray="4,4"
-              />
-              <text x="305" y="98" fill="#94A3B8" fontSize="8" textAnchor="middle">
-                Strapping Wire 2 [T-2]
-              </text>
-
-              {/* Output from Switch 2 Common to Lamp */}
-              <path
-                d="M 440 70 L 485 70 L 485 85"
-                fill="none"
-                stroke={isLampOn ? "#F59E0B" : "#64748B"}
-                strokeWidth="3"
-                strokeDasharray={isLampOn ? "6,4" : "none"}
-              />
-            </g>
-          )}
-
-          {/* Lamp Unit with Realistic Glow Effect */}
-          <g transform="translate(480, 85)">
-            {/* Glow Aura */}
-            {isLampOn && (
-              <circle
-                cx="20"
-                cy="20"
-                r="38"
-                fill="#FBBF24"
-                fillOpacity="0.35"
-                className="animate-pulse"
-              />
-            )}
-            {/* Glass Bulb */}
-            <circle
-              cx="20"
-              cy="20"
-              r="22"
-              fill={isLampOn ? "#FEF08A" : "#334155"}
-              stroke={isLampOn ? "#F59E0B" : "#64748B"}
-              strokeWidth="2"
-            />
-            {/* Filament */}
-            <path
-              d="M 15 22 Q 20 12 25 22"
-              fill="none"
-              stroke={isLampOn ? "#D97706" : "#475569"}
-              strokeWidth="2"
-            />
-            {/* Base */}
-            <rect x="14" y="38" width="12" height="8" fill="#94A3B8" rx="2" />
-            <text x="20" y="58" fill="#FFFFFF" fontSize="9" fontWeight="bold" textAnchor="middle">
-              Lampu 15W
+            {/* Kawat netral (biru): masuk dari sisi kanan lampu */}
+            <Wire d="M 20 315 H 750 V 205 H 724" on={isLampOn} color="#60A5FA" />
+            <text x="24" y="302" fill="#93C5FD" fontSize="15" fontWeight="700">
+              Kawat Netral (N · biru)
             </text>
-          </g>
 
-          {/* Grounding Wire (Green/Yellow) */}
-          <path
-            d="M 60 220 L 520 220"
-            fill="none"
-            stroke="#16A34A"
-            strokeWidth="2"
-            strokeDasharray="8,4"
-          />
-          <text x="70" y="235" fill="#16A34A" fontSize="9">
-            Pentanahan / Grounding (PE - Hijau/Kuning)
-          </text>
-        </svg>
+            {/* Kawat pentanahan (hijau/kuning) */}
+            <path d="M 20 358 H 750" stroke="#22C55E" strokeWidth="5" fill="none" strokeLinecap="round" />
+            <path d="M 20 358 H 750" stroke="#FACC15" strokeWidth="5" fill="none" strokeDasharray="14 14" />
+            <text x="24" y="384" fill="#86EFAC" fontSize="14" fontWeight="600">
+              Pentanahan / Grounding (PE · hijau-kuning)
+            </text>
 
+            {/* Kawat fasa dari sumber ke MCB */}
+            <text x="24" y="70" fill="#FBBF24" fontSize="15" fontWeight="700">
+              Fasa (L · hitam 220V)
+            </text>
+            <Wire d="M 20 125 H 100" on={powerOn} color="#FBBF24" />
+
+            {/* MCB */}
+            <rect x="100" y="95" width="68" height="60" rx="10" fill="#1E2888" stroke={powerOn ? '#4ADE80' : '#F87171'} strokeWidth="3" />
+            <text x="134" y="121" fill="#FFFFFF" fontSize="16" fontWeight="800" textAnchor="middle">MCB</text>
+            <text x="134" y="142" fill={powerOn ? '#4ADE80' : '#F87171'} fontSize="13" fontWeight="700" textAnchor="middle">
+              {powerOn ? 'ON' : 'OFF'}
+            </text>
+
+            {circuitType === 'base' ? (
+              <g>
+                <Wire d="M 168 125 H 330" on={powerOn} color="#FBBF24" />
+                <rect x="330" y="70" width="160" height="110" rx="12" fill="#1E2888" stroke="#6D80FF" strokeWidth="3" />
+                <text x="410" y="96" fill="#FFFFFF" fontSize="16" fontWeight="800" textAnchor="middle">Saklar Tunggal</text>
+                {/* Tuas: lurus saat tertutup, terangkat saat terbuka */}
+                <line
+                  x1="342" y1="125" x2="478" y2={switch1On ? 125 : 105}
+                  stroke={switch1On && powerOn ? '#FBBF24' : '#E2E8F0'} strokeWidth="6" strokeLinecap="round"
+                />
+                <Dot x={330} y={125} />
+                <Dot x={490} y={125} />
+                <text x="410" y="164" fill={switch1On ? '#4ADE80' : '#F87171'} fontSize="15" fontWeight="800" textAnchor="middle">
+                  {switch1On ? 'TERTUTUP (ON)' : 'TERBUKA (OFF)'}
+                </text>
+
+                <Wire d="M 490 125 H 690 V 171" on={isLampOn} color="#FBBF24" />
+                <text x="590" y="108" fill="#E2E8F0" fontSize="14" textAnchor="middle">
+                  {isLampOn ? 'Fasa mengalir ke lampu' : 'Fasa terputus'}
+                </text>
+              </g>
+            ) : (
+              <g>
+                <Wire d="M 168 125 H 200" on={powerOn} color="#FBBF24" />
+
+                <SpdtSwitch x={200} y={30} mirrored={false} title="Saklar Tukar 1" on={switch1On} powerOn={powerOn} />
+                <SpdtSwitch x={500} y={30} mirrored title="Saklar Tukar 2" on={switch2On} powerOn={powerOn} />
+
+                {/* Kawat strapping 1 (T-1) dan 2 (T-2) */}
+                <Wire d="M 340 100 H 500" on={powerOn && switch1On} color="#FBBF24" />
+                <text x="420" y="88" fill="#E2E8F0" fontSize="13" fontWeight="600" textAnchor="middle">
+                  Strapping Wire 1 [T-1]
+                </text>
+                <Wire d="M 340 150 H 500" on={powerOn && !switch1On} color="#FBBF24" />
+                <text x="420" y="176" fill="#E2E8F0" fontSize="13" fontWeight="600" textAnchor="middle">
+                  Strapping Wire 2 [T-2]
+                </text>
+
+                <Wire d="M 640 125 H 690 V 171" on={isLampOn} color="#FBBF24" />
+              </g>
+            )}
+
+            {/* Lampu 15W */}
+            <g transform="translate(690, 205)">
+              {isLampOn && (
+                <>
+                  <circle r="78" fill="url(#lamp-glow)" className="animate-pulse" />
+                  {[0, 45, 90, 135, 180, 225, 270, 315].map((a) => (
+                    <line
+                      key={a}
+                      x1="0" y1="-46" x2="0" y2="-58"
+                      stroke="#FDE047" strokeWidth="4" strokeLinecap="round"
+                      transform={`rotate(${a})`}
+                    />
+                  ))}
+                </>
+              )}
+              <circle r="34" fill={isLampOn ? '#FEF08A' : '#334155'} stroke={isLampOn ? '#F59E0B' : '#CBD5E1'} strokeWidth="4" />
+              <path d="M -12 10 L -8 -6 L 0 6 L 8 -6 L 12 10" fill="none" stroke={isLampOn ? '#D97706' : '#CBD5E1'} strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round" />
+              <rect x="-14" y="34" width="28" height="14" rx="3" fill="#CBD5E1" />
+              <line x1="-14" y1="41" x2="14" y2="41" stroke="#64748B" strokeWidth="2" />
+              <text y="74" fill="#FFFFFF" fontSize="15" fontWeight="800" textAnchor="middle">Lampu 15W</text>
+              <text y="92" fill={isLampOn ? '#FDE047' : '#CBD5E1'} fontSize="13" fontWeight="700" textAnchor="middle">
+                {isLampOn ? 'MENYALA' : 'PADAM'}
+              </text>
+            </g>
+          </svg>
+        </div>
       </div>
 
       {/* Technical Insight Box */}

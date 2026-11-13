@@ -105,6 +105,10 @@ button:disabled { cursor: not-allowed; }
 .stagger > *:nth-child(5) { animation-delay: 240ms; }
 .stagger > *:nth-child(n+6) { animation-delay: 300ms; }
 
+/* Diagram sirkuit: titik arus bergerak sepanjang kabel yang dialiri */
+@keyframes circuit-flow { to { stroke-dashoffset: -34; } }
+.circuit-flow { animation: circuit-flow 1.1s linear infinite; }
+
 /* Aksesibilitas: fokus keyboard terlihat & hormati preferensi kurangi gerak */
 :focus-visible {
   outline: 2px solid var(--brand-indigo);
