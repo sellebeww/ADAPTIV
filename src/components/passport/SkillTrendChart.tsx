@@ -23,6 +23,12 @@ import {
   History,
 } from 'lucide-react';
 
+const VIEW_LABELS = {
+  ia_overall: 'Indeks Adaptasi (IA) per sesi',
+  dimensions: 'skor lima sub-dimensi per sesi',
+  transfer_gap: 'selisih transfer per sesi'
+} as const;
+
 interface SkillTrendChartProps {
   sessionHistory?: HistoricalSessionRecord[];
   currentSessionScore?: number;
@@ -154,9 +160,10 @@ export const SkillTrendChart: React.FC<SkillTrendChartProps> = ({
         </div>
 
         {/* Chart View Modes */}
-        <div className="flex items-center gap-1.5 p-1 bg-[#F6F8FF] rounded-xl border border-[#E3E8F8] self-start lg:self-auto">
+        <div role="group" aria-label="Jenis grafik" className="flex flex-wrap items-center gap-1.5 p-1 bg-[#F6F8FF] rounded-xl border border-[#E3E8F8] self-start lg:self-auto">
           <button
             onClick={() => setViewMode('ia_overall')}
+            aria-pressed={viewMode === 'ia_overall'}
             className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
               viewMode === 'ia_overall'
                 ? 'bg-white text-[#3F55F0] shadow-xs ring-1 ring-[#3F55F0]/20'
@@ -167,6 +174,7 @@ export const SkillTrendChart: React.FC<SkillTrendChartProps> = ({
           </button>
           <button
             onClick={() => setViewMode('dimensions')}
+            aria-pressed={viewMode === 'dimensions'}
             className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
               viewMode === 'dimensions'
                 ? 'bg-white text-[#3F55F0] shadow-xs ring-1 ring-[#3F55F0]/20'
@@ -177,6 +185,7 @@ export const SkillTrendChart: React.FC<SkillTrendChartProps> = ({
           </button>
           <button
             onClick={() => setViewMode('transfer_gap')}
+            aria-pressed={viewMode === 'transfer_gap'}
             className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
               viewMode === 'transfer_gap'
                 ? 'bg-white text-[#3F55F0] shadow-xs ring-1 ring-[#3F55F0]/20'
@@ -251,8 +260,20 @@ export const SkillTrendChart: React.FC<SkillTrendChartProps> = ({
         </div>
       </div>
 
+      {/* Ringkasan teks untuk pembaca layar; tabel lengkap ada di bawah grafik */}
+      <p id="trend-chart-summary" className="sr-only">
+        Grafik {VIEW_LABELS[viewMode]} untuk {sessionHistory.length} sesi, dari {firstSession.sessionCode} ({firstSession.date}) sampai {latestSession.sessionCode} ({latestSession.date}).
+        Indeks Adaptasi berubah dari {firstSession.adaptationIndex} menjadi {latestSession.adaptationIndex}; selisih transfer dari {firstSession.transferGap} menjadi {latestSession.transferGap}.
+        Data lengkap tersedia pada tabel di bawah grafik.
+      </p>
+
       {/* Main Recharts Container */}
-      <div className="h-[280px] sm:h-[320px] w-full pt-2">
+      <div
+        role="group"
+        aria-label={`Grafik ${VIEW_LABELS[viewMode]}`}
+        aria-describedby="trend-chart-summary"
+        className="h-[280px] sm:h-[320px] w-full pt-2"
+      >
         <ResponsiveContainer width="100%" height="100%">
           {viewMode === 'ia_overall' ? (
             <ComposedChart data={chartData} margin={{ top: 15, right: 20, left: -10, bottom: 5 }}>
@@ -394,6 +415,50 @@ export const SkillTrendChart: React.FC<SkillTrendChartProps> = ({
         </ResponsiveContainer>
       </div>
 
+      {/* Alternatif teks grafik: seluruh data dalam tabel */}
+      <details className="rounded-2xl border border-[#E3E8F8] bg-white">
+        <summary className="cursor-pointer px-4 py-3 text-xs font-bold text-[#3F55F0] rounded-2xl">
+          Lihat data grafik sebagai tabel
+        </summary>
+        <div role="region" aria-label="Tabel data grafik tren" tabIndex={0} className="overflow-x-auto px-4 pb-4">
+          <table className="w-full min-w-[640px] text-xs text-left">
+            <caption className="sr-only">
+              Riwayat sesi: Indeks Adaptasi, selisih transfer, dan skor lima dimensi (0 sampai 4)
+            </caption>
+            <thead>
+              <tr className="text-[#5B6585] border-b border-[#E3E8F8]">
+                <th scope="col" className="py-2 pr-3 font-bold">Sesi</th>
+                <th scope="col" className="py-2 pr-3 font-bold">Tanggal</th>
+                <th scope="col" className="py-2 pr-3 font-bold">IA</th>
+                <th scope="col" className="py-2 pr-3 font-bold">Tingkat</th>
+                <th scope="col" className="py-2 pr-3 font-bold">Selisih Transfer</th>
+                <th scope="col" className="py-2 pr-3 font-bold">Prediksi</th>
+                <th scope="col" className="py-2 pr-3 font-bold">Penyesuaian</th>
+                <th scope="col" className="py-2 pr-3 font-bold">Hasil</th>
+                <th scope="col" className="py-2 pr-3 font-bold">Kemandirian</th>
+                <th scope="col" className="py-2 font-bold">Evaluasi</th>
+              </tr>
+            </thead>
+            <tbody className="text-[#0F1B4A]">
+              {chartData.map((row) => (
+                <tr key={row.id} className="border-b border-[#E3E8F8]/60 last:border-0">
+                  <th scope="row" className="py-2 pr-3 font-bold">{row.sessionCode}</th>
+                  <td className="py-2 pr-3">{row.name}</td>
+                  <td className="py-2 pr-3 font-mono">{row.adaptationIndex}</td>
+                  <td className="py-2 pr-3">{row.level}</td>
+                  <td className="py-2 pr-3 font-mono">{row.transferGap}</td>
+                  <td className="py-2 pr-3 font-mono">{row.prediksi}</td>
+                  <td className="py-2 pr-3 font-mono">{row.penyesuaian}</td>
+                  <td className="py-2 pr-3 font-mono">{row.hasil}</td>
+                  <td className="py-2 pr-3 font-mono">{row.kemandirian}</td>
+                  <td className="py-2 font-mono">{row.evaluasi}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </details>
+
       {/* Historical Sessions Interactive Cards */}
       <div className="space-y-2 pt-2">
         <div className="flex items-center justify-between">
@@ -413,6 +478,7 @@ export const SkillTrendChart: React.FC<SkillTrendChartProps> = ({
               <button
                 key={sess.id}
                 onClick={() => setSelectedSessionId(sess.id)}
+                aria-pressed={isSelected}
                 className={`p-3 rounded-2xl border text-left transition-all ${
                   isSelected
                     ? 'bg-[#3F55F0]/5 border-[#3F55F0] ring-2 ring-[#3F55F0]/20 shadow-xs'
