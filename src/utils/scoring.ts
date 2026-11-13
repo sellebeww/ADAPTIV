@@ -151,3 +151,24 @@ export function computeSessionResult(
     computedAt: new Date().toISOString()
   };
 }
+
+
+/** Angka contoh yang tampil di sesi demo sebelum penilai menerbitkan hasil. */
+const DEMO_RESULT = {
+  adaptationIndex: 82.5,
+  level: 'Mahir Beradaptasi' as AdaptationLevel,
+  transferGap: 0.3,
+  calibration: 0.2,
+  weakestCategory: 'Beban / Daya Tinggi'
+};
+
+/** Ringkasan hasil untuk layar; nilai 0 yang sah tidak diganti angka contoh (gunakan ??, bukan ||). */
+export function describeResult(result?: SessionResult) {
+  return {
+    adaptationIndex: result?.adaptationIndex ?? DEMO_RESULT.adaptationIndex,
+    level: result?.level ?? DEMO_RESULT.level,
+    transferGap: result?.transferGap ?? DEMO_RESULT.transferGap,
+    calibration: result?.calibration ?? DEMO_RESULT.calibration,
+    weakestCategory: result?.weakestCategory ?? DEMO_RESULT.weakestCategory
+  };
+}

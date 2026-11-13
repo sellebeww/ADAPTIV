@@ -4,6 +4,7 @@ import {
   RUBRIC_DIMENSIONS,
   calculateAdaptationIndex,
   computeSessionResult,
+  describeResult,
   getAdaptationLevel,
 } from './scoring';
 import { mulberry32, seededShuffle } from '../test/prng';
@@ -229,5 +230,42 @@ describe('computeSessionResult', () => {
     expect(r.adaptationIndex).toBe(0);
     expect(Number.isNaN(r.transferGap)).toBe(true);
     expect(Number.isNaN(r.calibration)).toBe(true);
+  });
+});
+
+describe('describeResult (tampilan ringkasan hasil)', () => {
+  const real = {
+    adaptationIndex: 0,
+    transferGap: 0,
+    calibration: 0,
+    level: 'Tergantung Prosedur' as const,
+    weakestCategory: 'alat' as const,
+    strengths: [],
+    recommendations: [],
+    computedAt: '2026-03-01T10:00:00.000Z',
+  };
+
+  it('nilai 0 yang valid tidak boleh diganti angka contoh (bug: operator || pada UI)', () => {
+    const d = describeResult(real);
+    expect(d.adaptationIndex).toBe(0);
+    expect(d.transferGap).toBe(0);
+    expect(d.calibration).toBe(0);
+    expect(d.level).toBe('Tergantung Prosedur');
+  });
+
+  it('tanpa hasil, memakai angka contoh sesi demo', () => {
+    expect(describeResult(undefined)).toEqual({
+      adaptationIndex: 82.5,
+      level: 'Mahir Beradaptasi',
+      transferGap: 0.3,
+      calibration: 0.2,
+      weakestCategory: 'Beban / Daya Tinggi',
+    });
+  });
+});
+
+describe('getAdaptationLevel vs pratinjau skor langsung', () => {
+  it('IA di bawah 40 adalah "Tergantung Prosedur", bukan "Berkembang" (bug: ternary UI lama)', () => {
+    expect(getAdaptationLevel(calculateAdaptationIndex(uniform(1)))).toBe('Tergantung Prosedur');
   });
 });
