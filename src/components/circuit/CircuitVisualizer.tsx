@@ -26,6 +26,11 @@ export const CircuitVisualizer: React.FC<CircuitVisualizerProps> = ({
   // Lamp is ON if switch1On === switch2On (both in position 1 or both in position 2)
   const isLampOn = powerOn && (circuitType === 'base' ? switch1On : switch1On === switch2On);
 
+  const circuitSummary =
+    circuitType === 'base'
+      ? `Sirkuit dasar satu saklar. Daya ${powerOn ? 'hidup' : 'mati'}, saklar ${switch1On ? 'tertutup' : 'terbuka'}, lampu ${isLampOn ? 'menyala' : 'padam'}.`
+      : `Sirkuit variasi dua saklar tukar. Daya ${powerOn ? 'hidup' : 'mati'}, saklar tukar 1 posisi ${switch1On ? 'A' : 'B'}, saklar tukar 2 posisi ${switch2On ? 'A' : 'B'}, lampu ${isLampOn ? 'menyala' : 'padam'}.`;
+
   return (
     <div className="p-5 sm:p-6 rounded-3xl bg-white border border-[#E3E8F8] shadow-xs space-y-5">
       
@@ -51,6 +56,7 @@ export const CircuitVisualizer: React.FC<CircuitVisualizerProps> = ({
         <div className="flex items-center gap-1.5 p-1 bg-[#F6F8FF] rounded-xl border border-[#E3E8F8]">
           <button
             onClick={() => setCircuitType('base')}
+            aria-pressed={circuitType === 'base'}
             className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
               circuitType === 'base'
                 ? 'bg-white text-[#0F1B4A] shadow-xs ring-1 ring-[#0F1B4A]/10'
@@ -61,6 +67,7 @@ export const CircuitVisualizer: React.FC<CircuitVisualizerProps> = ({
           </button>
           <button
             onClick={() => setCircuitType('variation')}
+            aria-pressed={circuitType === 'variation'}
             className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1 ${
               circuitType === 'variation'
                 ? 'bg-[#3F55F0] text-white shadow-xs'
@@ -78,6 +85,7 @@ export const CircuitVisualizer: React.FC<CircuitVisualizerProps> = ({
         <div className="flex items-center gap-2">
           <button
             onClick={() => setPowerOn(!powerOn)}
+            aria-pressed={powerOn}
             className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl font-bold transition-all ${
               powerOn 
                 ? 'bg-emerald-700 text-white shadow-xs' 
@@ -124,7 +132,8 @@ export const CircuitVisualizer: React.FC<CircuitVisualizerProps> = ({
         {/* Subtle grid lines background */}
         <div className="absolute inset-0 opacity-10 bg-[radial-gradient(#4A8BFF_1px,transparent_1px)] [background-size:16px_16px]" />
 
-        <svg viewBox="0 0 600 240" className="w-full h-full max-w-lg">
+        <p role="status" className="sr-only">{circuitSummary}</p>
+        <svg viewBox="0 0 600 240" className="w-full h-full max-w-lg" role="img" aria-label={circuitSummary}>
           <defs>
             {/* Animated flow pattern for Phase wire */}
             <pattern id="flow-line" width="20" height="20" patternUnits="userSpaceOnUse">
